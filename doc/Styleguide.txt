@@ -1,0 +1,6 @@
+This guide defines nameing convections:
+Package: snake_case
+Python file: snake_case
+Class: CamelCase
+Function: snake_case
+Variables: snake_case
