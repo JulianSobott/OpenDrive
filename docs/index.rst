@@ -19,6 +19,7 @@ Features
 
    installation
    dev_guide
+   internal/index
 
 Contribute
 ----------
