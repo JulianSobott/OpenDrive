@@ -46,3 +46,5 @@ What data to store:
     - necessary_action (Pull, move, delete)
     - is directory
     - old_file_path (Only on move)
+
+The code, that is responsible for this task is located at `client_side/file_watcher.py`.

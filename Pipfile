@@ -4,10 +4,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+thread-testing = {index = "https://test.pypi.org/simple/",version = "*"}
 
 [packages]
 networking = {index = "https://test.pypi.org/simple/",version = "*"}
-thread-testing = {index = "https://test.pypi.org/simple/thread-testing",version = "*"}
+watchdog = "*"
 
 [requires]
 python_version = "3.7"
