@@ -1,0 +1,90 @@
+==========
+Dev Guide
+==========
+
+General
+=================
+
+**Abstract:**
+
+Open Drive is an open source, self hosting alternative to GoogleDrive
+
+**Problem:**
+
+Many people need a kind of backup system and want data to be synchronized. They don't want their data to be stored at
+servers in america or in general any third party.
+
+**Solution:**
+
+Use your own server and OpenDrive.
+
+**Target Group:**
+
+People with different devices. People with critical/important data. People who want to make a backup.
+
+
+**Core functionality:**
+    - Automatically sync your files between multiple devices
+    - Define which file/folders to sync
+    - No third parties have access to your data
+
+
+**Possible features:**
+    - Share your files and make them available for other people
+    -  Access your files from everywhere, where you have internet access
+    - Smartphone app
+
+
+Details:
+========
+
+**Software:**
+    - Core: python (with networking library)
+    - GUI: JavaFX?, PyQT?, Website?
+
+
+**Project structure:**
+    - OpenDrive
+        - docs
+        - src
+            - OpenDrive
+                - server_side
+                    - __init__.py
+                - client_side
+                    - __init__.py
+                - general
+                    - __init__.py
+                - __init__.py
+                - start.py
+            - tests
+        - assets
+
+
+**Top to bottom tasks:**
+
+
+Workflow:
+=========
+
+    - Define General part
+    - Create broad documentation
+    - Create specific documentation
+    - Define code (not implement)
+    - Create tests for documentation
+    - Implement code
+
+
+Style-guide:
+=============
+
+This guide defines naming conventions:
+    - *Package*: snake_case
+    - *Python file*: snake_case
+    - *Class*: CamelCase
+    - *Function*: snake_case
+    - *Variables*: snake_case
+    - *rst file* snake_case
+
+TODO next:
+==========
+

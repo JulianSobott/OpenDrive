@@ -1,21 +1,29 @@
-.. OpenDrive documentation master file, created by
-   sphinx-quickstart on Thu Mar  7 14:29:10 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to OpenDrive's documentation!
 =====================================
+
+OpenDrive is an open source, self hosting alternative to Google Drive. You need an own server, that you have access to.
+For me a Raspberry-pi 3 with an external hard-drive just went fine.
+
+Features
+--------
+
+- Automatically sync your files between multiple devices
+- Define which file/folders to sync
+- No third parties have access to your data
+- Share your files and make them available for other people
+- Access your files from everywhere, where you have internet access
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+   dev_guide
 
+Contribute
+----------
 
-Indices and tables
-==================
+This project is at a very early stage. Every contribution is very appreciated.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+- Issue Tracker: github.com/JulianSobott/OpenDrive/issues
+- Source Code: github.com/JulianSobott/OpenDrive
