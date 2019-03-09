@@ -24,7 +24,7 @@ class TestDatabaseConnections(unittest.TestCase):
         delete_database()
         database.create_database()
         sql = "SELECT name  FROM sqlite_master WHERE type='table'"
-        with database.DBConnection() as db:
+        with database.DBConnection(paths.LOCAL_DB_PATH) as db:
             ret = db.get(sql)
         tables = [table_name for table_name, in ret]
         self.assertEqual(len(tables), 2)
