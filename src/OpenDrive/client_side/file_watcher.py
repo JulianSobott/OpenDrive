@@ -14,4 +14,3 @@ import watchdog
 def start(all_folders_to_sync: List[str]):
     """Start watching at all folders in a new thread."""
     pass
-

@@ -23,12 +23,6 @@ Features
 Considerations
 ---------------
 
-How to store changes?
-    - local db
-    - txt file with own formatting
-    - json
-    - csv
-
 Paths:
     - Use relative or absolute paths?
     - Paths relative to what?
@@ -46,5 +40,33 @@ What data to store:
     - necessary_action (Pull, move, delete)
     - is directory
     - old_file_path (Only on move)
+
+
+Store changes in a database.
+There are two tables in the local database, that are responsible for file changes.
+One stores all folders, to keep track of. The other stores all file changes. The second one has the folder_id as
+foreign key. Some advantages are, that the folders, and the files can be stored in one db. No redundant paths can occur.
+Easy to select changes in a specific folder.
+
+**Database structure:**
+
+*folders*
+
+    - folder_id
+    - path
+
+*changes* (Not 'files', because also it also tracks folders)
+
+    - change_id
+    - folder_id
+    - current_rel_path (to folder)
+    - is_folder
+    - last_change_time_stamp
+    - Create
+    - Move
+    - Modify
+    - Delete
+    - necessary_action (Pull, move, delete)
+    - old_abs_path (Only on move)
 
 The code, that is responsible for this task is located at `client_side/file_watcher.py`.

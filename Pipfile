@@ -4,11 +4,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-thread-testing = {index = "https://test.pypi.org/simple/",version = "*"}
 
 [packages]
 networking = {index = "https://test.pypi.org/simple/",version = "*"}
 watchdog = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.7"
