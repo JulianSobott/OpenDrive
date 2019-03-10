@@ -27,8 +27,6 @@ class TestDatabaseConnections(unittest.TestCase):
         with database.DBConnection(paths.LOCAL_DB_PATH) as db:
             ret = db.get(sql)
         tables = [table_name for table_name, in ret]
-        print(tables)
-        self.assertEqual(len(tables), 3)
         self.assertTrue("sync_folders" in tables)
         self.assertTrue("ignores" in tables)
         self.assertTrue("changes" in tables)
@@ -66,6 +64,22 @@ class TestEmptyAccess(unittest.TestCase):
         change.is_deleted = 1
         new_change = database.Change(change_id)
         self.assertEqual(True, new_change.is_deleted)
+
+    def test_ignores_setter(self):
+        ignore_id = database.Ignore.create(1, "folder1/*")
+        ignore = database.Ignore(ignore_id)
+        ignore.pattern = "new_pattern/*"
+        new_ignore = database.Ignore(ignore_id)
+        self.assertEqual("new_pattern/*", new_ignore.pattern)
+
+    def test_sync_folders(self):
+        folder_id = database.SyncFolder.create("C:/folder1/")
+        folder = database.SyncFolder(folder_id)
+        folder.abs_path = "C:/new_path/folder_1/"
+        new_folder = folder.update()
+        self.assertEqual("C:/new_path/folder_1/", new_folder.abs_path)
+        self.assertEqual("C:/new_path/folder_1/", folder.abs_path)
+
 
 
 class TestAccess(unittest.TestCase):

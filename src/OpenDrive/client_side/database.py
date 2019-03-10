@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Tuple, Optional
 
 from OpenDrive.client_side import paths
-from OpenDrive.general.database import DBConnection
+from OpenDrive.general.database import DBConnection, TableEntry
 
 
 def create_database() -> None:
@@ -40,7 +40,7 @@ def create_database() -> None:
                              ")")
         db.create(sql_table_changes)
         sql_table_ignores = ("create table ignores("
-                             "ignore_id int primary key,"
+                             "ignore_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
                              "folder_id int not null references sync_folders(folder_id), "
                              "pattern VARCHAR(260) not null,"
                              "sub_folders int default 0"
@@ -48,7 +48,7 @@ def create_database() -> None:
         db.create(sql_table_ignores)
 
 
-class Change:
+class Change(TableEntry):
     """Interface between python and DB change entry.
     call the `__init__(change_id)` to get a object, initialized with the values of the db.
     call the static method `create(...)` to insert a new change entry in the db.
@@ -59,6 +59,7 @@ class Change:
     ACTION_DELETE = (2, "DELETE")
 
     def __init__(self, change_id: int):
+        super().__init__(paths.LOCAL_DB_PATH, "changes", "change_id")
         """A object with all db values of the change_id is initialized. Raises KeyError if no entry exists."""
         sql = "SELECT * FROM changes WHERE change_id = ?"
         with DBConnection(paths.LOCAL_DB_PATH) as db:
@@ -66,7 +67,7 @@ class Change:
         if len(ret) == 0:
             raise KeyError(f"No change entry in 'changes' with id {change_id}!")
         values = ret[0]
-        self.id = change_id
+        self._id = change_id
         self._folder_id: int = values[1]
         self._current_rel_path: str = values[2]
         self._is_folder: bool = values[3]
@@ -123,7 +124,7 @@ class Change:
     """is_folder"""
     @property
     def is_folder(self) -> bool:
-        return self._is_folder
+        return bool(self._is_folder)
 
     @is_folder.setter
     def is_folder(self, new_value: bool):
@@ -142,7 +143,7 @@ class Change:
 
     @property
     def is_created(self) -> bool:
-        return self._is_created
+        return bool(self._is_created)
 
     @is_created.setter
     def is_created(self, new_value: bool):
@@ -151,7 +152,7 @@ class Change:
     """is_moved"""
     @property
     def is_moved(self) -> bool:
-        return self._is_moved
+        return bool(self._is_moved)
 
     @is_moved.setter
     def is_moved(self, new_value: bool):
@@ -160,7 +161,7 @@ class Change:
     """is_deleted"""
     @property
     def is_deleted(self) -> bool:
-        return self._is_deleted
+        return bool(self._is_deleted)
 
     @is_deleted.setter
     def is_deleted(self, new_value: bool):
@@ -169,7 +170,7 @@ class Change:
     """is_modified"""
     @property
     def is_modified(self) -> bool:
-        return self._is_modified
+        return bool(self._is_modified)
 
     @is_modified.setter
     def is_modified(self, new_value: bool):
@@ -193,10 +194,85 @@ class Change:
     def old_abs_path(self, new_value: Optional[str]):
         self._change_field("old_abs_path", new_value)
 
-    def _change_field(self, field_name: str, new_value) -> None:
-        if ";" in field_name or ")" in field_name:
-            raise ValueError("Preventing possible sql injection")
-        sql = f'UPDATE "changes" SET {field_name} = ? WHERE "change_id" = ?'
-        with DBConnection(paths.LOCAL_DB_PATH) as db:
-            db.update(sql, (new_value, self.id))
 
+class Ignore(TableEntry):
+
+    def __init__(self, ignore_id: int):
+        super().__init__(paths.LOCAL_DB_PATH, "ignores", "ignore_id")
+        """A object with all db values of the ignore_id is initialized. Raises KeyError if no entry exists."""
+        sql = "SELECT * FROM ignores WHERE ignore_id = ?"
+        with DBConnection(paths.LOCAL_DB_PATH) as db:
+            ret = db.get(sql, (ignore_id,))
+        if len(ret) == 0:
+            raise KeyError(f"No change entry in 'ignores' with id {ignore_id}!")
+        values = ret[0]
+        self._id = ignore_id
+        self._folder_id: int = values[1]
+        self._pattern: str = values[2]
+        self._sub_folders: bool = values[3]
+
+    @staticmethod
+    def create(folder_id: int, pattern: str, sub_folders: bool = True):
+        sql = 'INSERT INTO "ignores" (' \
+              '"folder_id", "pattern", "sub_folders") ' \
+              'VALUES (?, ?, ?)'
+        with DBConnection(paths.LOCAL_DB_PATH) as db:
+            return db.insert(sql, (folder_id, pattern, sub_folders))
+
+    """folder_id"""
+    @property
+    def folder_id(self) -> int:
+        return self._folder_id
+
+    @folder_id.setter
+    def folder_id(self, new_value):
+        self._change_field("folder_id", new_value)
+
+    """pattern"""
+    @property
+    def pattern(self) -> str:
+        return self._pattern
+
+    @pattern.setter
+    def pattern(self, new_value):
+        self._change_field("pattern", new_value)
+
+    """sub_folders"""
+    @property
+    def sub_folders(self) -> bool:
+        return bool(self._sub_folders)
+
+    @sub_folders.setter
+    def sub_folders(self, new_value):
+        self._change_field("sub_folders", new_value)
+
+
+class SyncFolder(TableEntry):
+
+    def __init__(self, folder_id: int):
+        super().__init__(paths.LOCAL_DB_PATH, "sync_folders", "folder_id")
+        """A object with all db values of the folder_id is initialized. Raises KeyError if no entry exists."""
+        sql = "SELECT * FROM sync_folders WHERE folder_id = ?"
+        with DBConnection(paths.LOCAL_DB_PATH) as db:
+            ret = db.get(sql, (folder_id,))
+        if len(ret) == 0:
+            raise KeyError(f"No change entry in 'sync_folders' with id {folder_id}!")
+        values = ret[0]
+        self._id = folder_id
+        self._abs_path = values[1]
+
+    @staticmethod
+    def create(abs_path: str):
+        sql = 'INSERT INTO "sync_folders" (' \
+              '"abs_path") ' \
+              'VALUES (?)'
+        with DBConnection(paths.LOCAL_DB_PATH) as db:
+            return db.insert(sql, (abs_path,))
+
+    @property
+    def abs_path(self) -> str:
+        return self._abs_path
+
+    @abs_path.setter
+    def abs_path(self, new_path: str):
+        self._change_field("abs_path", new_path)
