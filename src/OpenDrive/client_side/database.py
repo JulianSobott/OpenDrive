@@ -1,7 +1,20 @@
 """
 @author: Julian Sobott
-@brief:
+
+@brief: Interfaces between python and the db
+
 @description:
+
+classes:
+
+    :class:`Change` (TableEntry):
+
+    :class:`Ignore` (TableEntry):
+
+    :class:`SyncFolder` (TableEntry):
+
+functions:
+    - :func:`create_database()` -> None:
 
 @external_use:
 

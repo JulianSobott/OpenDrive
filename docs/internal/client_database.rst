@@ -51,4 +51,11 @@ As database_manager the sqlite3 module is used. It is available in the standard 
     - pattern
     - sub_folders
 
+Module
+--------
+.. automodule:: OpenDrive.general.database
+    :members:
+
+.. automodule:: OpenDrive.client_side.database
+    :members:
 

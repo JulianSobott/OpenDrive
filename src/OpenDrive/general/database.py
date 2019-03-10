@@ -1,11 +1,13 @@
 """
 @author: Julian Sobott
+
 @brief: Tools for accessing a sqlite database
+
 @description:
 
 classes:
-    - class DBConnection:
-    - class TableEntry
+    - :class:`DBConnection`
+    - :class:`TableEntry`
 
 @external_use:
 
@@ -23,13 +25,13 @@ class DBConnection:
         self.cursor: sqlite3.Cursor
 
     def __enter__(self) -> 'DBConnection':
-        """Opens a connection and initializes the cursor"""
+        """Opens a connection and initializes the `cursor`"""
         self.connection = sqlite3.connect(self.abs_db_path)
         self.cursor = self.connection.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Commits changes and closes the connection"""
+        """Commits changes and closes the `connection`"""
         self.connection.commit()
         self.connection.close()
 
@@ -60,15 +62,15 @@ class DBConnection:
 
 class TableEntry(object):
     """Interface between python and DB entry.
-        call a static method `from_...()` to get a object, initialized with the values of the db.
-        All class have the static method `from_id(id_)` implemented
-        call the static method `create(...)` to insert a new change entry in the db and get the id.
-        call the setter properties, to change the values in the db.
+        Call a static method :func:`from_...()` to get a object, initialized with the values of the db.
+        All class have the static method :func:`from_id(id_)` implemented.
+        Call the static method :func:`create(...)` to insert a new entry in the db and get the `id`.
+        Call the setter properties, to change the values in the db.
         To get a value from the DB call the getters.
         NOTE: if a value is changed, the :func:`update()` function must be called first, to update all values.
 
-        All subclasses must override the `TABLE_NAME`, `DB_PATH`, `PRIMARY_KEY_NAME`
-        and must provide the :func:`create(...)`
+        All subclasses must override the `TABLE_NAME`, `DB_PATH`, `PRIMARY_KEY_NAME` attributes
+        and must provide the :func:`create` function.
         """
     TABLE_NAME: str
     DB_PATH: str
