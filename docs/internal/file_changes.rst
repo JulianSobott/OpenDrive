@@ -48,25 +48,15 @@ One stores all folders, to keep track of. The other stores all file changes. The
 foreign key. Some advantages are, that the folders, and the files can be stored in one db. No redundant paths can occur.
 Easy to select changes in a specific folder.
 
-**Database structure:**
-
-*folders*
-
-    - folder_id
-    - path
-
-*changes* (Not 'files', because also it also tracks folders)
-
-    - change_id
-    - folder_id
-    - current_rel_path (to folder)
-    - is_folder
-    - last_change_time_stamp
-    - Create
-    - Move
-    - Modify
-    - Delete
-    - necessary_action (Pull, move, delete)
-    - old_abs_path (Only on move)
+**Database structure:** See: :doc:`client_database`.
 
 The code, that is responsible for this task is located at `client_side/file_watcher.py`.
+
+Implementation
+--------------
+
+1. For every folder there is a watcher that watches
+2. On any change:
+    - is already an entry -> Change entry
+    - no entry
+        - not ignore file -> add entry
