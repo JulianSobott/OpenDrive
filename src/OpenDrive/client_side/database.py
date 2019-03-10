@@ -102,6 +102,7 @@ class Change:
             return db.insert(sql, (folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
                                    is_deleted, is_modified, necessary_action[0], old_abs_path))
 
+    """folder_id"""
     @property
     def folder_id(self) -> int:
         return self._folder_id
@@ -110,6 +111,7 @@ class Change:
     def folder_id(self, new_id: int):
         self._change_field("folder_id", new_id)
 
+    """current_rel_path"""
     @property
     def current_rel_path(self) -> str:
         return self._current_rel_path
@@ -118,6 +120,7 @@ class Change:
     def current_rel_path(self, new_path: str):
         self._change_field("current_rel_path", new_path)
 
+    """is_folder"""
     @property
     def is_folder(self) -> bool:
         return self._is_folder
@@ -126,6 +129,7 @@ class Change:
     def is_folder(self, new_value: bool):
         self._change_field("is_folder", new_value)
 
+    """last_change_time_stamp"""
     @property
     def last_change_time_stamp(self) -> datetime:
         return self._last_change_time_stamp
@@ -134,6 +138,17 @@ class Change:
     def last_change_time_stamp(self, new_value: datetime):
         self._change_field("last_change_time_stamp", new_value)
 
+    """is_created"""
+
+    @property
+    def is_created(self) -> bool:
+        return self._is_created
+
+    @is_created.setter
+    def is_created(self, new_value: bool):
+        self._change_field("is_created", new_value)
+
+    """is_moved"""
     @property
     def is_moved(self) -> bool:
         return self._is_moved
@@ -142,6 +157,7 @@ class Change:
     def is_moved(self, new_value: bool):
         self._change_field("is_moved", new_value)
 
+    """is_deleted"""
     @property
     def is_deleted(self) -> bool:
         return self._is_deleted
@@ -150,6 +166,7 @@ class Change:
     def is_deleted(self, new_value: bool):
         self._change_field("is_deleted", new_value)
 
+    """is_modified"""
     @property
     def is_modified(self) -> bool:
         return self._is_modified
@@ -158,6 +175,7 @@ class Change:
     def is_modified(self, new_value: bool):
         self._change_field("is_modified", new_value)
 
+    """necessary_action"""
     @property
     def necessary_action(self) -> Tuple[int, str]:
         return self._necessary_action
@@ -166,6 +184,7 @@ class Change:
     def necessary_action(self, new_value: Tuple[int, str]):
         self._change_field("necessary_action", new_value)
 
+    """old_abs_path"""
     @property
     def old_abs_path(self) -> Optional[str]:
         return self._old_abs_path
@@ -175,7 +194,9 @@ class Change:
         self._change_field("old_abs_path", new_value)
 
     def _change_field(self, field_name: str, new_value) -> None:
-        sql = 'UPDATE "changes" SET ? = ? WHERE "change_id" = ?'
+        if ";" in field_name or ")" in field_name:
+            raise ValueError("Preventing possible sql injection")
+        sql = f'UPDATE "changes" SET {field_name} = ? WHERE "change_id" = ?'
         with DBConnection(paths.LOCAL_DB_PATH) as db:
-            db.update(sql, (field_name, new_value, self.id))
+            db.update(sql, (new_value, self.id))
 

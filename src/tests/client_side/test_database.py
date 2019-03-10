@@ -39,6 +39,35 @@ class TestDatabaseConnections(unittest.TestCase):
         self.assertRaises(FileExistsError, database.create_database)
 
 
+class TestEmptyAccess(unittest.TestCase):
+    """Access to the empty db"""
+
+    def setUp(self):
+        delete_database()
+        database.create_database()
+
+    def test_change_create(self):
+        change_id = database.Change.create(1, 'test.txt', is_created=True)
+        self.assertEqual(1, change_id)
+
+    def test_change_getter(self):
+        folder_id = 1
+        rel_path = 'v/test.txt'
+        is_created = True
+        change_id = database.Change.create(folder_id, rel_path, is_created=is_created)
+        change = database.Change(change_id)
+        self.assertEqual(folder_id, change.folder_id)
+        self.assertEqual(rel_path, change.current_rel_path)
+        self.assertEqual(is_created, change.is_created)
+
+    def test_change_setter(self):
+        change_id = database.Change.create(1, 'test.txt', is_created=True)
+        change = database.Change(change_id)
+        change.is_deleted = 1
+        new_change = database.Change(change_id)
+        self.assertEqual(True, new_change.is_deleted)
+
+
 class TestAccess(unittest.TestCase):
 
     def setUp(self):
