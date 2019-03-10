@@ -26,6 +26,7 @@ class DBConnection:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Closes the connection"""
+        self.connection.commit()
         self.connection.close()
 
     def get(self, sql: str, args: tuple = ()) -> list:

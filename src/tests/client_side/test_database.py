@@ -2,6 +2,7 @@ import unittest
 import os
 
 from client_side import database, paths
+from datetime import datetime
 
 
 def delete_database():
@@ -26,6 +27,7 @@ class TestDatabaseConnections(unittest.TestCase):
         with database.DBConnection(paths.LOCAL_DB_PATH) as db:
             ret = db.get(sql)
         tables = [table_name for table_name, in ret]
+        print(tables)
         self.assertEqual(len(tables), 3)
         self.assertTrue("sync_folders" in tables)
         self.assertTrue("ignores" in tables)
@@ -35,6 +37,25 @@ class TestDatabaseConnections(unittest.TestCase):
         delete_database()
         database.create_database()
         self.assertRaises(FileExistsError, database.create_database)
+
+
+class TestAccess(unittest.TestCase):
+
+    def setUp(self):
+        delete_database()
+        database.create_database()
+        sql_folder_insert = "INSERT INTO 'sync_folders' ('abs_path') VALUES (?)"
+        sql_changes_insert = "INSERT INTO 'changes' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        with database.DBConnection(paths.LOCAL_DB_PATH) as db:
+            folder_id = db.insert(sql_folder_insert, ('C:/folder1/',))
+            db.insert(sql_changes_insert, (None, folder_id, 'test.txt', 0, datetime.now(), 1, 0, 0, 0, 1, ""))
+
+    def tearDown(self):
+        pass
+
+    def test_get_existing_change_entry(self):
+        pass
+        # , folder_id, rel_path
 
 
 if __name__ == '__main__':

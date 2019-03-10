@@ -19,15 +19,15 @@ def create_database() -> None:
         raise FileExistsError("Cannot create new db, because it already exists!")
     with DBConnection(paths.LOCAL_DB_PATH) as db:
         sql_table_sync_folders = ("CREATE TABLE sync_folders ("
-                                  "`folder_id` INT NOT NULL PRIMARY KEY ,"
+                                  "`folder_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
                                   "`abs_path` VARCHAR(260) NOT NULL UNIQUE)")
         db.create(sql_table_sync_folders)
         sql_table_changes = ("CREATE TABLE changes ("
-                             "change_id INT NOT NULL PRIMARY KEY,"
+                             "change_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT ,"
                              "folder_id INT NOT NULL,"
                              "current_rel_path VARCHAR(260) NOT NULL UNIQUE,"
                              "is_folder INT NOT NULL ,"
-                             "last_change_time_stamp TEXT NOT NULL ,"
+                             "last_change_time_stamp DATETIME DEFAULT CURRENT_TIMESTAMP,"
                              "is_created INT DEFAULT 0,"
                              "is_moved INT DEFAULT 0,"
                              "is_deleted INT DEFAULT 0,"

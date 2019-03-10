@@ -57,6 +57,11 @@ Implementation
 
 1. For every folder there is a watcher that watches
 2. On any change:
-    - is already an entry -> Change entry
-    - no entry
-        - not ignore file -> add entry
+    - ignore? -> None
+        - is already an entry? -> Change entry
+            - add entry
+
+Tests
+---------
+
+- get_entry(folder_id, rel_path) -> None, entry
