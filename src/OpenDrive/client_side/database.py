@@ -8,6 +8,8 @@
 @internal_use:
 """
 import os
+from datetime import datetime
+from typing import Tuple, Optional
 
 from OpenDrive.client_side import paths
 from OpenDrive.general.database import DBConnection
@@ -33,7 +35,7 @@ def create_database() -> None:
                              "is_deleted INT DEFAULT 0,"
                              "is_modified INT DEFAULT 0,"
                              "necessary_action INT,"
-                             "old_abs_path VARCHAR(260) NOT NULL UNIQUE,"
+                             "old_abs_path VARCHAR(260) UNIQUE,"
                              "FOREIGN KEY (folder_id) REFERENCES sync_folders(folder_id)"
                              ")")
         db.create(sql_table_changes)
@@ -44,3 +46,32 @@ def create_database() -> None:
                              "sub_folders int default 0"
                              ")")
         db.create(sql_table_ignores)
+
+
+class ChangesTable:
+    ACTION_PULL = (0, "PULL")
+    ACTION_MOVE = (1, "MOVE")
+    ACTION_DELETE = (2, "DELETE")
+
+    @staticmethod
+    def insert(folder_id: int,
+               current_rel_path: str,
+               is_folder: bool = False,
+               last_change_time_stamp: datetime = datetime.now(),
+               is_created: bool = False,
+               is_moved: bool = False,
+               is_deleted: bool = False,
+               is_modified: bool = False,
+               necessary_action: Tuple[int, str] = ACTION_PULL,
+               old_abs_path: Optional[str] = None):
+        sql = 'INSERT INTO "changes" (' \
+              '"folder_id", "current_rel_path", "is_folder", "last_change_time_stamp", "is_created", "is_moved", ' \
+              '"is_deleted", "is_modified", "necessary_action", "old_abs_path") ' \
+              'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        assert isinstance(folder_id, int)
+        assert isinstance(current_rel_path, str)
+        assert 0 <= necessary_action[0] <= 2
+
+        with DBConnection(paths.LOCAL_DB_PATH) as db:
+            db.insert(sql, (folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
+                            is_deleted, is_modified, necessary_action[0], old_abs_path))

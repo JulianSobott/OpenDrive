@@ -45,10 +45,9 @@ class TestAccess(unittest.TestCase):
         delete_database()
         database.create_database()
         sql_folder_insert = "INSERT INTO 'sync_folders' ('abs_path') VALUES (?)"
-        sql_changes_insert = "INSERT INTO 'changes' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         with database.DBConnection(paths.LOCAL_DB_PATH) as db:
             folder_id = db.insert(sql_folder_insert, ('C:/folder1/',))
-            db.insert(sql_changes_insert, (None, folder_id, 'test.txt', 0, datetime.now(), 1, 0, 0, 0, 1, ""))
+        database.ChangesTable.insert(folder_id, 'test.txt', is_created=True)
 
     def tearDown(self):
         pass

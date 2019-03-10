@@ -50,3 +50,5 @@ As database_manager the sqlite3 module is used. It is available in the standard 
     - folder_id
     - pattern
     - sub_folders
+
+
