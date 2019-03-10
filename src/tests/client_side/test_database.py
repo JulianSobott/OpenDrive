@@ -3,6 +3,7 @@ import os
 
 from client_side import database, paths
 from datetime import datetime
+from context import logger
 
 
 def delete_database():
@@ -79,7 +80,6 @@ class TestEmptyAccess(unittest.TestCase):
         new_folder = folder.update()
         self.assertEqual("C:/new_path/folder_1/", new_folder.abs_path)
         self.assertEqual("C:/new_path/folder_1/", folder.abs_path)
-
 
 
 class TestAccess(unittest.TestCase):
