@@ -26,8 +26,10 @@ class TestDatabaseConnections(unittest.TestCase):
         with database.DBConnection(paths.LOCAL_DB_PATH) as db:
             ret = db.get(sql)
         tables = [table_name for table_name, in ret]
-        self.assertEqual(len(tables), 2)
+        self.assertEqual(len(tables), 3)
         self.assertTrue("sync_folders" in tables)
+        self.assertTrue("ignores" in tables)
+        self.assertTrue("changes" in tables)
 
     def test_create_database_existing(self):
         delete_database()

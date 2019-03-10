@@ -37,3 +37,10 @@ def create_database() -> None:
                              "FOREIGN KEY (folder_id) REFERENCES sync_folders(folder_id)"
                              ")")
         db.create(sql_table_changes)
+        sql_table_ignores = ("create table ignores("
+                             "ignore_id int primary key,"
+                             "folder_id int not null references sync_folders(folder_id), "
+                             "pattern VARCHAR(260) not null,"
+                             "sub_folders int default 0"
+                             ")")
+        db.create(sql_table_ignores)

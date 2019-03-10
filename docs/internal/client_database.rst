@@ -7,6 +7,7 @@ Ad the client side there is one database used.
 It has the following tables:
     - sync_folders
     - changes
+    - ignores
 
 The local_data.db file is located at *OpenDrive/local/client_side/local_data.db*.
 
@@ -42,3 +43,10 @@ As database_manager the sqlite3 module is used. It is available in the standard 
     - Delete
     - necessary_action (Pull, move, delete)
     - old_abs_path (Only on move)
+
+*ignores* (All patterns that should be ignored and not synchronized (like .gitignore))
+
+    - ignore_id
+    - folder_id
+    - pattern
+    - sub_folders
