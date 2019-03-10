@@ -3,7 +3,7 @@ import os
 
 from client_side import database, paths
 from datetime import datetime
-from context import logger
+from src.tests.Logging import logger
 
 
 def delete_database():
@@ -54,31 +54,30 @@ class TestEmptyAccess(unittest.TestCase):
         rel_path = 'v/test.txt'
         is_created = True
         change_id = database.Change.create(folder_id, rel_path, is_created=is_created)
-        change = database.Change(change_id)
+        change = database.Change.from_id(change_id)
         self.assertEqual(folder_id, change.folder_id)
         self.assertEqual(rel_path, change.current_rel_path)
         self.assertEqual(is_created, change.is_created)
 
     def test_change_setter(self):
         change_id = database.Change.create(1, 'test.txt', is_created=True)
-        change = database.Change(change_id)
+        change = database.Change.from_id(change_id)
         change.is_deleted = 1
-        new_change = database.Change(change_id)
-        self.assertEqual(True, new_change.is_deleted)
+        change.update()
+        self.assertEqual(True, change.is_deleted)
 
     def test_ignores_setter(self):
         ignore_id = database.Ignore.create(1, "folder1/*")
-        ignore = database.Ignore(ignore_id)
+        ignore = database.Ignore.from_id(ignore_id)
         ignore.pattern = "new_pattern/*"
-        new_ignore = database.Ignore(ignore_id)
-        self.assertEqual("new_pattern/*", new_ignore.pattern)
+        ignore.update()
+        self.assertEqual("new_pattern/*", ignore.pattern)
 
     def test_sync_folders(self):
         folder_id = database.SyncFolder.create("C:/folder1/")
-        folder = database.SyncFolder(folder_id)
+        folder = database.SyncFolder.from_id(folder_id)
         folder.abs_path = "C:/new_path/folder_1/"
-        new_folder = folder.update()
-        self.assertEqual("C:/new_path/folder_1/", new_folder.abs_path)
+        folder.update()
         self.assertEqual("C:/new_path/folder_1/", folder.abs_path)
 
 

@@ -50,7 +50,7 @@ def create_database() -> None:
 
 class Change(TableEntry):
     """Interface between python and DB change entry.
-    call the `__init__(change_id)` to get a object, initialized with the values of the db.
+    call the static method `from_...()` to get a object, initialized with the values of the db.
     call the static method `create(...)` to insert a new change entry in the db.
     call the setter properties, to change the values in the db.
     """
@@ -58,26 +58,35 @@ class Change(TableEntry):
     ACTION_MOVE = (1, "MOVE")
     ACTION_DELETE = (2, "DELETE")
 
-    def __init__(self, change_id: int):
-        super().__init__(paths.LOCAL_DB_PATH, "changes", "change_id")
-        """A object with all db values of the change_id is initialized. Raises KeyError if no entry exists."""
-        sql = "SELECT * FROM changes WHERE change_id = ?"
-        with DBConnection(paths.LOCAL_DB_PATH) as db:
-            ret = db.get(sql, (change_id,))
-        if len(ret) == 0:
-            raise KeyError(f"No change entry in 'changes' with id {change_id}!")
-        values = ret[0]
+    TABLE_NAME = "changes"
+    DB_PATH = paths.LOCAL_DB_PATH
+    PRIMARY_KEY_NAME = "change_id"
+
+    def __init__(self,
+                 change_id: int,
+                 folder_id: int,
+                 current_rel_path: str,
+                 is_folder: bool = False,
+                 last_change_time_stamp: datetime = datetime.now(),
+                 is_created: bool = False,
+                 is_moved: bool = False,
+                 is_deleted: bool = False,
+                 is_modified: bool = False,
+                 necessary_action: Tuple[int, str] = ACTION_PULL,
+                 old_abs_path: Optional[str] = None
+                 ) -> None:
+        super().__init__()
         self._id = change_id
-        self._folder_id: int = values[1]
-        self._current_rel_path: str = values[2]
-        self._is_folder: bool = values[3]
-        self._last_change_time_stamp: datetime = values[4]
-        self._is_created: bool = values[5]
-        self._is_moved: bool = values[6]
-        self._is_deleted: bool = values[7]
-        self._is_modified: bool = values[8]
-        self._necessary_action: Tuple[int, str] = values[9]
-        self._old_abs_path: Optional[str] = values[10]
+        self._folder_id: int = folder_id
+        self._current_rel_path: str = current_rel_path
+        self._is_folder: bool = is_folder
+        self._last_change_time_stamp: datetime = last_change_time_stamp
+        self._is_created: bool = is_created
+        self._is_moved: bool = is_moved
+        self._is_deleted: bool = is_deleted
+        self._is_modified: bool = is_modified
+        self._necessary_action: Tuple[int, str] = necessary_action
+        self._old_abs_path: Optional[str] = old_abs_path
 
     @staticmethod
     def create(folder_id: int,
@@ -197,19 +206,16 @@ class Change(TableEntry):
 
 class Ignore(TableEntry):
 
-    def __init__(self, ignore_id: int):
-        super().__init__(paths.LOCAL_DB_PATH, "ignores", "ignore_id")
-        """A object with all db values of the ignore_id is initialized. Raises KeyError if no entry exists."""
-        sql = "SELECT * FROM ignores WHERE ignore_id = ?"
-        with DBConnection(paths.LOCAL_DB_PATH) as db:
-            ret = db.get(sql, (ignore_id,))
-        if len(ret) == 0:
-            raise KeyError(f"No change entry in 'ignores' with id {ignore_id}!")
-        values = ret[0]
+    TABLE_NAME = "ignores"
+    DB_PATH = paths.LOCAL_DB_PATH
+    PRIMARY_KEY_NAME = "ignore_id"
+
+    def __init__(self, ignore_id: int, folder_id: int, pattern: str, sub_folders: bool = True):
+        super().__init__()
         self._id = ignore_id
-        self._folder_id: int = values[1]
-        self._pattern: str = values[2]
-        self._sub_folders: bool = values[3]
+        self._folder_id: int = folder_id
+        self._pattern: str = pattern
+        self._sub_folders: bool = sub_folders
 
     @staticmethod
     def create(folder_id: int, pattern: str, sub_folders: bool = True):
@@ -249,17 +255,18 @@ class Ignore(TableEntry):
 
 class SyncFolder(TableEntry):
 
-    def __init__(self, folder_id: int):
-        super().__init__(paths.LOCAL_DB_PATH, "sync_folders", "folder_id")
-        """A object with all db values of the folder_id is initialized. Raises KeyError if no entry exists."""
-        sql = "SELECT * FROM sync_folders WHERE folder_id = ?"
-        with DBConnection(paths.LOCAL_DB_PATH) as db:
-            ret = db.get(sql, (folder_id,))
-        if len(ret) == 0:
-            raise KeyError(f"No change entry in 'sync_folders' with id {folder_id}!")
-        values = ret[0]
+    TABLE_NAME = "sync_folders"
+    DB_PATH = paths.LOCAL_DB_PATH
+    PRIMARY_KEY_NAME = "folder_id"
+
+    def __init__(self, folder_id: int, abs_path: str):
+        super().__init__()
         self._id = folder_id
-        self._abs_path = values[1]
+        self._abs_path = abs_path
+
+    @classmethod
+    def from_path(cls, abs_folder_path: str) -> 'SyncFolder':
+        return cls._from_column("abs_path", abs_folder_path)
 
     @staticmethod
     def create(abs_path: str):
