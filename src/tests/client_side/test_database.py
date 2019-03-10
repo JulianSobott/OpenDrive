@@ -47,7 +47,7 @@ class TestAccess(unittest.TestCase):
         sql_folder_insert = "INSERT INTO 'sync_folders' ('abs_path') VALUES (?)"
         with database.DBConnection(paths.LOCAL_DB_PATH) as db:
             folder_id = db.insert(sql_folder_insert, ('C:/folder1/',))
-        database.ChangesTable.insert(folder_id, 'test.txt', is_created=True)
+        database.Change.create(folder_id, 'test.txt', is_created=True)
 
     def tearDown(self):
         pass
