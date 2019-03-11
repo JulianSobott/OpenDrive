@@ -1,5 +1,6 @@
 import unittest
 import os
+from typing import List
 
 from client_side import database, paths
 from datetime import datetime
@@ -86,17 +87,23 @@ class TestAccess(unittest.TestCase):
     def setUp(self):
         delete_database()
         database.create_database()
-        sql_folder_insert = "INSERT INTO 'sync_folders' ('abs_path') VALUES (?)"
-        with database.DBConnection(paths.LOCAL_DB_PATH) as db:
-            folder_id = db.insert(sql_folder_insert, ('C:/folder1/',))
+        folder_id = database.SyncFolder.create('C:/folder1/')
         database.Change.create(folder_id, 'test.txt', is_created=True)
 
     def tearDown(self):
         pass
 
     def test_get_existing_change_entry(self):
-        pass
-        # , folder_id, rel_path
+        folder_id = 1
+        rel_path = "test.txt"
+        change = database.Change.get_possible_entry(folder_id, rel_path)
+        self.assertEqual(rel_path, change.current_rel_path)
+
+    def test_get_non_existing_change_entry(self):
+        folder_id = 1
+        rel_path = "non_existing.txt"
+        change = database.Change.get_possible_entry(folder_id, rel_path)
+        self.assertEqual(None, change)
 
 
 if __name__ == '__main__':

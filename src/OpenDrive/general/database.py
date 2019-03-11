@@ -14,6 +14,7 @@ classes:
 @internal_use:
 """
 import sqlite3
+from typing import Dict, Any, Union, List
 
 
 class DBConnection:
@@ -119,6 +120,16 @@ class TableEntry(object):
         if len(ret) > 1:
             raise KeyError(f"To many entries in '{cls.TABLE_NAME}({column_name})' with value {value}! ")
         return cls(*ret[0])
+
+    @classmethod
+    def from_columns(cls, where_clause: str, args: tuple) -> List['TableEntry']:
+        """Returns a list with initialized objects from the inherited class of :class:`TableEntry`.
+        The `where_clause` must be a sqlite like parameterized WHERE clause without the WHERE. e.g. "name = ?".
+        The args must be a tuple with all values for the parameterized string."""
+        sql = f"SELECT * FROM {cls.TABLE_NAME} WHERE {where_clause}"
+        with DBConnection(cls.DB_PATH) as db:
+            ret = db.get(sql, args)
+        return [cls(*values) for values in ret]
 
     def _change_field(self, field_name: str, new_value) -> None:
         if ";" in field_name or ")" in field_name:

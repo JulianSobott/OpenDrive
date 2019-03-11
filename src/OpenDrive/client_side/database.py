@@ -26,6 +26,7 @@ from typing import Tuple, Optional
 
 from OpenDrive.client_side import paths
 from OpenDrive.general.database import DBConnection, TableEntry
+from OpenDrive.client_side.Logging import logger
 
 
 def create_database() -> None:
@@ -215,6 +216,17 @@ class Change(TableEntry):
     @old_abs_path.setter
     def old_abs_path(self, new_value: Optional[str]):
         self._change_field("old_abs_path", new_value)
+
+    @classmethod
+    def get_possible_entry(cls, folder_id, current_rel_path) -> Optional['Change']:
+        entries = cls.from_columns("folder_id=? and current_rel_path=?", (folder_id, current_rel_path))
+        if len(entries) > 1:
+            raise KeyError(f"To many entries with folder_id: {folder_id} and current_rel_path: {current_rel_path}")
+        if len(entries) == 0:
+            logger.info(f"No entry with folder_id: {folder_id} and current_rel_path: {current_rel_path}")
+            return None
+        change: Change = entries[0]
+        return change
 
 
 class Ignore(TableEntry):
