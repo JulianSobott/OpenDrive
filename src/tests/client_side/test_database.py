@@ -3,27 +3,21 @@ import os
 from typing import List
 
 from client_side import database, paths
+from general.database import delete_db_file
 from datetime import datetime
 from src.tests.Logging import logger
-
-
-def delete_database():
-    try:
-        os.remove(paths.LOCAL_DB_PATH)
-    except FileNotFoundError:
-        pass
 
 
 class TestDatabaseConnections(unittest.TestCase):
 
     def test_create_database_non_existing(self):
-        delete_database()
+        delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         self.assertTrue(os.path.exists(paths.LOCAL_DB_PATH),
                         "Database file was not created or created at the wrong place!")
 
     def test_tables_creation(self):
-        delete_database()
+        delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         sql = "SELECT name  FROM sqlite_master WHERE type='table'"
         with database.DBConnection(paths.LOCAL_DB_PATH) as db:
@@ -34,7 +28,7 @@ class TestDatabaseConnections(unittest.TestCase):
         self.assertTrue("changes" in tables)
 
     def test_create_database_existing(self):
-        delete_database()
+        delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         self.assertRaises(FileExistsError, database.create_database)
 
@@ -43,7 +37,7 @@ class TestEmptyAccess(unittest.TestCase):
     """Access to the empty db"""
 
     def setUp(self):
-        delete_database()
+        delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
 
     def test_change_create(self):
@@ -85,7 +79,7 @@ class TestEmptyAccess(unittest.TestCase):
 class TestAccess(unittest.TestCase):
 
     def setUp(self):
-        delete_database()
+        delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         folder_id = database.SyncFolder.create('C:/folder1/')
         database.Change.create(folder_id, 'test.txt', is_created=True)

@@ -15,7 +15,9 @@ classes:
 """
 import sqlite3
 from typing import Dict, Any, Union, List
+import os
 
+from OpenDrive.general.Logging import logger
 
 class DBConnection:
     """Interface to a sqlite database. Used as context-manager, to properly open and close the connection"""
@@ -137,3 +139,14 @@ class TableEntry(object):
         sql = f'UPDATE "{self.TABLE_NAME}" SET {field_name} = ? WHERE "{self.PRIMARY_KEY_NAME}" = ?'
         with DBConnection(self.DB_PATH) as db:
             db.update(sql, (new_value, self.id))
+
+
+def delete_db_file(path):
+    try:
+        extension = os.path.splitext(path)[1]
+        if extension != ".db":
+            raise Exception(f"Cannot delete non .db file! {path}")
+        os.remove(path)
+    except FileNotFoundError:
+        logger.debug(f"Could not delete non existing db file. {path}")
+        pass
