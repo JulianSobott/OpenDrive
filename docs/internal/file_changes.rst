@@ -64,4 +64,52 @@ Implementation
 Tests
 ---------
 
-- get_entry(folder_id, rel_path) -> None, entry
+**setup**:
+    - delete DB
+    - create DB
+    - Create a dummy folder
+    - Add dummy folder to DB
+
+**teardown**:
+    - remove folder with all files
+
+1. Test create file
+
+    - Start watcher at dummy folder
+    - Create file at folder
+    - (Wait till file added)
+    - Is file in DB -> success
+
+2. Test edit file
+
+    - Create file at folder
+    - Start watcher at folder
+    - edit file
+    - Edited file in DB -> success
+
+3. Test move file
+
+    - TODO: dest, src?
+    - Changed DB entry
+
+4. Test remove
+
+    - Create file
+    - Start watcher
+    - Remove file
+    - Entry changed in DB
+
+5. Test handled_change
+
+    - Start watcher
+    - Create file
+    - call handled(?)?
+    - No entry in DB -> success
+
+6. Test create multiple nested files
+
+    - Start watcher
+    - Create many files in different folders
+    - All entries in DB
+
+... Same for remove, move, edit
