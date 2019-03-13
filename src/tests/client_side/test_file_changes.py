@@ -33,7 +33,7 @@ class TestFileChange(unittest.TestCase):
         abs_file_path = os.path.join(self.abs_folder_path, rel_file_path)
         with open(abs_file_path, "w"):
             pass
-        wait_till_condition(os.path.exists, abs_file_path, timeout=1)
+        wait_till_condition(lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None, timeout=1)
         change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
         self.assertIsInstance(change, database.Change)
         expected_change = database.Change(1, self.folder_id, rel_file_path, is_folder=False,

@@ -72,6 +72,8 @@ class Change(TableEntry):
     ACTION_MOVE = (1, "MOVE")
     ACTION_DELETE = (2, "DELETE")
 
+    _ACTIONS = {0: ACTION_PULL, 1: ACTION_MOVE, 2: ACTION_DELETE}
+
     TABLE_NAME = "changes"
     DB_PATH = paths.LOCAL_DB_PATH
     PRIMARY_KEY_NAME = "change_id"
@@ -99,6 +101,8 @@ class Change(TableEntry):
         self._is_moved: bool = is_moved
         self._is_deleted: bool = is_deleted
         self._is_modified: bool = is_modified
+        if isinstance(necessary_action, int):
+            necessary_action = self._ACTIONS[necessary_action]
         self._necessary_action: Tuple[int, str] = necessary_action
         self._old_abs_path: Optional[str] = old_abs_path
 
@@ -227,6 +231,15 @@ class Change(TableEntry):
             return None
         change: Change = entries[0]
         return change
+
+    def __eq__(self, other):
+        if not isinstance(other, Change):
+            return False
+        # Return True, when there are no differences in all __dict__
+        try:
+            return 0 == sum([1 if self.__dict__[key] != other.__dict__[key] else 0 for key in self.__dict__.keys()])
+        except KeyError:
+            return False
 
 
 class Ignore(TableEntry):
