@@ -218,7 +218,7 @@ class Change(TableEntry):
         self._change_field("old_abs_path", new_value)
 
     @classmethod
-    def get_possible_entry(cls, folder_id, current_rel_path) -> Optional['Change']:
+    def get_possible_entry(cls, folder_id: int, current_rel_path: str) -> Optional['Change']:
         entries = cls.from_columns("folder_id=? and current_rel_path=?", (folder_id, current_rel_path))
         if len(entries) > 1:
             raise KeyError(f"To many entries with folder_id: {folder_id} and current_rel_path: {current_rel_path}")
