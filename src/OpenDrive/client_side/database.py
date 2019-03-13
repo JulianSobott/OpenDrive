@@ -134,7 +134,10 @@ class Change(TableEntry):
             old_abs_path = normalize_path(old_abs_path)
         with DBConnection(paths.LOCAL_DB_PATH) as db:
             return db.insert(sql, (folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
-                                   is_deleted, is_modified, necessary_action[0], old_abs_path))
+                                   is_deleted, is_modified, necessary_action[0], old_abs_path),
+                             ignore_unique_error=True)
+            # Hack: Ignore unique errors, because multiple entries can be created.
+            # See `client_side/file_watcher/FileSystemEventHandler/on_any_event()` for more information
 
     """folder_id"""
     @property

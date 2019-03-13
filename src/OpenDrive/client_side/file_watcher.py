@@ -46,6 +46,12 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         self._folder_id: int = folder_id
 
     def on_any_event(self, event):
+        """Known issue with watchdog: When a folder is created it checks after 1 second, if there are other files inside
+        this folder. If there are any files and folders (uses os.walk()) they are added 'manually' as creation events.
+        This is necessary, because when the folder is pasted, the inner files are not added. The issue occurs when a
+        folder and inner files/folders are created (e.g. from python). Then these files/folders are handled twice.
+        Once the manual and once the normal on create way. To solve this unique errors at insert are ignored in the DB.
+        """
         logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
 
     def on_created(self, event):

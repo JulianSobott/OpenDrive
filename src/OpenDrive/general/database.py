@@ -50,13 +50,17 @@ class DBConnection:
         """CREATE"""
         self.cursor.execute(sql, args)
 
-    def insert(self, sql: str, args: tuple = ()) -> int:
+    def insert(self, sql: str, args: tuple = (), ignore_unique_error=False) -> int:
         """INSERT"""
         try:
             self.cursor.execute(sql, args)
-        except sqlite3.Error as e:
-            logger.error(e)
-            logger.debug(f"sql: {sql}, \nargs: {args}")
+        except sqlite3.IntegrityError as e:
+            if ignore_unique_error:
+                return -1
+            else:
+                logger.error(e)
+                logger.debug(f"sql: {sql}, \nargs: {args}")
+                raise e
         return self.cursor.lastrowid
 
     def update(self, sql: str, args: tuple = ()) -> None:
