@@ -22,10 +22,11 @@ functions:
 """
 import os
 from datetime import datetime
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 from OpenDrive.client_side import paths
 from OpenDrive.general.database import DBConnection, TableEntry
+from OpenDrive.general.paths import normalize_path
 from OpenDrive.client_side.Logging import logger
 
 
@@ -94,7 +95,7 @@ class Change(TableEntry):
         super().__init__()
         self._id = change_id
         self._folder_id: int = folder_id
-        self._current_rel_path: str = current_rel_path
+        self._current_rel_path: str = normalize_path(current_rel_path)
         self._is_folder: bool = is_folder
         self._last_change_time_stamp: datetime = last_change_time_stamp
         self._is_created: bool = is_created
@@ -104,6 +105,8 @@ class Change(TableEntry):
         if isinstance(necessary_action, int):
             necessary_action = self._ACTIONS[necessary_action]
         self._necessary_action: Tuple[int, str] = necessary_action
+        if old_abs_path:
+            old_abs_path = normalize_path(old_abs_path)
         self._old_abs_path: Optional[str] = old_abs_path
 
     @staticmethod
@@ -126,6 +129,9 @@ class Change(TableEntry):
               '"folder_id", "current_rel_path", "is_folder", "last_change_time_stamp", "is_created", "is_moved", ' \
               '"is_deleted", "is_modified", "necessary_action", "old_abs_path") ' \
               'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        current_rel_path = normalize_path(current_rel_path)
+        if old_abs_path:
+            old_abs_path = normalize_path(old_abs_path)
         with DBConnection(paths.LOCAL_DB_PATH) as db:
             return db.insert(sql, (folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
                                    is_deleted, is_modified, necessary_action[0], old_abs_path))
@@ -146,6 +152,7 @@ class Change(TableEntry):
 
     @current_rel_path.setter
     def current_rel_path(self, new_path: str):
+        new_path = normalize_path(new_path)
         self._change_field("current_rel_path", new_path)
 
     """is_folder"""
@@ -219,10 +226,13 @@ class Change(TableEntry):
 
     @old_abs_path.setter
     def old_abs_path(self, new_value: Optional[str]):
+        if new_value:
+            new_value = normalize_path(new_value)
         self._change_field("old_abs_path", new_value)
 
     @classmethod
     def get_possible_entry(cls, folder_id: int, current_rel_path: str) -> Optional['Change']:
+        current_rel_path = normalize_path(current_rel_path)
         entries = cls.from_columns("folder_id=? and current_rel_path=?", (folder_id, current_rel_path))
         if len(entries) > 1:
             raise KeyError(f"To many entries with folder_id: {folder_id} and current_rel_path: {current_rel_path}")
@@ -231,6 +241,11 @@ class Change(TableEntry):
             return None
         change: Change = entries[0]
         return change
+
+    @classmethod
+    def get_all_folder_entries(cls, folder_id: int) -> List['Change']:
+        entries: List['Change'] = cls.from_columns("folder_id=?", (folder_id,))
+        return entries
 
     def __eq__(self, other):
         if not isinstance(other, Change):
@@ -300,14 +315,16 @@ class SyncFolder(TableEntry):
     def __init__(self, folder_id: int, abs_path: str):
         super().__init__()
         self._id = folder_id
-        self._abs_path = abs_path
+        self._abs_path = normalize_path(abs_path)
 
     @classmethod
     def from_path(cls, abs_folder_path: str) -> 'SyncFolder':
+        abs_folder_path = normalize_path(abs_folder_path)
         return cls._from_column("abs_path", abs_folder_path)
 
     @staticmethod
     def create(abs_path: str):
+        abs_path = normalize_path(abs_path)
         sql = 'INSERT INTO "sync_folders" (' \
               '"abs_path") ' \
               'VALUES (?)'
@@ -320,4 +337,5 @@ class SyncFolder(TableEntry):
 
     @abs_path.setter
     def abs_path(self, new_path: str):
+        new_path = normalize_path(new_path)
         self._change_field("abs_path", new_path)
