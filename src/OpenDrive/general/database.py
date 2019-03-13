@@ -52,7 +52,11 @@ class DBConnection:
 
     def insert(self, sql: str, args: tuple = ()) -> int:
         """INSERT"""
-        self.cursor.execute(sql, args)
+        try:
+            self.cursor.execute(sql, args)
+        except sqlite3.Error as e:
+            logger.error(e)
+            logger.debug(f"sql: {sql}, \nargs: {args}")
         return self.cursor.lastrowid
 
     def update(self, sql: str, args: tuple = ()) -> None:

@@ -15,8 +15,6 @@ from OpenDrive.client_side.Logging import logger
 from OpenDrive.client_side import database
 
 observer = watchdog_observers.Observer()
-all_watchers = []
-
 
 def start(all_folders_to_sync: List[str]):
     """Start watching at all folders in a new thread."""
@@ -38,18 +36,17 @@ def add_watcher(abs_folder_path: str, ignore_patterns: List[str] = (), folder_id
         folder_id = sync_folder.id
     event_handler = FileSystemEventHandler(abs_folder_path, folder_id, ignore_patterns)
     observer.schedule(event_handler, abs_folder_path, recursive=True)
-    all_watchers.append(event_handler)
 
 
-class FileSystemEventHandler(watchdog_events.PatternMatchingEventHandler):
+class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
 
     def __init__(self, abs_folder_path: str, folder_id: int, ignore_patterns: List[str] = ()):
-        super().__init__(ignore_patterns=ignore_patterns)
+        super().__init__(ignore_regexes=ignore_patterns, case_sensitive=False)
         self.folder_path = abs_folder_path
         self._folder_id: int = folder_id
 
     def on_any_event(self, event):
-        logger.debug(event)
+        logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
 
     def on_created(self, event):
         is_dir = event.is_directory
