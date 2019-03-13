@@ -4,6 +4,7 @@ from typing import List
 
 from client_side import database, paths
 from general.database import delete_db_file
+from general.paths import normalize_path
 from datetime import datetime
 from src.tests.od_logging import logger
 
@@ -73,7 +74,7 @@ class TestEmptyAccess(unittest.TestCase):
         folder = database.SyncFolder.from_id(folder_id)
         folder.abs_path = "C:/new_path/folder_1/"
         folder.update()
-        self.assertEqual("C:/new_path/folder_1/", folder.abs_path)
+        self.assertEqual(normalize_path("C:/new_path/folder_1/"), folder.abs_path)
 
 
 class TestAccess(unittest.TestCase):
