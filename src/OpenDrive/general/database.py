@@ -19,6 +19,7 @@ import os
 
 from OpenDrive.general.Logging import logger
 
+
 class DBConnection:
     """Interface to a sqlite database. Used as context-manager, to properly open and close the connection"""
 

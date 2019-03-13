@@ -26,22 +26,42 @@ class TestFileChange(unittest.TestCase):
         file_watcher.stop_observing()
         shutil.rmtree(self.abs_folder_path, ignore_errors=True)
 
-    def test_create_file(self):
+    def create_file(self, ignore=False, folder_id=None):
         file_watcher.start_observing()
-        file_watcher.add_watcher(self.abs_folder_path)
+        ignore_patterns = []
+        if ignore:
+            ignore_patterns = ["*.txt"]
+        file_watcher.add_watcher(self.abs_folder_path, ignore_patterns=ignore_patterns, folder_id=folder_id)
         rel_file_path = "test.txt"
         abs_file_path = os.path.join(self.abs_folder_path, rel_file_path)
         with open(abs_file_path, "w"):
             pass
-        wait_till_condition(lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None, timeout=1)
-        change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
-        self.assertIsInstance(change, database.Change)
-        expected_change = database.Change(1, self.folder_id, rel_file_path, is_folder=False,
-                                          last_change_time_stamp=change.last_change_time_stamp, is_created=True,
-                                          is_moved=False,
-                                          is_deleted=False, is_modified=False,
-                                          necessary_action=database.Change.ACTION_PULL)
-        self.assertEqual(expected_change, change)
+        found_possible = wait_till_condition(
+            lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None,
+            interval=0.5, timeout=1)
+        if ignore:
+            self.assertEqual(found_possible, False)
+        else:
+            change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
+            self.assertIsInstance(change, database.Change)
+            expected_change = database.Change(1, self.folder_id, rel_file_path, is_folder=False,
+                                              last_change_time_stamp=change.last_change_time_stamp, is_created=True,
+                                              is_moved=False,
+                                              is_deleted=False, is_modified=False,
+                                              necessary_action=database.Change.ACTION_PULL)
+            self.assertEqual(expected_change, change)
+
+    def test_create_file(self):
+        """no folder_id, no ignore_patterns"""
+        self.create_file()
+
+    def test_create_file_folder_id(self):
+        """folder_id, no ignore_patterns"""
+        self.create_file(folder_id=self.folder_id)
+
+    def test_create_file_ignored(self):
+        """no folder_id, ignore_patterns"""
+        self.create_file(ignore=True)
 
 
 if __name__ == '__main__':

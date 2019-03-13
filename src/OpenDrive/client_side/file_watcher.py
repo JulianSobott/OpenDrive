@@ -28,8 +28,8 @@ def start_observing():
 
 
 def stop_observing():
-    observer.unschedule_all()
     observer.stop()
+    observer.__init__()
 
 
 def add_watcher(abs_folder_path: str, ignore_patterns: List[str] = (), folder_id: int = None):
