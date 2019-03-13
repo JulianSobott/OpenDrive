@@ -8,4 +8,4 @@
 @internal_use:
 """
 from ...OpenDrive import client_side
-from ..Logging import logger
+from ..od_logging import logger

@@ -5,7 +5,7 @@ from typing import List
 from client_side import database, paths
 from general.database import delete_db_file
 from datetime import datetime
-from src.tests.Logging import logger
+from src.tests.od_logging import logger
 
 
 class TestDatabaseConnections(unittest.TestCase):

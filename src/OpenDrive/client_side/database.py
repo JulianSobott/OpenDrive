@@ -27,7 +27,7 @@ from typing import Tuple, Optional, List
 from OpenDrive.client_side import paths
 from OpenDrive.general.database import DBConnection, TableEntry
 from OpenDrive.general.paths import normalize_path
-from OpenDrive.client_side.Logging import logger
+from OpenDrive.client_side.od_logging import logger
 
 
 def create_database() -> None:

@@ -17,7 +17,7 @@ import sqlite3
 from typing import Dict, Any, Union, List
 import os
 
-from OpenDrive.general.Logging import logger
+from OpenDrive.general.od_logging import logger
 
 
 class DBConnection:

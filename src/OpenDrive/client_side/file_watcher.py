@@ -11,7 +11,7 @@ import os
 from typing import List
 from watchdog import events as watchdog_events, observers as watchdog_observers
 
-from OpenDrive.client_side.Logging import logger
+from OpenDrive.client_side.od_logging import logger
 from OpenDrive.client_side import database
 
 observer = watchdog_observers.Observer()

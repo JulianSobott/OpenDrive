@@ -5,7 +5,7 @@ from thread_testing import wait_till_condition
 
 from client_side import database, paths, file_watcher
 from general.database import delete_db_file
-from src.tests.Logging import logger
+from src.tests.od_logging import logger
 
 
 class TestFileChange(unittest.TestCase):
