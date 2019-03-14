@@ -50,17 +50,12 @@ class DBConnection:
         """CREATE"""
         self.cursor.execute(sql, args)
 
-    def insert(self, sql: str, args: tuple = (), ignore_unique_error=False) -> int:
-        """INSERT"""
+    def insert(self, sql: str, args: tuple = ()) -> int:
+        """INSERT (raises sqlite3.IntegrityError, when a existing unique field is inserted"""
         try:
             self.cursor.execute(sql, args)
         except sqlite3.IntegrityError as e:
-            if ignore_unique_error:
-                return -1
-            else:
-                logger.error(e)
-                logger.debug(f"sql: {sql}, \nargs: {args}")
-                raise e
+            raise e
         return self.cursor.lastrowid
 
     def update(self, sql: str, args: tuple = ()) -> None:
@@ -76,13 +71,13 @@ class TableEntry(object):
     """Interface between python and DB entry.
         Call a static method :func:`from_...()` to get a object, initialized with the values of the db.
         All class have the static method :func:`from_id(id_)` implemented.
-        Call the static method :func:`create(...)` to insert a new entry in the db and get the `id`.
+        Call the static method :func:`create_plus(...)` to insert a new entry in the db and get the `id`.
         Call the setter properties, to change the values in the db.
         To get a value from the DB call the getters.
         NOTE: if a value is changed, the :func:`update()` function must be called first, to update all values.
 
         All subclasses must override the `TABLE_NAME`, `DB_PATH`, `PRIMARY_KEY_NAME` attributes
-        and must provide the :func:`create` function.
+        and must provide the :func:`create_plus` function.
         """
     TABLE_NAME: str
     DB_PATH: str

@@ -42,21 +42,21 @@ class TestEmptyAccess(unittest.TestCase):
         database.create_database()
 
     def test_change_create(self):
-        change_id = database.Change.create(1, 'test.txt', is_created=True)
+        change_id = database.Change.create_plus(1, 'test.txt', is_created=True)
         self.assertEqual(1, change_id)
 
     def test_change_getter(self):
         folder_id = 1
         rel_path = 'v/test.txt'
         is_created = True
-        change_id = database.Change.create(folder_id, rel_path, is_created=is_created)
+        change_id = database.Change.create_plus(folder_id, rel_path, is_created=is_created)
         change = database.Change.from_id(change_id)
         self.assertEqual(folder_id, change.folder_id)
         self.assertEqual(rel_path, change.current_rel_path)
         self.assertEqual(is_created, change.is_created)
 
     def test_change_setter(self):
-        change_id = database.Change.create(1, 'test.txt', is_created=True)
+        change_id = database.Change.create_plus(1, 'test.txt', is_created=True)
         change = database.Change.from_id(change_id)
         change.is_deleted = 1
         change.update()
@@ -83,7 +83,7 @@ class TestAccess(unittest.TestCase):
         delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         folder_id = database.SyncFolder.create('C:/folder1/')
-        database.Change.create(folder_id, 'test.txt', is_created=True)
+        database.Change.create_plus(folder_id, 'test.txt', is_created=True)
 
     def tearDown(self):
         pass

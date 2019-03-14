@@ -26,6 +26,9 @@ class TestFileChange(unittest.TestCase):
         file_watcher.stop_observing()
         shutil.rmtree(self.abs_folder_path, ignore_errors=True)
 
+
+class TestFileCreate(TestFileChange):
+
     def create_file(self, ignore=False, folder_id=None, is_folder=False):
         file_watcher.start_observing()
         ignore_patterns = []
@@ -75,33 +78,29 @@ class TestFileChange(unittest.TestCase):
         ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+"]
         file_watcher.add_watcher(self.abs_folder_path, ignore_patterns=ignore_patterns, folder_id=self.folder_id)
         # root: 10 files + 1 folder
-        logger.debug("create 10 files")
         for i in range(10):
             rel_file_path = f"file_{i}.txt"
             abs_file_path = os.path.join(self.abs_folder_path, rel_file_path)
             with open(abs_file_path, "w"):
                 pass
-        logger.debug("create folder_1")
         rel_folder_path = "folder_1"
         folder_1_path = os.path.join(self.abs_folder_path, rel_folder_path)
         os.mkdir(folder_1_path)
 
         # folder_1: 1 ignore folder + 1 ignore_file.pyc + 1 not_ignore.txt
-        logger.debug("create folder ignore")
         rel_folder_path = "ignore"
         ignore_folder_path = os.path.join(folder_1_path, rel_folder_path)
         os.mkdir(ignore_folder_path)
 
-        logger.debug("create ignore_file.pyc")
         abs_file_path = os.path.join(folder_1_path, "ignore_file.pyc")
         with open(abs_file_path, "w"):
             pass
-        logger.debug("create not_ignore_file.txt")
+
         abs_file_path = os.path.join(folder_1_path, "not_ignore_file.txt")
         with open(abs_file_path, "w"):
             pass
         # ignore folder: 1 file1.txt
-        logger.debug("create file_1.txt")
+
         abs_file_path = os.path.join(ignore_folder_path, "file_1.txt")
         with open(abs_file_path, "w"):
             pass
@@ -114,6 +113,33 @@ class TestFileChange(unittest.TestCase):
             num_files += not change.is_folder
         self.assertEqual(11, num_files)
         self.assertEqual(2, num_folders)
+
+
+class TestEditFile(TestFileChange):
+
+    def setUp(self):
+        super().setUp()
+        self.rel_file_path = "test.txt"
+        self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
+        with open(self.abs_file_path, "w"):
+            pass
+
+    def test_edit_file(self):
+        file_watcher.start_observing()
+        file_watcher.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        with open(self.abs_file_path, "w") as f:
+            f.write(100*"Edited text")
+        found_possible = wait_till_condition(
+            lambda: database.Change.get_possible_entry(self.folder_id, self.rel_file_path) is not None,
+            interval=0.5, timeout=1)
+        change = database.Change.get_possible_entry(self.folder_id, self.rel_file_path)
+        self.assertIsInstance(change, database.Change)
+        is_folder = False
+        expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
+                                          last_change_time_stamp=change.last_change_time_stamp,
+                                          is_created=False, is_moved=False, is_deleted=False, is_modified=True,
+                                          necessary_action=database.Change.ACTION_PULL)
+        self.assertEqual(expected_change, change)
 
 
 if __name__ == '__main__':

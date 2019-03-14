@@ -44,6 +44,8 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         super().__init__(ignore_regexes=ignore_patterns, case_sensitive=False)
         self.folder_path = abs_folder_path
         self._folder_id: int = folder_id
+        self._is_dir: bool = False
+        self._rel_path: str = ""
 
     def on_any_event(self, event):
         """Known issue with watchdog: When a folder is created it checks after 1 second, if there are other files inside
@@ -53,18 +55,20 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         Once the manual and once the normal on create way. To solve this unique errors at insert are ignored in the DB.
         """
         logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
+        # Metadata
+        self._is_dir = event.is_directory
+        src_path = event.src_path
+        self._rel_path = os.path.relpath(src_path, self.folder_path)
 
     def on_created(self, event):
-        is_dir = event.is_directory
-        src_path = event.src_path
-        rel_path = os.path.relpath(src_path, self.folder_path)
-        database.Change.create(self._folder_id, rel_path, is_folder=is_dir, is_created=True)
+        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
 
     def on_deleted(self, event):
         pass
 
     def on_modified(self, event):
         pass
+
 
     def on_moved(self, event):
         pass

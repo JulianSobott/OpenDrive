@@ -110,17 +110,17 @@ class Change(TableEntry):
         self._old_abs_path: Optional[str] = old_abs_path
 
     @staticmethod
-    def create(folder_id: int,
-               current_rel_path: str,
-               is_folder: bool = False,
-               last_change_time_stamp: datetime = datetime.now(),
-               is_created: bool = False,
-               is_moved: bool = False,
-               is_deleted: bool = False,
-               is_modified: bool = False,
-               necessary_action: Tuple[int, str] = ACTION_PULL,
-               old_abs_path: Optional[str] = None) -> int:
-        """Insert a new entry to the db"""
+    def create_plus(folder_id: int,
+                    current_rel_path: str,
+                    is_folder: bool = False,
+                    last_change_time_stamp: datetime = datetime.now(),
+                    is_created: bool = False,
+                    is_moved: bool = False,
+                    is_deleted: bool = False,
+                    is_modified: bool = False,
+                    necessary_action: Tuple[int, str] = ACTION_PULL,
+                    old_abs_path: Optional[str] = None) -> int:
+        """If no entry in db, `INSERT` a new one. Else `UPDATE` the old one"""
         assert isinstance(folder_id, int)
         assert isinstance(current_rel_path, str)
         assert 0 <= necessary_action[0] <= 2
@@ -134,10 +134,8 @@ class Change(TableEntry):
             old_abs_path = normalize_path(old_abs_path)
         with DBConnection(paths.LOCAL_DB_PATH) as db:
             return db.insert(sql, (folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
-                                   is_deleted, is_modified, necessary_action[0], old_abs_path),
-                             ignore_unique_error=True)
-            # Hack: Ignore unique errors, because multiple entries can be created.
-            # See `client_side/file_watcher/FileSystemEventHandler/on_any_event()` for more information
+                                   is_deleted, is_modified, necessary_action[0], old_abs_path))
+            # TODO: handle when entry already exists and exception is raised
 
     """folder_id"""
     @property
