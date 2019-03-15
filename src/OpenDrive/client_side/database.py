@@ -25,7 +25,7 @@ from datetime import datetime
 from typing import Tuple, Optional, List
 
 from OpenDrive.client_side import paths
-from OpenDrive.general.database import DBConnection, TableEntry
+from OpenDrive.general.database import DBConnection, TableEntry, UniqueError
 from OpenDrive.general.paths import normalize_path
 from OpenDrive.client_side.od_logging import logger
 
@@ -72,8 +72,9 @@ class Change(TableEntry):
     ACTION_PULL = (0, "PULL")
     ACTION_MOVE = (1, "MOVE")
     ACTION_DELETE = (2, "DELETE")
+    ACTION_PULL_DELETE = (3, "PullDelete")  # File was changed and moved -> pull to new dest and delete old
 
-    _ACTIONS = {0: ACTION_PULL, 1: ACTION_MOVE, 2: ACTION_DELETE}
+    _ACTIONS = {0: ACTION_PULL, 1: ACTION_MOVE, 2: ACTION_DELETE, 3: ACTION_PULL_DELETE}
 
     TABLE_NAME = "changes"
     DB_PATH = paths.LOCAL_DB_PATH
@@ -124,6 +125,7 @@ class Change(TableEntry):
         assert isinstance(folder_id, int)
         assert isinstance(current_rel_path, str)
         assert 0 <= necessary_action[0] <= 2
+        necessary_action_val = necessary_action[0]
 
         sql = 'INSERT INTO "changes" (' \
               '"folder_id", "current_rel_path", "is_folder", "last_change_time_stamp", "is_created", "is_moved", ' \
@@ -133,11 +135,26 @@ class Change(TableEntry):
         if old_abs_path:
             old_abs_path = normalize_path(old_abs_path)
         with DBConnection(paths.LOCAL_DB_PATH) as db:
-            return db.insert(sql, (folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
-                                   is_deleted, is_modified, necessary_action[0], old_abs_path))
-            # TODO: handle when entry already exists and exception is raised
+            try:
+                change_id = db.insert(sql, (
+                    folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
+                    is_deleted, is_modified, necessary_action_val, old_abs_path))
+            except UniqueError:
+                sql = ('UPDATE "changes" SET '
+                       'folder_id = ?, is_folder = ?, last_change_time_stamp = ?, '
+                       'is_created = ?, is_moved = ?, is_deleted = ?, is_modified = ?, necessary_action = ?, '
+                       'old_abs_path = ?'
+                       'WHERE current_rel_path = ?')
+
+                # entry already exists
+                db.update(sql, (folder_id, is_folder, last_change_time_stamp, is_created,
+                                is_moved, is_deleted, is_modified, necessary_action_val, old_abs_path,
+                                current_rel_path))
+                change_id = Change.get_possible_entry(folder_id, current_rel_path).id
+            return change_id
 
     """folder_id"""
+
     @property
     def folder_id(self) -> int:
         return self._folder_id
@@ -147,6 +164,7 @@ class Change(TableEntry):
         self._change_field("folder_id", new_id)
 
     """current_rel_path"""
+
     @property
     def current_rel_path(self) -> str:
         return self._current_rel_path
@@ -157,6 +175,7 @@ class Change(TableEntry):
         self._change_field("current_rel_path", new_path)
 
     """is_folder"""
+
     @property
     def is_folder(self) -> bool:
         return bool(self._is_folder)
@@ -166,6 +185,7 @@ class Change(TableEntry):
         self._change_field("is_folder", new_value)
 
     """last_change_time_stamp"""
+
     @property
     def last_change_time_stamp(self) -> datetime:
         return self._last_change_time_stamp
@@ -185,6 +205,7 @@ class Change(TableEntry):
         self._change_field("is_created", new_value)
 
     """is_moved"""
+
     @property
     def is_moved(self) -> bool:
         return bool(self._is_moved)
@@ -194,6 +215,7 @@ class Change(TableEntry):
         self._change_field("is_moved", new_value)
 
     """is_deleted"""
+
     @property
     def is_deleted(self) -> bool:
         return bool(self._is_deleted)
@@ -203,6 +225,7 @@ class Change(TableEntry):
         self._change_field("is_deleted", new_value)
 
     """is_modified"""
+
     @property
     def is_modified(self) -> bool:
         return bool(self._is_modified)
@@ -212,6 +235,7 @@ class Change(TableEntry):
         self._change_field("is_modified", new_value)
 
     """necessary_action"""
+
     @property
     def necessary_action(self) -> Tuple[int, str]:
         return self._necessary_action
@@ -221,6 +245,7 @@ class Change(TableEntry):
         self._change_field("necessary_action", new_value)
 
     """old_abs_path"""
+
     @property
     def old_abs_path(self) -> Optional[str]:
         return self._old_abs_path
@@ -253,13 +278,14 @@ class Change(TableEntry):
             return False
         # Return True, when there are no differences in all __dict__
         try:
-            return 0 == sum([1 if self.__dict__[key] != other.__dict__[key] else 0 for key in self.__dict__.keys()])
+            diffs = [(self.__dict__[key], other.__dict__[key]) for key in self.__dict__.keys() if self.__dict__[key] != other.__dict__[key]]
+            logger.debug(f"Difference (self, other): {diffs}")
+            return len(diffs) == 0
         except KeyError:
             return False
 
 
 class Ignore(TableEntry):
-
     TABLE_NAME = "ignores"
     DB_PATH = paths.LOCAL_DB_PATH
     PRIMARY_KEY_NAME = "ignore_id"
@@ -280,6 +306,7 @@ class Ignore(TableEntry):
             return db.insert(sql, (folder_id, pattern, sub_folders))
 
     """folder_id"""
+
     @property
     def folder_id(self) -> int:
         return self._folder_id
@@ -289,6 +316,7 @@ class Ignore(TableEntry):
         self._change_field("folder_id", new_value)
 
     """pattern"""
+
     @property
     def pattern(self) -> str:
         return self._pattern
@@ -298,6 +326,7 @@ class Ignore(TableEntry):
         self._change_field("pattern", new_value)
 
     """sub_folders"""
+
     @property
     def sub_folders(self) -> bool:
         return bool(self._sub_folders)
@@ -308,7 +337,6 @@ class Ignore(TableEntry):
 
 
 class SyncFolder(TableEntry):
-
     TABLE_NAME = "sync_folders"
     DB_PATH = paths.LOCAL_DB_PATH
     PRIMARY_KEY_NAME = "folder_id"

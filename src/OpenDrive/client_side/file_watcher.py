@@ -64,11 +64,21 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
 
     def on_deleted(self, event):
-        pass
+        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_deleted=True,
+                                    necessary_action=database.Change.ACTION_DELETE)
 
     def on_modified(self, event):
-        pass
-
+        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
+                                    necessary_action=database.Change.ACTION_PULL)
 
     def on_moved(self, event):
-        pass
+        possible_change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
+        action = database.Change.ACTION_MOVE
+        try:
+            pull = possible_change.is_modified or possible_change.is_created
+            if pull:
+                action = database.Change.ACTION_PULL_DELETE
+        except AttributeError:
+            pass
+        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
+                                    necessary_action=action)

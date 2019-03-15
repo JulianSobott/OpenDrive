@@ -20,6 +20,9 @@ import os
 from OpenDrive.general.od_logging import logger
 
 
+UniqueError = sqlite3.IntegrityError
+
+
 class DBConnection:
     """Interface to a sqlite database. Used as context-manager, to properly open and close the connection"""
 
@@ -55,12 +58,16 @@ class DBConnection:
         try:
             self.cursor.execute(sql, args)
         except sqlite3.IntegrityError as e:
-            raise e
+            raise UniqueError()
         return self.cursor.lastrowid
 
     def update(self, sql: str, args: tuple = ()) -> None:
         """UPDATE"""
-        self.cursor.execute(sql, args)
+        try:
+            self.cursor.execute(sql, args)
+        except Exception as e:
+            logger.error(e)
+            raise e
 
     def delete(self, sql: str, args: tuple = ()) -> None:
         """DELETE"""
@@ -154,3 +161,4 @@ def delete_db_file(path):
     except FileNotFoundError:
         logger.debug(f"Could not delete non existing db file. {path}")
         pass
+

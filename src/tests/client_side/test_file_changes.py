@@ -123,10 +123,10 @@ class TestEditFile(TestFileChange):
         self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
         with open(self.abs_file_path, "w"):
             pass
-
-    def test_edit_file(self):
         file_watcher.start_observing()
         file_watcher.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+
+    def test_edit_file(self):
         with open(self.abs_file_path, "w") as f:
             f.write(100*"Edited text")
         found_possible = wait_till_condition(
@@ -138,6 +138,22 @@ class TestEditFile(TestFileChange):
         expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
                                           last_change_time_stamp=change.last_change_time_stamp,
                                           is_created=False, is_moved=False, is_deleted=False, is_modified=True,
+                                          necessary_action=database.Change.ACTION_PULL)
+        self.assertEqual(expected_change, change)
+
+    def test_create_edit_file(self):
+        rel_file_path = "test2.txt"
+        with open(os.path.join(self.abs_folder_path, rel_file_path), "w") as f:
+            f.write(100*"Edited text")
+        wait_till_condition(
+            lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None,
+            interval=0.5, timeout=1)
+        change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
+        self.assertIsInstance(change, database.Change)
+        is_folder = False
+        expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
+                                          last_change_time_stamp=change.last_change_time_stamp,
+                                          is_created=True, is_moved=False, is_deleted=False, is_modified=True,
                                           necessary_action=database.Change.ACTION_PULL)
         self.assertEqual(expected_change, change)
 
