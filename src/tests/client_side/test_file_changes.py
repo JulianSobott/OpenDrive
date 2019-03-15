@@ -151,7 +151,7 @@ class TestEditFile(TestFileChange):
         change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
         self.assertIsInstance(change, database.Change)
         is_folder = False
-        expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
+        expected_change = database.Change(1, self.folder_id, rel_file_path, is_folder=is_folder,
                                           last_change_time_stamp=change.last_change_time_stamp,
                                           is_created=True, is_moved=False, is_deleted=False, is_modified=True,
                                           necessary_action=database.Change.ACTION_PULL)

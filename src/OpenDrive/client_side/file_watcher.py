@@ -16,6 +16,7 @@ from OpenDrive.client_side import database
 
 observer = watchdog_observers.Observer()
 
+
 def start(all_folders_to_sync: List[str]):
     """Start watching at all folders in a new thread."""
     pass
@@ -61,15 +62,20 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         self._rel_path = os.path.relpath(src_path, self.folder_path)
 
     def on_created(self, event):
-        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
+        database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
 
     def on_deleted(self, event):
-        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_deleted=True,
-                                    necessary_action=database.Change.ACTION_DELETE)
+        database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_deleted=True,
+                               necessary_action=database.Change.ACTION_DELETE)
 
     def on_modified(self, event):
-        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
-                                    necessary_action=database.Change.ACTION_PULL)
+        try:
+            database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
+                                   necessary_action=database.Change.ACTION_PULL)
+        except database.UniqueError:
+            change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
+            change.is_modified = True
+            change.last_change_time_stamp = change.get_current_time()
 
     def on_moved(self, event):
         possible_change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
@@ -80,5 +86,5 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
                 action = database.Change.ACTION_PULL_DELETE
         except AttributeError:
             pass
-        database.Change.create_plus(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
-                                    necessary_action=action)
+        database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
+                               necessary_action=action)

@@ -78,13 +78,13 @@ class TableEntry(object):
     """Interface between python and DB entry.
         Call a static method :func:`from_...()` to get a object, initialized with the values of the db.
         All class have the static method :func:`from_id(id_)` implemented.
-        Call the static method :func:`create_plus(...)` to insert a new entry in the db and get the `id`.
+        Call the static method :func:`create(...)` to insert a new entry in the db and get the `id`.
         Call the setter properties, to change the values in the db.
         To get a value from the DB call the getters.
         NOTE: if a value is changed, the :func:`update()` function must be called first, to update all values.
 
         All subclasses must override the `TABLE_NAME`, `DB_PATH`, `PRIMARY_KEY_NAME` attributes
-        and must provide the :func:`create_plus` function.
+        and must provide the :func:`create` function.
         """
     TABLE_NAME: str
     DB_PATH: str

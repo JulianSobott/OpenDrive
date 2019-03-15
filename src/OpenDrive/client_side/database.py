@@ -111,17 +111,17 @@ class Change(TableEntry):
         self._old_abs_path: Optional[str] = old_abs_path
 
     @staticmethod
-    def create_plus(folder_id: int,
-                    current_rel_path: str,
-                    is_folder: bool = False,
-                    last_change_time_stamp: datetime = datetime.now(),
-                    is_created: bool = False,
-                    is_moved: bool = False,
-                    is_deleted: bool = False,
-                    is_modified: bool = False,
-                    necessary_action: Tuple[int, str] = ACTION_PULL,
-                    old_abs_path: Optional[str] = None) -> int:
-        """If no entry in db, `INSERT` a new one. Else `UPDATE` the old one"""
+    def create(folder_id: int,
+               current_rel_path: str,
+               is_folder: bool = False,
+               last_change_time_stamp: datetime = datetime.now(),
+               is_created: bool = False,
+               is_moved: bool = False,
+               is_deleted: bool = False,
+               is_modified: bool = False,
+               necessary_action: Tuple[int, str] = ACTION_PULL,
+               old_abs_path: Optional[str] = None) -> int:
+        """If no entry in db, `INSERT` a new one. Else raises `UniqueError`"""
         assert isinstance(folder_id, int)
         assert isinstance(current_rel_path, str)
         assert 0 <= necessary_action[0] <= 2
@@ -135,22 +135,9 @@ class Change(TableEntry):
         if old_abs_path:
             old_abs_path = normalize_path(old_abs_path)
         with DBConnection(paths.LOCAL_DB_PATH) as db:
-            try:
-                change_id = db.insert(sql, (
-                    folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
-                    is_deleted, is_modified, necessary_action_val, old_abs_path))
-            except UniqueError:
-                sql = ('UPDATE "changes" SET '
-                       'folder_id = ?, is_folder = ?, last_change_time_stamp = ?, '
-                       'is_created = ?, is_moved = ?, is_deleted = ?, is_modified = ?, necessary_action = ?, '
-                       'old_abs_path = ?'
-                       'WHERE current_rel_path = ?')
-
-                # entry already exists
-                db.update(sql, (folder_id, is_folder, last_change_time_stamp, is_created,
-                                is_moved, is_deleted, is_modified, necessary_action_val, old_abs_path,
-                                current_rel_path))
-                change_id = Change.get_possible_entry(folder_id, current_rel_path).id
+            change_id = db.insert(sql, (
+                folder_id, current_rel_path, is_folder, last_change_time_stamp, is_created, is_moved,
+                is_deleted, is_modified, necessary_action_val, old_abs_path))
             return change_id
 
     """folder_id"""
@@ -193,6 +180,10 @@ class Change(TableEntry):
     @last_change_time_stamp.setter
     def last_change_time_stamp(self, new_value: datetime):
         self._change_field("last_change_time_stamp", new_value)
+
+    @staticmethod
+    def get_current_time():
+        return datetime.now()
 
     """is_created"""
 
@@ -278,8 +269,10 @@ class Change(TableEntry):
             return False
         # Return True, when there are no differences in all __dict__
         try:
-            diffs = [(self.__dict__[key], other.__dict__[key]) for key in self.__dict__.keys() if self.__dict__[key] != other.__dict__[key]]
-            logger.debug(f"Difference (self, other): {diffs}")
+            diffs = [(self.__dict__[key], other.__dict__[key])
+                     for key in self.__dict__.keys() if self.__dict__[key] != other.__dict__[key]]
+            if len(diffs) > 0:
+                logger.debug(f"Difference (self, other): {diffs}")
             return len(diffs) == 0
         except KeyError:
             return False
