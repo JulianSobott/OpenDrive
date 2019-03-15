@@ -41,6 +41,10 @@ class TestEmptyAccess(unittest.TestCase):
         delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
 
+    @classmethod
+    def tearDownClass(cls):
+        delete_db_file(paths.LOCAL_DB_PATH)
+
     def test_change_create(self):
         change_id = database.Change.create(1, 'test.txt', is_created=True)
         self.assertEqual(1, change_id)
@@ -85,8 +89,9 @@ class TestAccess(unittest.TestCase):
         folder_id = database.SyncFolder.create('C:/folder1/')
         database.Change.create(folder_id, 'test.txt', is_created=True)
 
-    def tearDown(self):
-        pass
+    @classmethod
+    def tearDownClass(cls):
+        delete_db_file(paths.LOCAL_DB_PATH)
 
     def test_get_existing_change_entry(self):
         folder_id = 1

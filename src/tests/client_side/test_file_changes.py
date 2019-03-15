@@ -158,5 +158,31 @@ class TestEditFile(TestFileChange):
         self.assertEqual(expected_change, change)
 
 
+class TestRemove(TestFileChange):
+
+    def setUp(self):
+        super().setUp()
+        self.rel_file_path = "test.txt"
+        self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
+        with open(self.abs_file_path, "w"):
+            pass
+        file_watcher.start_observing()
+        file_watcher.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+
+    def test_remove_file(self):
+        os.remove(self.abs_file_path)
+        wait_till_condition(
+            lambda: database.Change.get_possible_entry(self.folder_id, self.rel_file_path) is not None,
+            interval=0.1, timeout=1)
+        change = database.Change.get_possible_entry(self.folder_id, self.rel_file_path)
+        self.assertIsInstance(change, database.Change)
+        is_folder = False
+        expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
+                                          last_change_time_stamp=change.last_change_time_stamp,
+                                          is_created=False, is_moved=False, is_deleted=True, is_modified=False,
+                                          necessary_action=database.Change.ACTION_DELETE)
+        self.assertEqual(expected_change, change)
+
+
 if __name__ == '__main__':
     unittest.main()
