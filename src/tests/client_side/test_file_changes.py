@@ -1,3 +1,4 @@
+import time
 import unittest
 import os
 import shutil
@@ -274,6 +275,7 @@ class TestModule(unittest.TestCase):
             f.write("Hello World" * 100)
         file_watcher.start()
         file_watcher.add_single_ignores(self.folder_id_1, [rel_file_path])
+        time.sleep(1)
         shutil.copy(abs_file_path, self.abs_folder_path_1)
         self.assertEqual(0, len(database.Change.get_all()))
 

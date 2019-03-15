@@ -87,7 +87,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def __init__(self, abs_folder_path: str, folder_id: int, ignore_patterns: List[str] = ()):
         super().__init__(ignore_regexes=ignore_patterns, case_sensitive=False)
         self.folder_path = abs_folder_path
-        self._single_ignore_paths: Dict[str, datetime.datetime] = {}
+        self._single_ignore_paths: Dict[str, List[datetime.datetime, bool]] = {}
         self._folder_id: int = folder_id
         self._is_dir: bool = False
         self._rel_path: str = ""
@@ -109,11 +109,17 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         # ignore
         self._ignore = False
         if self._rel_path in self._single_ignore_paths.keys():
-            enter_time = self._single_ignore_paths[self._rel_path]
-            if datetime.datetime.now() - enter_time < datetime.timedelta(seconds=0.5):
+            ignore = self._single_ignore_paths[self._rel_path]
+            if not ignore[1]:   # not changed
+                ignore[1] = True
+                ignore[0] = datetime.datetime.now()
                 self._ignore = True
             else:
-                self._single_ignore_paths.pop(self._rel_path)
+                enter_time = self._single_ignore_paths[self._rel_path][0]
+                if datetime.datetime.now() - enter_time < datetime.timedelta(seconds=0.5):
+                    self._ignore = True
+                else:
+                    self._single_ignore_paths.pop(self._rel_path)
 
     def on_created(self, event):
         if self._ignore:
@@ -164,4 +170,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
             change.last_change_time_stamp = change.get_current_time()
 
     def add_single_ignores(self, rel_ignore_paths: List[str]):
-        self._single_ignore_paths.update({path: datetime.datetime.now() for path in rel_ignore_paths})
+        """Single ignores are listed, to be ignored once to be ignored when an event on them occurs.
+        Tis is to make copies from the server possible. If changes to the ignored file/folder happens in a short
+        time (0.5s) both changes are ignored. This is because a copy is tracked as create and then on modify."""
+        self._single_ignore_paths.update({path: [datetime.datetime.now(), False] for path in rel_ignore_paths})
