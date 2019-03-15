@@ -62,7 +62,10 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         self._rel_path = os.path.relpath(src_path, self.folder_path)
 
     def on_created(self, event):
-        database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
+        try:
+            database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
+        except database.UniqueError:
+            pass    # Added file twice. See issue at :func:`on_any_event`
 
     def on_deleted(self, event):
         database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_deleted=True,

@@ -69,12 +69,13 @@ class Change(TableEntry):
     call the static method `create(...)` to insert a new change entry in the db.
     call the setter properties, to change the values in the db.
     """
-    ACTION_PULL = (0, "PULL")
-    ACTION_MOVE = (1, "MOVE")
-    ACTION_DELETE = (2, "DELETE")
-    ACTION_PULL_DELETE = (3, "PullDelete")  # File was changed and moved -> pull to new dest and delete old
+    ACTION_NONE = (0, "NONE")
+    ACTION_PULL = (1, "PULL")
+    ACTION_MOVE = (2, "MOVE")
+    ACTION_DELETE = (3, "DELETE")
+    ACTION_PULL_DELETE = (4, "PULL_DELETE")  # File was changed and moved -> pull to new dest and delete old
 
-    _ACTIONS = {0: ACTION_PULL, 1: ACTION_MOVE, 2: ACTION_DELETE, 3: ACTION_PULL_DELETE}
+    _ACTIONS = {0: ACTION_NONE, 1: ACTION_PULL, 2: ACTION_MOVE, 3: ACTION_DELETE, 4: ACTION_PULL_DELETE}
 
     TABLE_NAME = "changes"
     DB_PATH = paths.LOCAL_DB_PATH
@@ -124,7 +125,7 @@ class Change(TableEntry):
         """If no entry in db, `INSERT` a new one. Else raises `UniqueError`"""
         assert isinstance(folder_id, int)
         assert isinstance(current_rel_path, str)
-        assert 0 <= necessary_action[0] <= 2
+        assert 0 <= necessary_action[0] <= 4
         necessary_action_val = necessary_action[0]
 
         sql = 'INSERT INTO "changes" (' \
@@ -269,7 +270,7 @@ class Change(TableEntry):
             return False
         # Return True, when there are no differences in all __dict__
         try:
-            diffs = [(self.__dict__[key], other.__dict__[key])
+            diffs = [(key, self.__dict__[key], other.__dict__[key])
                      for key in self.__dict__.keys() if self.__dict__[key] != other.__dict__[key]]
             if len(diffs) > 0:
                 logger.debug(f"Difference (self, other): {diffs}")
