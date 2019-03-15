@@ -17,9 +17,14 @@ from OpenDrive.client_side import database
 observer = watchdog_observers.Observer()
 
 
-def start(all_folders_to_sync: List[str]):
+def start():
     """Start watching at all folders in a new thread."""
-    pass
+    all_folders = database.SyncFolder.get_all()
+    for folder in all_folders:
+        ignores = database.Ignore.get_by_folder(folder.id)
+        patterns = [ignore.pattern for ignore in ignores]
+        add_watcher(folder.abs_path, patterns, folder.id)
+    observer.start()
 
 
 def start_observing():

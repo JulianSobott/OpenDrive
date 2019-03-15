@@ -218,5 +218,54 @@ class TestMove(TestFileChange):
         self.assertEqual(expected_change, change)
 
 
+class TestModule(unittest.TestCase):
+    abs_folder_path_1 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_1/")
+    abs_folder_path_2 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_2/")
+    folder_id_1: int
+    folder_id_2: int
+
+    def setUp(self):
+        delete_db_file(paths.LOCAL_DB_PATH)
+        database.create_database()
+        try:
+            os.mkdir(self.abs_folder_path_1)
+        except FileExistsError:
+            shutil.rmtree(self.abs_folder_path_1, ignore_errors=True)
+            os.mkdir(self.abs_folder_path_1)
+        try:
+            os.mkdir(self.abs_folder_path_2)
+        except FileExistsError:
+            shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
+            os.mkdir(self.abs_folder_path_2)
+        self.folder_id_1 = database.SyncFolder.create(self.abs_folder_path_1)
+        self.folder_id_2 = database.SyncFolder.create(self.abs_folder_path_2)
+        database.Ignore.create(self.folder_id_1, ".*\\.pys", True)
+
+    def tearDown(self):
+        file_watcher.stop_observing()
+        shutil.rmtree(self.abs_folder_path_1, ignore_errors=True)
+        shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
+
+    def test_start(self):
+        file_watcher.start()
+        rel_file_path = "test.txt"
+        with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
+            f.write("Hello World" * 100)
+        with open(os.path.join(self.abs_folder_path_1, "test.pyc"), "w") as f:
+            f.write("Hello World" * 100)
+
+        wait_till_condition(
+            lambda: database.Change.get_possible_entry(self.folder_id_1, rel_file_path) is not None,
+            interval=0.1, timeout=1)
+        change = database.Change.get_possible_entry(self.folder_id_1, rel_file_path)
+        self.assertIsInstance(change, database.Change)
+        expected_change = database.Change(1, self.folder_id_1, rel_file_path, is_folder=False,
+                                          last_change_time_stamp=change.last_change_time_stamp,
+                                          is_created=True, is_moved=False, is_deleted=False, is_modified=True,
+                                          necessary_action=database.Change.ACTION_PULL)
+        self.assertEqual(expected_change, change)
+        self.assertEqual(2, len(database.Change.get_all()))
+
+
 if __name__ == '__main__':
     unittest.main()

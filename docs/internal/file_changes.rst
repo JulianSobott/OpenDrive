@@ -61,6 +61,14 @@ Implementation
         - is already an entry? -> Change entry
             - add entry
 
+Special case: `move`
+*********************
+
+The `create`, `delete` and `modified` changes are easy to track and implement. The `move event` is trickier. For
+now it only tracks, when a file is renamed and stays inside the same folder. If the file or folder is moved, to another
+folder, it is recognized as `delete` at the old path and `create` at the new path. The disadvantage is, that files, that
+probably already exist are deleted and then pulled again. To solve this enhancement is a possible enhancement.
+
 Tests
 ---------
 

@@ -330,6 +330,11 @@ class Ignore(TableEntry):
     def sub_folders(self, new_value):
         self._change_field("sub_folders", new_value)
 
+    @classmethod
+    def get_by_folder(cls, folder_id: int) -> List['Ignore']:
+        entries: List['Ignore'] = cls.from_columns("folder_id = ?", (folder_id,))
+        return entries
+
 
 class SyncFolder(TableEntry):
     TABLE_NAME = "sync_folders"
@@ -363,3 +368,4 @@ class SyncFolder(TableEntry):
     def abs_path(self, new_path: str):
         new_path = normalize_path(new_path)
         self._change_field("abs_path", new_path)
+

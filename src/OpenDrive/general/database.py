@@ -144,6 +144,13 @@ class TableEntry(object):
             ret = db.get(sql, args)
         return [cls(*values) for values in ret]
 
+    @classmethod
+    def get_all(cls):
+        sql = f"SELECT * FROM {cls.TABLE_NAME}"
+        with DBConnection(cls.DB_PATH) as db:
+            ret = db.get(sql, tuple())
+        return [cls(*values) for values in ret]
+
     def _change_field(self, field_name: str, new_value) -> None:
         if ";" in field_name or ")" in field_name:
             raise ValueError("Preventing possible sql injection")
