@@ -65,7 +65,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         try:
             database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
         except database.UniqueError:
-            pass    # Added file twice. See issue at :func:`on_any_event`
+            pass  # Added file twice. See issue at :func:`on_any_event`
 
     def on_deleted(self, event):
         database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_deleted=True,
@@ -83,11 +83,20 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def on_moved(self, event):
         possible_change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
         action = database.Change.ACTION_MOVE
+        old_abs_path = event.src_path
+        current_rel_path = os.path.relpath(event.dest_path, self.folder_path)
         try:
             pull = possible_change.is_modified or possible_change.is_created
             if pull:
                 action = database.Change.ACTION_PULL_DELETE
         except AttributeError:
             pass
-        database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
-                               necessary_action=action)
+        try:
+            database.Change.create(self._folder_id, current_rel_path, is_folder=self._is_dir, is_moved=True,
+                                   necessary_action=action, old_abs_path=old_abs_path)
+        except database.UniqueError:
+            change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
+            change.is_moved = True
+            change.old_abs_path = old_abs_path
+            change.current_rel_path = current_rel_path
+            change.last_change_time_stamp = change.get_current_time()

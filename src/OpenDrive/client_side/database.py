@@ -42,7 +42,7 @@ def create_database() -> None:
         sql_table_changes = ("CREATE TABLE changes ("
                              "change_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT ,"
                              "folder_id INT NOT NULL,"
-                             "current_rel_path VARCHAR(260) NOT NULL UNIQUE,"
+                             "current_rel_path VARCHAR(260) NOT NULL,"
                              "is_folder INT NOT NULL ,"
                              "last_change_time_stamp DATETIME DEFAULT CURRENT_TIMESTAMP,"
                              "is_created INT DEFAULT 0,"
@@ -51,7 +51,8 @@ def create_database() -> None:
                              "is_modified INT DEFAULT 0,"
                              "necessary_action INT,"
                              "old_abs_path VARCHAR(260) UNIQUE,"
-                             "FOREIGN KEY (folder_id) REFERENCES sync_folders(folder_id)"
+                             "FOREIGN KEY (folder_id) REFERENCES sync_folders(folder_id),"
+                             "UNIQUE (folder_id, current_rel_path)"
                              ")")
         db.create(sql_table_changes)
         sql_table_ignores = ("create table ignores("
