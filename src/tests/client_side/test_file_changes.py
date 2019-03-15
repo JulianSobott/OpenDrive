@@ -239,7 +239,7 @@ class TestModule(unittest.TestCase):
             os.mkdir(self.abs_folder_path_2)
         self.folder_id_1 = database.SyncFolder.create(self.abs_folder_path_1)
         self.folder_id_2 = database.SyncFolder.create(self.abs_folder_path_2)
-        database.Ignore.create(self.folder_id_1, ".*\\.pys", True)
+        database.Ignore.create(self.folder_id_1, ".*\\.pyc", True)
 
     def tearDown(self):
         file_watcher.stop_observing()
@@ -261,10 +261,21 @@ class TestModule(unittest.TestCase):
         self.assertIsInstance(change, database.Change)
         expected_change = database.Change(1, self.folder_id_1, rel_file_path, is_folder=False,
                                           last_change_time_stamp=change.last_change_time_stamp,
-                                          is_created=True, is_moved=False, is_deleted=False, is_modified=True,
+                                          is_created=True, is_moved=False, is_deleted=False,
+                                          is_modified=change.is_modified,
                                           necessary_action=database.Change.ACTION_PULL)
         self.assertEqual(expected_change, change)
-        self.assertEqual(2, len(database.Change.get_all()))
+        self.assertEqual(1, len(database.Change.get_all()))
+
+    def test_add_single_ignores(self):
+        rel_file_path = "test.txt"
+        abs_file_path = os.path.join(self.abs_folder_path_2, rel_file_path)
+        with open(abs_file_path, "w") as f:
+            f.write("Hello World" * 100)
+        file_watcher.start()
+        file_watcher.add_single_ignores(self.folder_id_1, [rel_file_path])
+        shutil.copy(abs_file_path, self.abs_folder_path_1)
+        self.assertEqual(0, len(database.Change.get_all()))
 
 
 if __name__ == '__main__':

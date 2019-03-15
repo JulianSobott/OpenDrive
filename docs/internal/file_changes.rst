@@ -121,3 +121,9 @@ Tests
     - All entries in DB
 
 ... Same for remove, move, edit
+
+
+Code doc
+==========
+
+.. automodule:: OpenDrive.client_side.file_watcher
