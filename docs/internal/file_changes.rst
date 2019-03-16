@@ -20,15 +20,14 @@ Features
   state of a file
 - Only one entry per file, even when it changed multiple times
 
-Considerations
----------------
+API
+-----
 
-Paths:
-    - Use relative or absolute paths?
-    - Paths relative to what?
-    - depends also on the structure how changes are stored
-        - Multiple changes in a folder could be stored memory efficient, when the path to the folder is only stored once
-
+- start() -> watching at all specified folders
+- add_folder() -> Check is folder possible, insert in DB, start watching
+- remove_folder -> remove from DB, Stop watching
+- get_all_folders() -> return list of all folders
+- add_single_ignores() -> ignore pulled files
 
 Details
 --------
