@@ -87,7 +87,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def __init__(self, abs_folder_path: str, folder_id: int, ignore_patterns: List[str] = ()):
         super().__init__(ignore_regexes=ignore_patterns, case_sensitive=False)
         self.folder_path = abs_folder_path
-        self._single_ignore_paths: Dict[str, List[datetime.datetime, bool]] = {}
+        self._single_ignore_paths: Dict[str, Tuple[datetime.datetime, bool]] = {}
         self._folder_id: int = folder_id
         self._is_dir: bool = False
         self._rel_path: str = ""
@@ -111,8 +111,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         if self._rel_path in self._single_ignore_paths.keys():
             ignore = self._single_ignore_paths[self._rel_path]
             if not ignore[1]:   # not changed
-                ignore[1] = True
-                ignore[0] = datetime.datetime.now()
+                self._single_ignore_paths[self._rel_path] = (datetime.datetime.now(), False)
                 self._ignore = True
             else:
                 enter_time = self._single_ignore_paths[self._rel_path][0]
@@ -173,4 +172,4 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         """Single ignores are listed, to be ignored once to be ignored when an event on them occurs.
         Tis is to make copies from the server possible. If changes to the ignored file/folder happens in a short
         time (0.5s) both changes are ignored. This is because a copy is tracked as create and then on modify."""
-        self._single_ignore_paths.update({path: [datetime.datetime.now(), False] for path in rel_ignore_paths})
+        self._single_ignore_paths.update({path: (datetime.datetime.now(), False) for path in rel_ignore_paths})
