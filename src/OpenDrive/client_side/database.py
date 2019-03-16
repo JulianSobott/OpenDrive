@@ -22,7 +22,8 @@ functions:
 """
 import os
 from datetime import datetime
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Dict, Union, NewType
+from collections import namedtuple
 
 from OpenDrive.client_side import paths
 from OpenDrive.general.database import DBConnection, TableEntry, UniqueError
@@ -368,4 +369,21 @@ class SyncFolder(TableEntry):
     def abs_path(self, new_path: str):
         new_path = normalize_path(new_path)
         self._change_field("abs_path", new_path)
+
+    @classmethod
+    def sub_path_check(cls, abs_folder_path: str) -> Tuple[Optional[dict], Optional[dict]]:
+        """:returns A tuple.
+        1. Item is a Optional[dict] with a parent folder id and path.
+        2. Item is a Optional[dict] with all children folders.
+        """
+        all_folders: List[SyncFolder] = cls.get_all()
+        children_folders: Dict[int, str] = {}
+        for folder in all_folders:
+            if abs_folder_path in folder.abs_path:
+                return {folder.id: folder.abs_path}, None  # is sub folder
+            if folder.abs_path in abs_folder_path:
+                children_folders[folder.id] = folder.abs_path    # is parent folder
+        if len(children_folders.keys()) == 0:
+            children_folders = None
+        return None, children_folders
 

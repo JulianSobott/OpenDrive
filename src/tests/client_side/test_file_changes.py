@@ -219,7 +219,7 @@ class TestMove(TestFileChange):
         self.assertEqual(expected_change, change)
 
 
-class TestModule(unittest.TestCase):
+class TestAPI(unittest.TestCase):
     abs_folder_path_1 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_1/")
     abs_folder_path_2 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_2/")
     folder_id_1: int
@@ -278,6 +278,18 @@ class TestModule(unittest.TestCase):
         time.sleep(1)
         shutil.copy(abs_file_path, self.abs_folder_path_1)
         self.assertEqual(0, len(database.Change.get_all()))
+
+    def test_add_folder(self):
+        delete_db_file(paths.LOCAL_DB_PATH)
+        database.create_database()
+        file_watcher.start()
+        file_watcher.add_folder(self.abs_folder_path_1)
+        wait_till_condition(lambda: len(database.SyncFolder.get_all()) == 1, timeout=1)
+        rel_file_path = "test.txt"
+        with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
+            f.write("Hello World" * 100)
+        wait_till_condition(lambda: len(database.Change.get_all()) >= 1, timeout=1)
+        self.assertEqual(1, len(database.Change.get_all()))
 
 
 if __name__ == '__main__':
