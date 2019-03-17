@@ -23,48 +23,24 @@ from OpenDrive.general.od_logging import logger
 UniqueError = sqlite3.IntegrityError
 
 
-class MetaDBConnection(type):
-    _instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if MetaDBConnection._instance is None:
-            MetaDBConnection._instance = super(MetaDBConnection, cls).__call__(*args, **kwargs)
-        return MetaDBConnection._instance
-
-
-class DBConnection(metaclass=MetaDBConnection):
+class DBConnection:
     """Interface to a sqlite database. Used as context-manager, to properly open and close the connection"""
 
     def __init__(self, abs_db_path: str) -> None:
         self.abs_db_path = abs_db_path
         self.connection: sqlite3.Connection = None
         self.cursor: sqlite3.Cursor = None
-        self._commit_close_on_exit = True
-        self.connected = False
 
     def __enter__(self) -> 'DBConnection':
         """Opens a connection and initializes the `cursor`"""
-        if not self.connected:
-            self.connection = sqlite3.connect(self.abs_db_path)
-            self.cursor = self.connection.cursor()
-            self.connected = True
+        self.connection = sqlite3.connect(self.abs_db_path)
+        self.cursor = self.connection.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Commits changes and closes the `connection`"""
-        if self._commit_close_on_exit:
-            self.connection.commit()
-            self.connection.close()
-            self.connected = False
-
-    def commit_and_close(self):
-        self._commit_close_on_exit = True
         self.connection.commit()
         self.connection.close()
-        self.connected = False
-
-    def pause_commit_and_close(self):
-        self._commit_close_on_exit = False
 
     """Possible actions at the DB"""
 

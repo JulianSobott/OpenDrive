@@ -85,11 +85,13 @@ def add_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_
     assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
     if folder_id is None:
         folder_id = database.SyncFolder.from_path(abs_folder_path)
-    db = database.DBConnection(paths.LOCAL_DB_PATH)
-    db.pause_commit_and_close()
-    for ignore in ignores:
-        database.Ignore.create(folder_id, ignore)
-    db.commit_and_close()
+
+    seq = [(folder_id, pattern, True) for pattern in ignores]
+    with database.DBConnection(paths.LOCAL_DB_PATH) as db:
+        sql = 'INSERT INTO "ignores" (' \
+              '"folder_id", "pattern", "sub_folders") ' \
+              'VALUES (?, ?, ?)'
+        db.cursor.executemany(sql, seq)
 
 
 def remove_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_path: str = None) -> None:
