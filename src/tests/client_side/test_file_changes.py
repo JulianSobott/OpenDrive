@@ -283,7 +283,7 @@ class TestAPI(unittest.TestCase):
         delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         file_watcher.start()
-        file_watcher.add_folder(self.abs_folder_path_1)
+        file_watcher.add_folder(self.abs_folder_path_1, [])
         wait_till_condition(lambda: len(database.SyncFolder.get_all()) == 1, timeout=1)
         rel_file_path = "test.txt"
         with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:

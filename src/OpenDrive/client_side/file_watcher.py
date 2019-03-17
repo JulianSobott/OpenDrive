@@ -53,15 +53,14 @@ def start():
     observer.start()
 
 
-def add_folder(abs_folder_path: str, ignore_patterns: List[str]):
+def add_folder(abs_folder_path: str, ignore_patterns: List[str] = ()):
     """Check is folder possible, insert in DB, start watching"""
     abs_folder_path = normalize_path(abs_folder_path)
     can_added = _exist_folder(abs_folder_path)
     if not can_added:
         logger.info(f"Folder {abs_folder_path} can not be added, because it dont exist!")
-        return
+        return  # TODO: Notify user
     folder_id = _add_folder_to_db(abs_folder_path)
-
     add_watcher(abs_folder_path, ignore_patterns, folder_id)
 
 
@@ -79,19 +78,13 @@ def _exist_folder(abs_folder_path: str) -> bool:
 
 
 def _add_folder_to_db(abs_folder_path: str) -> int:
-    sub_paths = database.SyncFolder.sub_path_check(abs_folder_path)
-    if sub_paths[0] is not None:
-        sub_paths[0]: dict
-        assert len(sub_paths[0].keys()) == 1, "Folder has multiple parents. Error happened before."
-        logger.info("Folder is not added, because a parent folder is already watching")
-        return sub_paths[0].popitem()[0]    # return folder id of parent
-    if sub_paths[1] is not None:
-        pass
     folder_id = database.SyncFolder.create(abs_folder_path)
+    return folder_id
 
 
 def _add_ignores_to_db(ignore_patterns: List[str]) -> None:
     pass
+
 
 def start_observing():
     """Protects the `observer` from external access"""
