@@ -6,3 +6,5 @@ Internal documentation
 
     file_changes
     client_database
+    databases
+    synchronisation

@@ -25,3 +25,23 @@ Everything is running for a while. No setup/init stuff and no border cases.
 
 #. Server send files
 #. Server pull files
+
+Start up
+---------
+
+Client starts and want to synchronise with the server. Also client was offline and is online again.
+
+- Same as normal case
+
+First init
+-----------
+
+A new folder is added to synchronise. Both client and server folders may have content already.
+
+- Define what to do with non existing/different files at both sides
+
+    - Copy
+    - Delete
+
+- Interchange files
+- Start with normal procedure
