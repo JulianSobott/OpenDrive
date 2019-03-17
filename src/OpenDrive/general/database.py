@@ -14,7 +14,7 @@ classes:
 @internal_use:
 """
 import sqlite3
-from typing import Dict, Any, Union, List, Tuple
+from typing import List
 import os
 
 from OpenDrive.general.od_logging import logger
@@ -35,23 +35,20 @@ class MetaDBConnection(type):
 class DBConnection(metaclass=MetaDBConnection):
     """Interface to a sqlite database. Used as context-manager, to properly open and close the connection"""
 
-    _connections: Dict[str, 'DBConnection'] = {}
-    _commit_close_on_exit = True
-
     def __init__(self, abs_db_path: str) -> None:
         self.abs_db_path = abs_db_path
         self.connection: sqlite3.Connection = None
         self.cursor: sqlite3.Cursor = None
+        self._commit_close_on_exit = True
         self.connected = False
 
     def __enter__(self) -> 'DBConnection':
         """Opens a connection and initializes the `cursor`"""
-        db = self.get_instance(self.abs_db_path)
-        if not db.connected:
-            db.connection = sqlite3.connect(db.abs_db_path)
-            db.cursor = db.connection.cursor()
-            db.connected = True
-        return db
+        if not self.connected:
+            self.connection = sqlite3.connect(self.abs_db_path)
+            self.cursor = self.connection.cursor()
+            self.connected = True
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Commits changes and closes the `connection`"""
@@ -66,28 +63,8 @@ class DBConnection(metaclass=MetaDBConnection):
         self.connection.close()
         self.connected = False
 
-    @staticmethod
-    def get_instance(abs_db_path):
-        try:
-            db_conn = DBConnection._connections[abs_db_path]
-        except KeyError:
-            db_conn = DBConnection(abs_db_path)
-            DBConnection._connections[db_conn.abs_db_path] = db_conn
-        return db_conn
-
-    @staticmethod
-    def get_manual_instance(abs_db_path: str):
-        db = DBConnection.get_instance(abs_db_path)
-        if not db.connected:
-            db.connection = sqlite3.connect(db.abs_db_path)
-            db.cursor = db.connection.cursor()
-            db.connected = True
-        db._commit_close_on_exit = False
-        return db
-
-    @staticmethod
-    def pause_commit_and_close():
-        DBConnection._commit_close_on_exit = False
+    def pause_commit_and_close(self):
+        self._commit_close_on_exit = False
 
     """Possible actions at the DB"""
 
