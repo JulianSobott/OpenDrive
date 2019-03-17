@@ -306,6 +306,14 @@ class TestAPI(unittest.TestCase):
         file_watcher.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
         self.assertEqual(num_ignores, len(database.Ignore.get_all()))
 
+    def test_remove_permanent_ignores(self):
+        num_ignores = 3
+        ignores = [str(i) for i in range(num_ignores)]
+        file_watcher.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
+        self.assertEqual(num_ignores, len(database.Ignore.get_all()))
+        file_watcher.remove_permanent_ignores(ignores, folder_id=self.folder_id_1)
+        self.assertEqual(0, len(database.Ignore.get_all()))
+
 
 if __name__ == '__main__':
     unittest.main()

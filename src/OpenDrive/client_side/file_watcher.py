@@ -92,6 +92,15 @@ def add_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_
     db.commit_and_close()
 
 
+def remove_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_path: str = None) -> None:
+    assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
+    if folder_id is None:
+        folder_id = database.SyncFolder.from_path(abs_folder_path)
+    with database.DBConnection(paths.LOCAL_DB_PATH) as db:
+        sql = f"DELETE FROM ignores WHERE folder_id = ? and pattern in ({','.join(['?']*len(ignores))})"
+        db.delete(sql, (folder_id, *ignores))
+
+
 def _exist_folder(abs_folder_path: str) -> bool:
     if not os.path.exists(abs_folder_path):
         return False
