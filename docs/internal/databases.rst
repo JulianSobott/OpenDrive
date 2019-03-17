@@ -16,6 +16,7 @@ Server
 
 - users (user data)
 - folders (Server paths, user (for path)? )
+- changes (files changed. folder. device)
 - privileges (folder, user, privileges)
 - devices (device_data)
 - device_user (device, user, extra_data)
