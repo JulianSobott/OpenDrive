@@ -152,11 +152,21 @@ class TableEntry(object):
         return [cls(*values) for values in ret]
 
     def _change_field(self, field_name: str, new_value) -> None:
-        if ";" in field_name or ")" in field_name:
-            raise ValueError("Preventing possible sql injection")
+        self._prevent_sql_injection(field_name)
         sql = f'UPDATE "{self.TABLE_NAME}" SET {field_name} = ? WHERE "{self.PRIMARY_KEY_NAME}" = ?'
         with DBConnection(self.DB_PATH) as db:
             db.update(sql, (new_value, self.id))
+
+    @classmethod
+    def remove_entry(cls, entry_id: int) -> None:
+        sql = f'DELETE FROM {cls.TABLE_NAME} WHERE {cls.PRIMARY_KEY_NAME} = ?'
+        with DBConnection(cls.DB_PATH) as db:
+            db.delete(sql, (entry_id,))
+
+    @staticmethod
+    def _prevent_sql_injection(string: str):
+        if ";" in string or ")" in string:
+            raise ValueError("Preventing possible sql injection")
 
 
 def delete_db_file(path):

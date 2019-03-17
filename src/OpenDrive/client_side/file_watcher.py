@@ -30,6 +30,7 @@ private classes
 import os
 from typing import List, Dict, Tuple
 from watchdog import events as watchdog_events, observers as watchdog_observers
+from watchdog.observers.api import ObservedWatch
 import datetime
 
 from OpenDrive.client_side.od_logging import logger
@@ -37,12 +38,12 @@ from OpenDrive.client_side import database
 from OpenDrive.general.paths import normalize_path
 
 observer = watchdog_observers.Observer()
-watchers: Dict[int, 'FileSystemEventHandler'] = {}
+watchers: Dict[int, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
 
 __all__ = ["start"]
 
 
-def start():
+def start() -> None:
     """Start watching at all folders in a new thread. Calling this is enough and no further function calls inside this
     module are needed."""
     all_folders = database.SyncFolder.get_all()
@@ -53,7 +54,7 @@ def start():
     observer.start()
 
 
-def add_folder(abs_folder_path: str, ignore_patterns: List[str] = ()):
+def add_folder(abs_folder_path: str, ignore_patterns: List[str] = ()) -> None:
     """Check is folder possible, insert in DB, start watching"""
     abs_folder_path = normalize_path(abs_folder_path)
     can_added = _exist_folder(abs_folder_path)
@@ -64,11 +65,20 @@ def add_folder(abs_folder_path: str, ignore_patterns: List[str] = ()):
     add_watcher(abs_folder_path, ignore_patterns, folder_id)
 
 
+def remove_folder_from_watching(abs_folder_path: str = None, folder_id: int = None) -> None:
+    """Stops watching at the folder and removes it permanently from the db"""
+    assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
+    if folder_id is None:
+        folder_id = database.SyncFolder.from_path(abs_folder_path)
+    _remove_watcher(folder_id)
+    database.SyncFolder.remove_entry(folder_id)
+
+
 def add_single_ignores(folder_id: int, rel_paths: List[str]) -> None:
     """Add folder and file names that shall be ignored, because they are pulled from the server."""
-    assert folder_id in watchers.keys(), f"No watcher, watches at the specified folder with id {folder_id}"
-    watcher = watchers[folder_id]
-    watcher.add_single_ignores(rel_paths)
+    assert folder_id in watchers.keys(), f"No event_handler, watches at the specified folder with id {folder_id}"
+    event_handler, _ = watchers[folder_id]
+    event_handler.add_single_ignores(rel_paths)
 
 
 def _exist_folder(abs_folder_path: str) -> bool:
@@ -106,8 +116,15 @@ def add_watcher(abs_folder_path: str, ignore_patterns: List[str] = (), folder_id
         sync_folder = database.SyncFolder.from_path(abs_folder_path)
         folder_id = sync_folder.id
     event_handler = FileSystemEventHandler(abs_folder_path, folder_id, ignore_patterns)
-    observer.schedule(event_handler, abs_folder_path, recursive=True)
-    watchers[folder_id] = event_handler
+    watch = observer.schedule(event_handler, abs_folder_path, recursive=True)
+    watchers[folder_id] = event_handler, watch
+
+
+def _remove_watcher(folder_id: int):
+    """Stops watching"""
+    event_handler, watch = watchers.pop(folder_id)
+    observer.remove_handler_for_watch(event_handler, watch)
+    observer.unschedule(watch)
 
 
 class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):

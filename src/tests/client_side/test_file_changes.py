@@ -291,6 +291,15 @@ class TestAPI(unittest.TestCase):
         wait_till_condition(lambda: len(database.Change.get_all()) >= 1, timeout=1)
         self.assertEqual(1, len(database.Change.get_all()))
 
+    def test_remove_folder(self):
+        file_watcher.start()
+        file_watcher.remove_folder_from_watching(folder_id=self.folder_id_1)
+        rel_file_path = "test.txt"
+        with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
+            f.write("Hello World" * 100)
+        wait_till_condition(lambda: True is False, timeout=0.5)
+        self.assertEqual(0, len(database.Change.get_all()))
+
 
 if __name__ == '__main__':
     unittest.main()
