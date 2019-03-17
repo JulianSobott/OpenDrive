@@ -240,7 +240,6 @@ class TestAPI(unittest.TestCase):
             os.mkdir(self.abs_folder_path_2)
         self.folder_id_1 = database.SyncFolder.create(self.abs_folder_path_1)
         self.folder_id_2 = database.SyncFolder.create(self.abs_folder_path_2)
-        database.Ignore.create(self.folder_id_1, ".*\\.pyc", True)
 
     def tearDown(self):
         file_watcher.stop_observing()
@@ -248,6 +247,7 @@ class TestAPI(unittest.TestCase):
         shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
 
     def test_start(self):
+        database.Ignore.create(self.folder_id_1, ".*\\.pyc", True)
         file_watcher.start()
         rel_file_path = "test.txt"
         with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
@@ -299,6 +299,12 @@ class TestAPI(unittest.TestCase):
             f.write("Hello World" * 100)
         wait_till_condition(lambda: True is False, timeout=0.5)
         self.assertEqual(0, len(database.Change.get_all()))
+
+    def test_add_permanent_ignores(self):
+        num_ignores = 4
+        ignores = [str(i) for i in range(num_ignores)]
+        file_watcher.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
+        self.assertEqual(num_ignores, len(database.Ignore.get_all()))
 
 
 if __name__ == '__main__':

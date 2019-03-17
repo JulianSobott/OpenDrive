@@ -81,6 +81,14 @@ def add_single_ignores(folder_id: int, rel_paths: List[str]) -> None:
     event_handler.add_single_ignores(rel_paths)
 
 
+def add_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_path: str = None) -> None:
+    assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
+    if folder_id is None:
+        folder_id = database.SyncFolder.from_path(abs_folder_path)
+    for ignore in ignores:
+        database.Ignore.create(folder_id, ignore)
+
+
 def _exist_folder(abs_folder_path: str) -> bool:
     if not os.path.exists(abs_folder_path):
         return False

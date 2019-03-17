@@ -28,6 +28,8 @@ API
 - remove_folder -> remove from DB, Stop watching
 - get_all_folders() -> return list of all folders
 - add_single_ignores() -> ignore pulled files
+- add_permanent_ignores() -> ...
+- remove_permanent_ignores() -> ...
 
 Details
 --------
