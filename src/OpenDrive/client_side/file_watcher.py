@@ -34,7 +34,7 @@ from watchdog.observers.api import ObservedWatch
 import datetime
 
 from OpenDrive.client_side.od_logging import logger
-from OpenDrive.client_side import database
+from OpenDrive.client_side import database, paths
 from OpenDrive.general.paths import normalize_path
 
 observer = watchdog_observers.Observer()
@@ -85,8 +85,11 @@ def add_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_
     assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
     if folder_id is None:
         folder_id = database.SyncFolder.from_path(abs_folder_path)
+    db = database.DBConnection(paths.LOCAL_DB_PATH)
+    db.pause_commit_and_close()
     for ignore in ignores:
         database.Ignore.create(folder_id, ignore)
+    db.commit_and_close()
 
 
 def _exist_folder(abs_folder_path: str) -> bool:

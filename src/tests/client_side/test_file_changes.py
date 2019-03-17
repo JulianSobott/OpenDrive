@@ -301,7 +301,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(0, len(database.Change.get_all()))
 
     def test_add_permanent_ignores(self):
-        num_ignores = 4
+        num_ignores = 10
         ignores = [str(i) for i in range(num_ignores)]
         file_watcher.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
         self.assertEqual(num_ignores, len(database.Ignore.get_all()))
