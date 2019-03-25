@@ -1,6 +1,6 @@
 import networking as net
 
-net.Logging.logger.setLevel(0)
+net.Logging.logger.setLevel(10)
 
 
 class ServerCommunicator:
@@ -13,7 +13,7 @@ class ClientCommunicator:
 
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
-    pass
+    from OpenDrive.server_side.net_start import test
 
 
 class ClientFunctions(net.ClientFunctions):

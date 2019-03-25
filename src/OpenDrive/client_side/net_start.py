@@ -5,7 +5,12 @@ server = net_interface.ServerCommunicator.remote_functions
 
 def connect():
     address = ("127.0.0.1", 5000)
-    net_interface.ServerCommunicator.connect(address, blocking=False)
+    net_interface.ServerCommunicator.connect(address)
+    test()
+
+
+def test():
+    server.test()
 
 
 def close_connection():
