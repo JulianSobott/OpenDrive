@@ -44,21 +44,45 @@ Details:
 
 
 **Project structure:**
-    - OpenDrive
-        - docs
-        - src
-            - OpenDrive
-                - server_side
-                    - __init__.py
-                - client_side
-                    - __init__.py
-                - general
-                    - __init__.py
-                - __init__.py
-                - start.py
-            - tests
-        - assets
 
+::
+
+    OpenDrive
+    |   README.md
+    |   setup.py
+    |
+    |___assets
+    |       logo.png
+    |
+    |___docs
+    |   |   index.rst
+    |   |
+    |   |____build
+    |   |
+    |   |___internal
+    |   |
+    |   |___external
+    |
+    |___src
+    |   |
+    |   |___OpenDrive
+    |   |   |   debug_client_server.py
+    |   |   |   net_interface.py
+    |   |   |   start.py ?
+    |   |   |
+    |   |   |___client_side
+    |   |   |
+    |   |   |___server_side
+    |   |   |
+    |   |   |___general
+    |   |
+    |   |___tests
+    |   |   |
+    |   |   |___client_side
+    |   |   |
+    |   |   |___server_side
+    |   |   |
+    |   |   |___general
 
 **Top to bottom tasks:**
 
