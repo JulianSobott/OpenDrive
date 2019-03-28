@@ -4,8 +4,6 @@
 :author: Julian Sobott
 """
 import unittest
-import os
-import sqlite3
 
 from server_side import database, paths
 from general.database import delete_db_file

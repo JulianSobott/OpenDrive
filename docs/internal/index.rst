@@ -8,3 +8,4 @@ Internal documentation
     client_database
     databases
     synchronisation
+    authentication

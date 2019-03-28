@@ -267,19 +267,6 @@ class Change(TableEntry):
         entries: List['Change'] = cls.from_columns("folder_id=?", (folder_id,))
         return entries
 
-    def __eq__(self, other):
-        if not isinstance(other, Change):
-            return False
-        # Return True, when there are no differences in all __dict__
-        try:
-            diffs = [(key, self.__dict__[key], other.__dict__[key])
-                     for key in self.__dict__.keys() if self.__dict__[key] != other.__dict__[key]]
-            if len(diffs) > 0:
-                logger.debug(f"Difference (self, other): {diffs}")
-            return len(diffs) == 0
-        except KeyError:
-            return False
-
 
 class Ignore(TableEntry):
     TABLE_NAME = "ignores"

@@ -18,7 +18,7 @@ Server
 - folders (Server paths, user (for path)? )
 - changes (files changed. folder. device)
 - privileges (folder, user, privileges)
-- devices (device_data)
+- devices (device_id, mac_address, token)
 - device_user (device, user, extra_data)
 
 - sync_folders (client_folder, server_folder, device_user)
