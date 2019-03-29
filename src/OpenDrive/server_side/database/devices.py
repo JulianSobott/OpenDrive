@@ -15,6 +15,7 @@ public classes
 
 """
 import datetime
+import secrets
 from typing import Optional
 
 from OpenDrive.general.database import TableEntry, DBConnection
@@ -104,10 +105,19 @@ class Device(TableEntry):
 
 class Token:
 
+    def __init__(self, length: Optional[int] = None):
+        self.token = secrets.token_hex(length)
+
     @staticmethod
-    def generate_token(length: Optional[int]=None):
+    def from_string(token: str) -> 'Token':
+        ret_token = Token()
+        ret_token.token = token
+        return ret_token
+
+    @staticmethod
+    def is_token_expired(date: datetime.datetime):
         pass
 
     @staticmethod
-    def is_token_expired(date):
-        pass
+    def get_next_expired(days=31) -> datetime.datetime:
+        return datetime.datetime.now() + datetime.timedelta(days=days)
