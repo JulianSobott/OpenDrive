@@ -5,6 +5,8 @@ import secrets
 from server_side import database, paths
 from general.database import delete_db_file
 from src.tests.od_logging import logger
+from src.tests.server_side.database.test_devices import TestDatabaseDevices
+from src.tests.server_side.database.test_users import TestDatabaseUsers
 
 
 class TestDataBaseDeviceUser(unittest.TestCase):
@@ -24,12 +26,12 @@ class TestDataBaseDeviceUser(unittest.TestCase):
             self.assertEqual(table_names, expected, "Column names changes")
 
     def test_create_non_existing(self):
-        mac_address = str(uuid.getnode())
-        token = secrets.token_hex(32)
-        device_id = database.Device.create(mac_address, token)
-        device = database.Device.from_id(device_id)
-        self.assertEqual(device.mac_address, mac_address)
-        self.assertEqual(device.token, token)
+        device = TestDatabaseDevices.helper_create_dummy_device()
+        user = TestDatabaseUsers.helper_create_dummy_user()
+        database.DeviceUser.create(device.id, user.id)
+        device_user = database.DeviceUser.get_by_ids(device.id, user.id)
+        self.assertEqual(device_user.device_id, device.id)
+        self.assertEqual(device_user.user_id, user.id)
 
 
 if __name__ == '__main__':

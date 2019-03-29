@@ -7,3 +7,5 @@
 from OpenDrive.server_side.database.general import create_database, DBConnection
 from OpenDrive.server_side.database.users import User
 from OpenDrive.server_side.database.devices import Device
+from OpenDrive.server_side.database.device_user import DeviceUser
+
