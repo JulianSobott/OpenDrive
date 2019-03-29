@@ -22,3 +22,8 @@ Server
 - device_user (device, user, extra_data)
 
 - sync_folders (client_folder, server_folder, device_user)
+
+Code doc
+^^^^^^^^^^
+
+.. automodule:: OpenDrive.server_side.database.users

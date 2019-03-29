@@ -6,13 +6,17 @@
 public classes
 ---------------
 
-.. autoclass:: XXX
+.. autoclass:: User
+    :exclude-members: DB_PATH
+    :show-inheritance:
     :members:
+    :inherited-members:
+    :undoc-members:
     
 public functions
 -----------------
 
-.. autofunction:: XXX
+.. autofunction:
 
 private classes
 ----------------
@@ -28,6 +32,12 @@ from OpenDrive.server_side import paths
 
 
 class User(TableEntry):
+    """
+    :ivar user_id:
+    :ivar username:
+    :ivar password:
+    :ivar email:
+    """
 
     TABLE_NAME = "users"
     DB_PATH = paths.SERVER_DB_PATH
