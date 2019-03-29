@@ -2,23 +2,16 @@
 :module: OpenDrive.server_side.authentication
 :synopsis: Functions, to authenticate, login, register a user/device
 :author: Julian Sobott
-
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
     
 public functions
 -----------------
 
-.. autofunction:: XXX
-
-private classes
-----------------
+.. autofunction:: register_user_device
 
 private functions
 ------------------
+
+.. autofunction:: _add_update_device
 
 """
 from passlib.apps import custom_app_context as pwd_context
@@ -29,7 +22,8 @@ from OpenDrive.server_side.database import User, Device, DeviceUser, Token
 
 def register_user_device(username: str, password: str, mac_address: str, email: Optional[str] = None) -> \
         Union[str, Token]:
-
+    """Registers a new user and adds the device to the db if it is not already in the db. On success a Token is
+    returned. This Token is used for auto-login. On any failure a string with the error message is returned."""
     assert len(username) > 3, "Username must be at least 4 characters long!"
     assert len(password) > 4, "Password must be at least 5 characters long!"
     assert len(mac_address) == 14, "Mac address string must have length 14! ('str(uuid.getnode())')"
@@ -45,6 +39,8 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
 
 
 def _add_update_device(mac_address: str) -> Tuple[Token, int]:
+    """Adds a new device to the db. If the device already no device is added. A proper Token that isn't expired and
+    the device_id is returned."""
     possible_device = Device.get_by_mac(mac_address)
     if possible_device is not None:
         if Token.is_token_expired(possible_device.token_expires):

@@ -60,3 +60,8 @@ Login (Auto)
 
 - The client reads the stored token, unique device data and send it to the server
 - Server checks data: on success login and return success
+
+Code doc
+^^^^^^^^^^
+
+.. automodule:: OpenDrive.server_side.authentication
