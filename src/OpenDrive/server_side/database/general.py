@@ -38,3 +38,9 @@ def create_database() -> None:
                            "`password` VARCHAR(96) NOT NULL, "
                            "`email` VARCHAR(40))")
         db.create(sql_table_users)
+
+        sql_table_devices = ("CREATE TABLE devices ("
+                             "`device_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+                             "`mac_address` VARCHAR(17) NOT NULL UNIQUE, "
+                             "`token` VARCHAR(64) NOT NULL)")
+        db.create(sql_table_devices)

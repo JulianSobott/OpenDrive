@@ -30,4 +30,5 @@ class TestDatabaseConnections(unittest.TestCase):
             ret = db.get(sql)
         tables = [table_name for table_name, in ret]
         self.assertTrue("users" in tables)
+        self.assertTrue("devices" in tables)
 
