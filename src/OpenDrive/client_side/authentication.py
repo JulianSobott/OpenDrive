@@ -25,12 +25,20 @@ import getpass
 
 from OpenDrive import net_interface
 from OpenDrive.general.device_data import get_mac
-from server_side.database import Token
+from OpenDrive.server_side.database import Token
 
 server = net_interface.ServerCommunicator.remote_functions
 
 
 def register_user_device_cli():
+    """For debugging
+    import random
+    import string
+    username = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    ret = server.register_user_device(username, "12345", get_mac(), None)
+    print(type(ret))
+    return
+    """
     if not net_interface.ServerCommunicator.is_connected():
         print("Can not connect to server. PLease try again later")
         return
