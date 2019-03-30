@@ -73,5 +73,13 @@ def login_manual_user_device_cli() -> None:
             break
 
 
+def login_auto() -> None:
+    pass
+
+
 def _save_received_token(token: Token) -> None:
     print(token)
+
+
+def _get_token() -> Token:
+    pass

@@ -38,6 +38,13 @@ class TestAuthentication(unittest.TestCase):
                                                                           return_value=user.password):
             client_side.authentication.login_manual_user_device_cli()
 
+    @cs_env.client_routine(clear_server_db=True)
+    def test_login_auto(self):
+        user, device = server_auth.TestRegistration.helper_register_dummy_user_device()
+        token = device.token
+        with mock.patch("_get_token", return_value=token):
+            client_side.authentication.login_auto()
+
 
 if __name__ == '__main__':
     unittest.main()
