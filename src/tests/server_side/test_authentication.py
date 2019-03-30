@@ -42,6 +42,16 @@ class TestRegistration(unittest.TestCase):
         user = all_users[0]
         self.assertEqual(user, database.User(1, username, user.password, email))
 
+    def test_register_user_device_existing(self):
+        username = "Anne"
+        password = "2hj:_sAdf"
+        email = None
+        mac = str(uuid.getnode())
+        token = authentication.register_user_device(username, password, mac, email)
+        self.assertIsInstance(token, Token)
+        token = authentication.register_user_device(username, password, mac, email)
+        self.assertIsInstance(token, str)
+
 
 if __name__ == '__main__':
     unittest.main()
