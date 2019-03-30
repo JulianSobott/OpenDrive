@@ -56,7 +56,6 @@ def register_user_device_cli():
             email = None
         mac_address = get_mac()
         ret = server.register_user_device(username, password, mac_address, email)
-        print(type(ret))
         if isinstance(ret, str):
             print(ret)
         else:

@@ -43,14 +43,11 @@ def delete_recreate_client_db():
 
 
 def start_server_process() -> Process:
-    def debug_server_routine():
-        server_net = OpenDrive.server_side.net_start
-        server_net.start()
-        net.ClientManager().mainloop()
-
-    server_process = Process(target=debug_server_routine)
-    server_process.start()
-    return server_process
+    try:
+        server_process = Process(target=_debug_server_routine)
+        return server_process
+    finally:
+        server_process.start()
 
 
 def stop_process(process: Process):
@@ -65,3 +62,9 @@ def client_routine(func):
         client_net.close_connection()
         return ret_value
     return wrapper
+
+
+def _debug_server_routine():
+    server_net = OpenDrive.server_side.net_start
+    server_net.start()
+    net.ClientManager().mainloop()
