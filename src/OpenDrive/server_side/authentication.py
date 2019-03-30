@@ -36,13 +36,27 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     user_id = User.create(username, hashed_password, email)
     token, device_id = _add_update_device(mac_address)
     DeviceUser.create(device_id, user_id)
-    logger.debug(type(token))
+    return token
+
+
+def login_manual_user_device(username: str, password: str, mac_address: str) -> Union[str, Token]:
+    """Try to login by username and password. A token for auto-login is returned"""
+    possible_user = User.get_by_username(username)
+    if possible_user is None:
+        return f"No user with username: {username}."
+    user = possible_user
+    if not pwd_context.verify(password, user.password):
+        return "Entered wrong password."
+    device_exist = Device.get_by_mac(mac_address) is not None
+    token, device_id = _add_update_device(mac_address)
+    if not device_exist:
+        DeviceUser.create(device_id, user.id)
     return token
 
 
 def _add_update_device(mac_address: str) -> Tuple[Token, int]:
-    """Adds a new device to the db. If the device already no device is added. A proper Token that isn't expired and
-    the device_id is returned."""
+    """Adds a new device to the db. If the device already exists no device is added. A proper Token that isn't
+    expired and the device_id is returned."""
     possible_device = Device.get_by_mac(mac_address)
     if possible_device is not None:
         if Token.is_token_expired(possible_device.token_expires):

@@ -2,6 +2,7 @@ import datetime
 import unittest
 import uuid
 import secrets
+from typing import Tuple
 
 from server_side import database, paths, authentication
 from general.database import delete_db_file
@@ -14,6 +15,17 @@ class TestRegistration(unittest.TestCase):
     def setUp(self):
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
+
+    @staticmethod
+    def helper_register_dummy_user_device() -> Tuple[database.User, database.Device]:
+        username = "Anne"
+        password = "2hj:_sAdf"
+        email = None
+        mac = str(uuid.getnode())
+        token = authentication.register_user_device(username, password, mac, email)
+        user = database.User(1, username, password, email)
+        device = database.Device.get_by_mac(mac)
+        return user, device
 
     def test_add_update_device_new(self):
         mac = str(uuid.getnode())
@@ -51,6 +63,21 @@ class TestRegistration(unittest.TestCase):
         self.assertIsInstance(token, Token)
         token = authentication.register_user_device(username, password, mac, email)
         self.assertIsInstance(token, str)
+
+
+class TestLogin(unittest.TestCase):
+
+    def setUp(self):
+        delete_db_file(paths.SERVER_DB_PATH)
+        database.create_database()
+
+    def test_login_manual_user_device(self):
+        user, device = TestRegistration.helper_register_dummy_user_device()
+        username = user.username
+        password = user.password
+        mac = device.mac_address
+        token = authentication.login_manual_user_device(username, password, mac)
+        self.assertIsInstance(token, Token)
 
 
 if __name__ == '__main__':
