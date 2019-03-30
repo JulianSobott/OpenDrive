@@ -30,7 +30,7 @@ from OpenDrive.server_side.database import Token
 server = net_interface.ServerCommunicator.remote_functions
 
 
-def register_user_device_cli():
+def register_user_device_cli() -> None:
     """For debugging
     import random
     import string
