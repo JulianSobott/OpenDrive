@@ -127,5 +127,13 @@ class Token:
     def get_next_expired(days=31) -> datetime.datetime:
         return datetime.datetime.now() + datetime.timedelta(days=days)
 
+    def __eq__(self, other):
+        if isinstance(other, Token):
+            return other.token == self.token
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __repr__(self):
         return self.token

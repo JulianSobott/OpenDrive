@@ -54,6 +54,18 @@ def login_manual_user_device(username: str, password: str, mac_address: str) -> 
     return token
 
 
+def login_auto(token: Token, mac_address: str) -> bool:
+    """Login by the token and mac_address. Returns, whether it was successful or not."""
+    device = Device.get_by_mac(mac_address)
+    if device is None:
+        return False
+    if Token.is_token_expired(device.token_expires):
+        return False
+    if token != device.token:
+        return False
+    return True
+
+
 def _add_update_device(mac_address: str) -> Tuple[Token, int]:
     """Adds a new device to the db. If the device already exists no device is added. A proper Token that isn't
     expired and the device_id is returned."""

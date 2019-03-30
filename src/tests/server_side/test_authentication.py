@@ -79,6 +79,13 @@ class TestLogin(unittest.TestCase):
         token = authentication.login_manual_user_device(username, password, mac)
         self.assertIsInstance(token, Token)
 
+    def test_login_auto(self):
+        user, device = TestRegistration.helper_register_dummy_user_device()
+        mac = device.mac_address
+        token = device.token
+        ret = authentication.login_auto(token, mac)
+        self.assertTrue(ret)
+
 
 if __name__ == '__main__':
     unittest.main()
