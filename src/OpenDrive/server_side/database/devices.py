@@ -16,7 +16,7 @@ public classes
 """
 import datetime
 import secrets
-from typing import Optional
+from typing import Optional, Union
 
 from OpenDrive.general.database import TableEntry, DBConnection
 from OpenDrive.server_side import paths
@@ -26,7 +26,8 @@ class Device(TableEntry):
     """
     :ivar device_id: Autoincrement id
     :ivar mac_address: Unique for every device
-    :ivar token: Allows auto login. Integrated timestamp when expires
+    :ivar token: Allows auto login
+    :ivar token_expires:
     """
 
     TABLE_NAME = "devices"
@@ -36,21 +37,23 @@ class Device(TableEntry):
     def __init__(self,
                  device_id: int,
                  mac_address: str,
-                 token: str,
+                 token: Union['Token', str],
                  token_expires: datetime.datetime) -> None:
         super().__init__()
         self._id = device_id
         self._mac_address = mac_address
+        if not isinstance(token, Token):
+            token = Token.from_string(token)
         self._token = token
         self._token_expires = token_expires
 
     @staticmethod
     def create(mac_address: str,
-               token: str,
+               token: 'Token',
                token_expires: datetime.datetime) -> int:
         sql = "INSERT INTO `devices` (mac_address, token, token_expires) VALUES (?, ?, ?)"
         with DBConnection(paths.SERVER_DB_PATH) as db:
-            user_id = db.insert(sql, (mac_address, token, token_expires))
+            user_id = db.insert(sql, (mac_address, token.token, token_expires))
             return user_id
 
     """user_id"""
@@ -72,11 +75,13 @@ class Device(TableEntry):
     """token"""
 
     @property
-    def token(self) -> str:
+    def token(self) -> 'Token':
         return self._token
 
     @token.setter
-    def token(self, val: str) -> None:
+    def token(self, val: Union['Token', str]) -> None:
+        if isinstance(val, Token):
+            val = val.token
         self._change_field("token", val)
 
     """token_expires"""
@@ -100,7 +105,7 @@ class Device(TableEntry):
         return device
 
     def __repr__(self):
-        return f"Device({self._id}, {self._mac_address}, {self._token})"
+        return f"Device({self._id}, {self._mac_address}, {self._token}, {self._token_expires})"
 
 
 class Token:

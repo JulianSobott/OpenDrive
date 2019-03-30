@@ -53,6 +53,6 @@ def _add_update_device(mac_address: str) -> Tuple[Token, int]:
         else:
             return possible_device.token, possible_device.device_id
     device_id = Device.create(mac_address, Token().token, Token.get_next_expired())
-    device_token_string = Device.from_id(device_id).token
-    return Token.from_string(device_token_string), device_id
+    device_token = Device.from_id(device_id).token
+    return device_token, device_id
 
