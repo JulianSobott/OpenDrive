@@ -56,5 +56,22 @@ def register_user_device_cli() -> None:
             break
 
 
+def login_manual_user_device_cli() -> None:
+    if not net_interface.ServerCommunicator.is_connected():
+        print("Can not connect to server. PLease try again later")
+        return
+    while True:
+        username = input("Username: ")
+        password = getpass.getpass("Password: ")
+        mac_address = get_mac()
+        ret = server.login_manual_user_device(username, password, mac_address)
+        if isinstance(ret, str):
+            print(ret)
+        else:
+            print("Successfully logged in")
+            _save_received_token(ret)
+            break
+
+
 def _save_received_token(token: Token) -> None:
     print(token)
