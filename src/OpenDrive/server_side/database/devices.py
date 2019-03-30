@@ -121,3 +121,6 @@ class Token:
     @staticmethod
     def get_next_expired(days=31) -> datetime.datetime:
         return datetime.datetime.now() + datetime.timedelta(days=days)
+
+    def __repr__(self):
+        return self.token

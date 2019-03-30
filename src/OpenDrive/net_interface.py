@@ -14,6 +14,7 @@ class ClientCommunicator:
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
     from OpenDrive.server_side.net_start import test
+    from OpenDrive.server_side.authentication import register_user_device
 
 
 class ClientFunctions(net.ClientFunctions):

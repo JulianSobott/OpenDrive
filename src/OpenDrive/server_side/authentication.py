@@ -18,6 +18,7 @@ from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
 
 from OpenDrive.server_side.database import User, Device, DeviceUser, Token
+from OpenDrive.server_side.od_logging import logger
 
 
 def register_user_device(username: str, password: str, mac_address: str, email: Optional[str] = None) -> \
@@ -35,6 +36,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     user_id = User.create(username, hashed_password, email)
     token, device_id = _add_update_device(mac_address)
     DeviceUser.create(device_id, user_id)
+    logger.debug(type(token))
     return token
 
 
