@@ -13,9 +13,8 @@ class TestAuthentication(unittest.TestCase):
     def tearDown(self) -> None:
         cs_env.stop_process(self._server_process)
 
-    @cs_env.client_routine
+    @cs_env.client_routine(clear_server_db=True)
     def test_register_user_device_cli(self):
-        cs_env.delete_recreate_server_db()
         inputs = (in_val for in_val in ["RandomUsername", ""])
 
         def mock_input(prompt):
