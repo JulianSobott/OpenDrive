@@ -137,3 +137,10 @@ an account the user needs to register.
 
 - Low level Connection: Setup networking stuff
 - Setup Console UI
+
+
+Store connected devices
+************************
+
+It may be useful to store all connected devices in a data structure. It is necessary, because the server needs to
+validate, that the device is logged in and is allowed to synchronize.

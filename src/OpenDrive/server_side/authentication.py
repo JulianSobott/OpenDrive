@@ -14,6 +14,7 @@ private functions
 .. autofunction:: _add_update_device
 
 """
+import networking as net
 from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
 
@@ -42,6 +43,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
 def login_manual_user_device(username: str, password: str, mac_address: str) -> Union[str, Token]:
     """Try to login by username and password. A token for auto-login is returned"""
     possible_user = User.get_by_username(username)
+    client = net.ClientManager().get()
     if possible_user is None:
         return f"No user with username: {username}."
     user = possible_user
@@ -82,3 +84,10 @@ def _add_update_device(mac_address: str) -> Tuple[Token, int]:
     device_token = Device.from_id(device_id).token
     return device_token, device_id
 
+
+class ConnectedDevice(net.ClientCommunicator):
+
+    def __init__(self):
+        self.is_authenticated = False
+        self.user_id = -1
+        self.device_id = -1
