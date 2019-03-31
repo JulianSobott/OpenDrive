@@ -137,3 +137,4 @@ an account the user needs to register.
 
 - Low level Connection: Setup networking stuff
 - Setup Console UI
+Hallo ich bin jetzt auch dabei.
