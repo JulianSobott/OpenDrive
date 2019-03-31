@@ -10,7 +10,7 @@ from general.database import delete_db_file
 from src.tests.od_logging import logger
 
 
-class TestDatabaseConnections(unittest.TestCase):
+class TestDatabaseUsers(unittest.TestCase):
 
     def setUp(self):
         delete_db_file(paths.SERVER_DB_PATH)

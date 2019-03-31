@@ -9,6 +9,7 @@ verify_ssl = true
 networking = {index = "https://test.pypi.org/simple/",version = "*"}
 watchdog = "*"
 coverage = "*"
+passlib = "*"
 
 [requires]
 python_version = "3.7"
