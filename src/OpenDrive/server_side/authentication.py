@@ -36,13 +36,14 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     user_id = User.create(username, hashed_password, email)
     token, device_id = _add_update_device(mac_address)
     DeviceUser.create(device_id, user_id)
+    client = net.ClientManager().get()
+    client.is_authenticated = True
     return token
 
 
 def login_manual_user_device(username: str, password: str, mac_address: str) -> Union[str, Token]:
     """Try to login by username and password. A token for auto-login is returned"""
     possible_user = User.get_by_username(username)
-    client = net.ClientManager().get()
     if possible_user is None:
         return f"No user with username: {username}."
     user = possible_user
@@ -52,6 +53,8 @@ def login_manual_user_device(username: str, password: str, mac_address: str) -> 
     token, device_id = _add_update_device(mac_address)
     if not device_exist:
         DeviceUser.create(device_id, user.id)
+    client = net.ClientManager().get()
+    client.is_authenticated = True
     return token
 
 
@@ -64,6 +67,8 @@ def login_auto(token: Token, mac_address: str) -> bool:
         return False
     if token != device.token:
         return False
+    client = net.ClientManager().get()
+    client.is_authenticated = True
     return True
 
 
@@ -82,11 +87,3 @@ def _add_update_device(mac_address: str) -> Tuple[Token, int]:
     device_id = Device.create(mac_address, Token(), Token.get_next_expired())
     device_token = Device.from_id(device_id).token
     return device_token, device_id
-
-
-class ConnectedDevice(net.ClientCommunicator):
-
-    def __init__(self):
-        self.is_authenticated = False
-        self.user_id = -1
-        self.device_id = -1

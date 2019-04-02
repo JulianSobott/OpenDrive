@@ -30,3 +30,15 @@ class ServerCommunicator(net.ServerCommunicator):
 class ClientCommunicator(net.ClientCommunicator):
     remote_functions = ClientFunctions
     local_functions = ServerFunctions
+
+    def __init__(self, id_, address, connection, on_close):
+        super().__init__(id_, address, connection, on_close)
+        self._is_authenticated = False
+
+    @property
+    def is_authenticated(self) -> bool:
+        return self._is_authenticated
+
+    @is_authenticated.setter
+    def is_authenticated(self, val: bool) -> None:
+        self._is_authenticated = val
