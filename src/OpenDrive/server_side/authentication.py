@@ -28,7 +28,6 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     returned. This Token is used for auto-login. On any failure a string with the error message is returned."""
     assert len(username) > 3, "Username must be at least 4 characters long!"
     assert len(password) > 4, "Password must be at least 5 characters long!"
-    assert len(mac_address) == 14, "Mac address string must have length 14! ('str(uuid.getnode())')"
 
     possible_user = User.get_by_username(username)
     if possible_user is not None:
