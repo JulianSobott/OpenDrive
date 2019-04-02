@@ -22,10 +22,12 @@ private functions
 
 """
 import getpass
+from typing import Optional
 
 from OpenDrive import net_interface
 from OpenDrive.general.device_data import get_mac
 from OpenDrive.server_side.database import Token
+from client_side import paths
 
 server = net_interface.ServerCommunicator.remote_functions
 
@@ -75,15 +77,24 @@ def login_manual_user_device_cli() -> None:
 
 def login_auto() -> None:
     token = _get_token()
-    mac = get_mac()
-    success = server.login_auto(token, mac)
-    if not success:
+    if token is not None:
+        mac = get_mac()
+        success = server.login_auto(token, mac)
+        if not success:
+            login_manual_user_device_cli()
+    else:
         login_manual_user_device_cli()
 
 
 def _save_received_token(token: Token) -> None:
-    print(token)
+    with open(paths.AUTHENTICATION_PATH, "w+") as file:
+        file.write(token.token)
 
 
-def _get_token() -> Token:
-    pass
+def _get_token() -> Optional[Token]:
+    try:
+        with open(paths.AUTHENTICATION_PATH, "r") as file:
+            token = file.read().strip()
+            return Token.from_string(token)
+    except FileNotFoundError:
+        return None

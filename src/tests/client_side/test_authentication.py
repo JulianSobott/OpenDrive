@@ -32,7 +32,7 @@ class TestAuthentication(unittest.TestCase):
 
     @cs_env.client_routine(clear_server_db=True)
     def test_login_manual_user_device_cli(self):
-        user, device = server_auth.TestRegistration.helper_register_dummy_user_device()
+        user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
         inputs = (in_val for in_val in [user.username])
         with mock.patch('builtins.input', mock_input(inputs)), mock.patch("getpass.getpass",
                                                                           return_value=user.password):
@@ -40,10 +40,8 @@ class TestAuthentication(unittest.TestCase):
 
     @cs_env.client_routine(clear_server_db=True)
     def test_login_auto(self):
-        user, device = server_auth.TestRegistration.helper_register_dummy_user_device()
-        token = device.token
-        with mock.patch("_get_token", return_value=token):
-            client_side.authentication.login_auto()
+        user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
+        client_side.authentication.login_auto()
 
 
 if __name__ == '__main__':

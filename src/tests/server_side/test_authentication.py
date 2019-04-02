@@ -17,7 +17,7 @@ class TestRegistration(unittest.TestCase):
         database.create_database()
 
     @staticmethod
-    def helper_register_dummy_user_device() -> Tuple[database.User, database.Device]:
+    def helper_register_dummy_user_device() -> Tuple[database.User, database.Device, Token]:
         username = "Anne"
         password = "2hj:_sAdf"
         email = None
@@ -25,7 +25,8 @@ class TestRegistration(unittest.TestCase):
         token = authentication.register_user_device(username, password, mac, email)
         user = database.User(1, username, password, email)
         device = database.Device.get_by_mac(mac)
-        return user, device
+        # TODO: Save token in file (call function at client side)
+        return user, device, token
 
     def test_add_update_device_new(self):
         mac = str(uuid.getnode())
@@ -72,7 +73,7 @@ class TestLogin(unittest.TestCase):
         database.create_database()
 
     def test_login_manual_user_device(self):
-        user, device = TestRegistration.helper_register_dummy_user_device()
+        user, device, token = TestRegistration.helper_register_dummy_user_device()
         username = user.username
         password = user.password
         mac = device.mac_address
@@ -80,9 +81,8 @@ class TestLogin(unittest.TestCase):
         self.assertIsInstance(token, Token)
 
     def test_login_auto(self):
-        user, device = TestRegistration.helper_register_dummy_user_device()
+        user, device, token = TestRegistration.helper_register_dummy_user_device()
         mac = device.mac_address
-        token = device.token
         ret = authentication.login_auto(token, mac)
         self.assertTrue(ret)
 
