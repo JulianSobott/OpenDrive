@@ -74,7 +74,11 @@ def login_manual_user_device_cli() -> None:
 
 
 def login_auto() -> None:
-    pass
+    token = _get_token()
+    mac = get_mac()
+    success = server.login_auto(token, mac)
+    if not success:
+        login_manual_user_device_cli()
 
 
 def _save_received_token(token: Token) -> None:
