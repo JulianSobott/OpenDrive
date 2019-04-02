@@ -8,6 +8,10 @@ public functions
 
 .. autofunction:: register_user_device
 
+.. autofunction:: login_manual_user_device
+
+.. autofunction:: login_auto
+
 private functions
 ------------------
 
