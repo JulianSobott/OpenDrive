@@ -9,3 +9,4 @@ Internal documentation
     databases
     synchronisation
     authentication
+    folders

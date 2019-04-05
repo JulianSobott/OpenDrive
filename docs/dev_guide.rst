@@ -137,14 +137,30 @@ an account the user needs to register.
 
 - Low level Connection: Setup networking stuff
 - Setup Console UI
-Hallo ich bin jetzt auch dabei.
 
 
-Store connected devices
-************************
+The user/device is now successfully logged in. What actions are possible or rather important?
 
-It may be useful to store all connected devices in a data structure. It is necessary, because the server needs to
-validate, that the device is logged in and is allowed to synchronize.
+- Add folder to be synchronized
+    - local folder
+    - server folder (existing one/create new)
+    - Get all existing server folders
+
+- Remove folder synchronization
+- Remove server folder (danger)
+- Merge folders
+    - Merge conflicts?
+
+- Edit folder privileges
+    - Share link
+    - Add user
+    - Privileges
+        - Edit
+        - View
+        - Full access (edit, view, delete)
+
+
+
 
 
 Team
