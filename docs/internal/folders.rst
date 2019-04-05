@@ -34,3 +34,9 @@ All synchronized folders are stored inside a DB table:
     - user_id (owner -> necessary for path)
     - folder_name
 
+
+Code docs
+**********
+
+.. automodule:: OpenDrive.server_side.folders
+

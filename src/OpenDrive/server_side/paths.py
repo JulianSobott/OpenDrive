@@ -13,4 +13,8 @@ paths_PATH = os.path.realpath(__file__)
 PROJECT_PATH = os.path.abspath(os.path.join(paths_PATH, "../../../.."))
 CODE_PATH = os.path.join(PROJECT_PATH, "src/OpenDrive/")
 
-SERVER_DB_PATH = os.path.join(PROJECT_PATH, "local/server_side/server_data.db")
+LOCAL_SERVER_DATA = os.path.join(PROJECT_PATH, "local/server_side")
+
+SERVER_DB_PATH = os.path.join(LOCAL_SERVER_DATA, "server_data.db")
+
+FOLDERS_ROOT = os.path.join(LOCAL_SERVER_DATA, "ROOT/")
