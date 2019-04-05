@@ -54,3 +54,11 @@ def create_database() -> None:
                                  "PRIMARY KEY (device_id, user_id) "
                                  ")")
         db.create(sql_table_device_user)
+
+        sql_table_folders = ("CREATE TABLE folders ("
+                             "folder_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+                             "user_id   INTEGER NOT NULL "
+                             "  REFERENCES users, "
+                             "folder_name VARCHAR(100) "
+                             ")")
+        db.create(sql_table_folders)
