@@ -27,7 +27,8 @@ from typing import Optional
 from OpenDrive import net_interface
 from OpenDrive.general.device_data import get_mac
 from OpenDrive.server_side.database import Token
-from client_side import paths
+from OpenDrive.client_side import paths
+from OpenDrive.client_side.od_logging import logger
 
 server = net_interface.ServerCommunicator.remote_functions
 
@@ -82,6 +83,8 @@ def login_auto() -> None:
         success = server.login_auto(token, mac)
         if not success:
             login_manual_user_device_cli()
+        else:
+            logger.info("Successfully auto logged in")
     else:
         login_manual_user_device_cli()
 

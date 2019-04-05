@@ -22,6 +22,11 @@ class TestAuthentication(unittest.TestCase):
     def tearDown(self) -> None:
         cs_env.stop_process(self._server_process)
 
+    @staticmethod
+    def helper_register_dummy_user_device():
+        user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
+        client_side.authentication._save_received_token(token)
+
     @cs_env.client_routine(clear_server_db=True)
     def test_register_user_device_cli(self):
         inputs = (in_val for in_val in ["RandomUsername", ""])
@@ -40,7 +45,7 @@ class TestAuthentication(unittest.TestCase):
 
     @cs_env.client_routine(clear_server_db=True)
     def test_login_auto(self):
-        user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
+        TestAuthentication.helper_register_dummy_user_device()
         client_side.authentication.login_auto()
 
 
