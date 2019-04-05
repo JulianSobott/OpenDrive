@@ -15,6 +15,8 @@ class TestRegistration(unittest.TestCase):
     def setUp(self):
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
+        authentication._set_user_authenticated = lambda: None  # Deactivates the function, that is only available,
+        # when a client is connected
 
     @staticmethod
     def helper_register_dummy_user_device() -> Tuple[database.User, database.Device, Token]:
@@ -25,7 +27,6 @@ class TestRegistration(unittest.TestCase):
         token = authentication.register_user_device(username, password, mac, email)
         user = database.User(1, username, password, email)
         device = database.Device.get_by_mac(mac)
-        # TODO: Save token in file (call function at client side)
         return user, device, token
 
     def test_add_update_device_new(self):
@@ -71,6 +72,8 @@ class TestLogin(unittest.TestCase):
     def setUp(self):
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
+        authentication._set_user_authenticated = lambda: None   # Deactivates the function, that is only available,
+        # when a client is connected
 
     def test_login_manual_user_device(self):
         user, device, token = TestRegistration.helper_register_dummy_user_device()

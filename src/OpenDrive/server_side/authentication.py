@@ -17,6 +17,8 @@ private functions
 
 .. autofunction:: _add_update_device
 
+.. autofunction:: _set_user_authenticated
+
 """
 import networking as net
 from passlib.apps import custom_app_context as pwd_context
@@ -40,10 +42,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     user_id = User.create(username, hashed_password, email)
     token, device_id = _add_update_device(mac_address)
     DeviceUser.create(device_id, user_id)
-    # TODO: Try to make server-side test working
-    # Maybe move client authenticated to another function, that is ignored at test
-    #client = net.ClientManager().get()
-    #client.is_authenticated = True
+    _set_user_authenticated()
     return token
 
 
@@ -59,10 +58,7 @@ def login_manual_user_device(username: str, password: str, mac_address: str) -> 
     token, device_id = _add_update_device(mac_address)
     if not device_exist:
         DeviceUser.create(device_id, user.id)
-    # TODO: Try to make server-side test working
-    # Maybe move client authenticated to another function, that is ignored at test
-    #client = net.ClientManager().get()
-    #client.is_authenticated = True
+    _set_user_authenticated()
     return token
 
 
@@ -75,10 +71,7 @@ def login_auto(token: Token, mac_address: str) -> bool:
         return False
     if token != device.token:
         return False
-    # TODO: Try to make server-side test working
-    # Maybe move client authenticated to another function, that is ignored at test
-    #client = net.ClientManager().get()
-    #client.is_authenticated = True
+    _set_user_authenticated()
     return True
 
 
@@ -97,3 +90,9 @@ def _add_update_device(mac_address: str) -> Tuple[Token, int]:
     device_id = Device.create(mac_address, Token(), Token.get_next_expired())
     device_token = Device.from_id(device_id).token
     return device_token, device_id
+
+
+def _set_user_authenticated(value: bool = True) -> None:
+    """Set the client, to be authenticated. This allows further communication."""
+    client = net.ClientManager().get()
+    client.is_authenticated = value
