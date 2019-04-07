@@ -26,6 +26,7 @@ from typing import Optional, Tuple, Union
 
 from OpenDrive.server_side.database import User, Device, DeviceUser, Token
 from OpenDrive.server_side.od_logging import logger
+from OpenDrive.server_side import folders
 
 
 def register_user_device(username: str, password: str, mac_address: str, email: Optional[str] = None) -> \
@@ -43,6 +44,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     token, device_id = _add_update_device(mac_address)
     DeviceUser.create(device_id, user_id)
     _set_user_authenticated()
+    folders.create_folder_for_new_user(User.from_id(user_id))
     return token
 
 

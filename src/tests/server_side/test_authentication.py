@@ -3,6 +3,7 @@ import unittest
 import uuid
 import secrets
 from typing import Tuple
+import os
 
 from server_side import database, paths, authentication
 from general.database import delete_db_file
@@ -13,15 +14,27 @@ from src.tests.od_logging import logger
 class TestRegistration(unittest.TestCase):
 
     def setUp(self):
+        self.static_setup()
+
+    @staticmethod
+    def static_setup():
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
         authentication._set_user_authenticated = lambda: None  # Deactivates the function, that is only available,
         # when a client is connected
+        try:
+            os.mkdir(paths.FOLDERS_ROOT)
+        except FileExistsError:
+            pass
+
+    def tearDown(self) -> None:
+        os.rmdir(paths.FOLDERS_ROOT)
 
     @staticmethod
     def helper_register_dummy_user_device() -> Tuple[database.User, database.Device, Token]:
         copy_set_user_authenticated = authentication._set_user_authenticated
-        authentication._set_user_authenticated = lambda: None
+        TestRegistration.static_setup()
+
         username = "Anne"
         password = "2hj:_sAdf"
         email = None
@@ -29,6 +42,7 @@ class TestRegistration(unittest.TestCase):
         token = authentication.register_user_device(username, password, mac, email)
         user = database.User(1, username, password, email)
         device = database.Device.get_by_mac(mac)
+
         authentication._set_user_authenticated = copy_set_user_authenticated
         return user, device, token
 
