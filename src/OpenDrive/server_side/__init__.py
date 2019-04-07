@@ -10,3 +10,4 @@
 from OpenDrive.server_side import paths
 from OpenDrive.server_side import database
 from OpenDrive.server_side import net_start
+from OpenDrive.server_side import folders

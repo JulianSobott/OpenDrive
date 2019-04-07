@@ -25,6 +25,7 @@ import os
 
 from OpenDrive.server_side import database
 from OpenDrive.server_side import paths
+from OpenDrive.server_side.od_logging import logger
 
 
 def add_folder(user_id: int, folder_name: str):
@@ -37,4 +38,7 @@ def _create_physical_folder(user_id: int, folder_name: str):
     """Creates a new folder at the harddrive."""
     user_path = f"user_{user_id}"
     folder_path = os.path.join(paths.FOLDERS_ROOT, user_path, folder_name)
-    os.mkdir(folder_path)
+    try:
+        os.mkdir(folder_path)
+    except FileNotFoundError:
+        logger.error("Cannot create folder, because the parent folder does not exist!")
