@@ -1,4 +1,4 @@
-import networking as net
+import pynetworking as net
 
 net.Logging.logger.setLevel(10)
 

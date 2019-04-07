@@ -23,7 +23,7 @@ private functions
 
 """
 from multiprocessing import Process
-import networking as net
+import pynetworking as net
 
 import OpenDrive.server_side.net_start
 import OpenDrive.client_side.net_start
