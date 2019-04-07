@@ -20,6 +20,8 @@ class TestRegistration(unittest.TestCase):
 
     @staticmethod
     def helper_register_dummy_user_device() -> Tuple[database.User, database.Device, Token]:
+        copy_set_user_authenticated = authentication._set_user_authenticated
+        authentication._set_user_authenticated = lambda: None
         username = "Anne"
         password = "2hj:_sAdf"
         email = None
@@ -27,6 +29,7 @@ class TestRegistration(unittest.TestCase):
         token = authentication.register_user_device(username, password, mac, email)
         user = database.User(1, username, password, email)
         device = database.Device.get_by_mac(mac)
+        authentication._set_user_authenticated = copy_set_user_authenticated
         return user, device, token
 
     def test_add_update_device_new(self):

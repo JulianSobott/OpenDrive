@@ -23,7 +23,6 @@ private functions
 
 """
 from multiprocessing import Process
-import pynetworking as net
 
 import OpenDrive.server_side.net_start
 import OpenDrive.client_side.net_start
@@ -73,6 +72,5 @@ def client_routine(clear_server_db: bool = False, clear_client_db: bool = False)
 
 
 def _debug_server_routine():
-    server_net = OpenDrive.server_side.net_start
-    server_net.start()
-    net.ClientManager().mainloop()
+    OpenDrive.server_side.net_start.start()
+
