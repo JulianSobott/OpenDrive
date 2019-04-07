@@ -4,6 +4,7 @@ import shutil
 
 import OpenDrive.server_side.folders as folders
 from OpenDrive.server_side import paths as server_paths
+from OpenDrive.server_side import database
 
 from tests.server_side import test_authentication as server_auth
 
@@ -21,5 +22,13 @@ class TestFolders(unittest.TestCase):
     def test_create_physical_folder(self):
         folder_name = "TestFolder"
         folders._create_physical_folder(self.user, folder_name)
-        expected = os.path.join(server_paths.FOLDERS_ROOT, f"user_{self.user.user_id}", folder_name)
-        self.assertTrue(os.path.exists(expected))
+        expected = folders._get_users_root_folder(self.user).joinpath(folder_name)
+        self.assertTrue(expected.exists())
+
+    def test_add_folder(self):
+        folder_name = "TestFolder"
+        folders.add_folder(self.user, folder_name)
+        expected = folders._get_users_root_folder(self.user).joinpath(folder_name)
+        self.assertTrue(expected.exists())
+        folder_entry = database.Folder.get_by_user_and_name(self.user.user_id, folder_name)
+        self.assertIsInstance(folder_entry, database.Folder)
