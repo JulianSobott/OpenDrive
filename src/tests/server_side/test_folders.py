@@ -12,12 +12,19 @@ from tests.server_side import test_authentication as server_auth
 class TestFolders(unittest.TestCase):
 
     def setUp(self) -> None:
+        TestFolders.initialize_standard_folders()
         shutil.rmtree(server_paths.FOLDERS_ROOT)
         os.makedirs(server_paths.FOLDERS_ROOT)
         self.user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
 
     def tearDown(self) -> None:
         pass
+
+    @staticmethod
+    def initialize_standard_folders():
+        """Create: local/server_side/ROOT/"""
+        os.makedirs(server_paths.FOLDERS_ROOT, exist_ok=True)
+
 
     def test_create_physical_folder(self):
         folder_name = "TestFolder"

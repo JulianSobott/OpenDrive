@@ -9,11 +9,13 @@ from server_side import database, paths, authentication
 from general.database import delete_db_file
 from server_side.database import Token
 from src.tests.od_logging import logger
+from tests.server_side.test_folders import TestFolders
 
 
 class TestRegistration(unittest.TestCase):
 
     def setUp(self):
+        TestFolders.initialize_standard_folders()
         self.static_setup()
 
     @staticmethod
