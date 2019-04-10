@@ -9,9 +9,9 @@ import unittest
 import uuid
 import secrets
 
-from server_side import database, paths
-from general.database import delete_db_file
-from src.tests.od_logging import logger
+from OpenDrive.server_side import database, paths
+from OpenDrive.general.database import delete_db_file
+from tests.od_logging import logger
 
 
 class TestDatabaseDevices(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestDatabaseDevices(unittest.TestCase):
         mac_address = str(uuid.getnode())
         token = secrets.token_hex(32)
         token_expires = datetime.datetime(2020, 12, 31)
-        device_id = database.Device.create(mac_address, token, token_expires)
+        device_id = database.Device.create(mac_address, token, token_expires) # TODO: to Token
         return database.Device(device_id, mac_address, token, token_expires)
 
     def test_columns(self):

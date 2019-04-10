@@ -7,11 +7,10 @@
 import unittest
 import os
 
-from server_side import database, paths
-from general.database import delete_db_file
-from general.paths import normalize_path
-from datetime import datetime
-from src.tests.od_logging import logger
+from OpenDrive.server_side import database, paths
+from OpenDrive.general.database import delete_db_file
+from OpenDrive.general.paths import normalize_path
+from tests.od_logging import logger
 
 
 class TestDatabaseConnections(unittest.TestCase):

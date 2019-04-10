@@ -5,10 +5,10 @@ import secrets
 from typing import Tuple
 import os
 
-from server_side import database, paths, authentication
-from general.database import delete_db_file
-from server_side.database import Token
-from src.tests.od_logging import logger
+from OpenDrive.server_side import database, paths, authentication
+from OpenDrive.general.database import delete_db_file
+from OpenDrive.server_side.database import Token
+from tests.od_logging import logger
 
 
 class TestRegistration(unittest.TestCase):

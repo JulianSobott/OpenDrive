@@ -2,11 +2,11 @@ import unittest
 import uuid
 import secrets
 
-from server_side import database, paths
-from general.database import delete_db_file
-from src.tests.od_logging import logger
-from src.tests.server_side.database.test_devices import TestDatabaseDevices
-from src.tests.server_side.database.test_users import TestDatabaseUsers
+from OpenDrive.server_side import database, paths
+from OpenDrive.general.database import delete_db_file
+from tests.od_logging import logger
+from tests.server_side.database.test_devices import TestDatabaseDevices
+from tests.server_side.database.test_users import TestDatabaseUsers
 
 
 class TestDataBaseDeviceUser(unittest.TestCase):

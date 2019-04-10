@@ -5,9 +5,9 @@
 """
 import unittest
 
-from server_side import database, paths
-from general.database import delete_db_file
-from src.tests.od_logging import logger
+from OpenDrive.server_side import database, paths
+from OpenDrive.general.database import delete_db_file
+from tests.od_logging import logger
 
 
 class TestDatabaseUsers(unittest.TestCase):
