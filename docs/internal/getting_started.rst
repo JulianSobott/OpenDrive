@@ -14,7 +14,7 @@ Then type in the console:
 
 .. code-block:: console
 
-    git clone https://gitlab.com/JulianSobott/mower.git
+    git clone https://github.com/JulianSobott/OpenDrive.git
 
 **In PyCharm:**
 
