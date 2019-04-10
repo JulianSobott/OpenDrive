@@ -70,6 +70,20 @@ You can open the `index.html` in your browser and watch the generated documentat
 If you are working in PyCharm you can right-click the `index.html` file and select *run* to run it at the localhost in
 your browser. No advantage, maybe more easy, then searching in the file explorer for the file.
 
+Setup PyCharm
+--------------
+
+In PyCharm you need to set 3 folders as sources root. This ensures, that all imports works. To set a folder as
+sources root: In PyCharm on the left side, navigate to the folder -> right click it -> Select: Mark Directory as ->
+Sources Root.
+Do this for the folders:
+
+- OpenDrive/src
+- OpenDrive/src/OpenDrive
+- OpenDrive/src/tests
+
+These three folders should now be colored blue instead of grey.
+
 Start coding
 ---------------
 
