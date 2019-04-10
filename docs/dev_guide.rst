@@ -40,7 +40,7 @@ Details:
 
 **Software:**
     - Core: python (with networking library)
-    - GUI: JavaFX?, PyQT?, Website?
+    - GUI: JavaFX?, PyQT?, Website, Kivy?
 
 
 **Project structure:**
@@ -84,90 +84,65 @@ Details:
     |   |   |
     |   |   |___general
 
-**Top to bottom tasks:**
-
 
 Workflow:
 =========
 
-    - Define General part
-    - Create broad documentation
-    - Create specific documentation
-    - Define code (not implement)
-    - Create tests for documentation
-    - Implement code
+One important point of this project is "clean" development process. The following list contains a possible workflow
+(when a new feature is implemented), that can help to achieve this.
 
+- Create broad documentation
+- Create specific documentation
+- Define code (not implement)
+- Create tests for documentation
+- Implement code
+- Add code specific documentation
 
 Style-guide:
 =============
 
 This guide defines naming conventions:
-    - *Package*: snake_case
-    - *Python file*: snake_case
-    - *Class*: CamelCase
-    - *Function*: snake_case
-    - *Variables*: snake_case
-    - *rst file* snake_case
+
+- *Package*: snake_case
+- *Python file*: snake_case
+- *Class*: CamelCase
+- *Function*: snake_case
+- *Variables*: snake_case
+- *rst file* snake_case
+
+Tasks
+=======
+
+- GUI
+    - Define features
+    - Define procedure
+    - Draft the gui design
+
+- UI
+    - Console interface
+    - Same interface between console and gui
+
+- Backend
+    - folders
+        - Add folder to be synchronized
+            - local folder
+            - server folder (existing one/create new)
+        - Get all existing server folders
+        - Remove folder synchronization
+        - Remove server folder (danger)
+        - Merge folders
+            - Merge conflicts?
+        - Edit folder privileges
+            - Share link
+            - Add user
+            - Privileges
+                - Edit
+                - View
+                - Full access (edit, view, delete)
+
 
 TODO next:
 ==========
 
-On any change at the client side the server should be notified and a synchronization process should start.
-Therefore a connection between server and client is necessary. The connection starts, when the client starts
-and is online. A mechanism to test if it is only or in other words, if it *can connect to the server* is necessary.
-How to connect: the device needs to identify itself and authenticate, that it is allowed to connect to the server.
-There are several ways to achieve this. The user can choose which he/she want to choose.
-
-1. The user has to enter his/her credentials
-
-    - Necessary when the following fails
-    - Not very user friendly
-    - Very secure
-
-2. Auto-login - login is stored in a file
-
-    - The device logs in with multiple data, that is unique per device
-    - Should be also very secure, but there are ways to crack?
-    - Very user friendly
-    - Default case
-
-To login the user needs an existing account for auto login the device must be registered.
-At manual login the the device may be registered (depends on the users choice). To create
-an account the user needs to register.
-
-- Low level Connection: Setup networking stuff
-- Setup Console UI
-
-
-The user/device is now successfully logged in. What actions are possible or rather important?
-
-- Add folder to be synchronized
-    - local folder
-    - server folder (existing one/create new)
-    - Get all existing server folders
-
-- Remove folder synchronization
-- Remove server folder (danger)
-- Merge folders
-    - Merge conflicts?
-
-- Edit folder privileges
-    - Share link
-    - Add user
-    - Privileges
-        - Edit
-        - View
-        - Full access (edit, view, delete)
-
-TODOS:
-
-- dev_guide
-- pass tests
-
-
-
-Team
-*********
-
-- Überlegen welche GUI features
-    - Ablauf
+- GUI define features
+- Define Interface between backend, ui, gui

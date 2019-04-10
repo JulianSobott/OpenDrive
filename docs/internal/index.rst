@@ -11,3 +11,4 @@ Internal documentation
     synchronisation
     authentication
     folders
+    gui
