@@ -2,6 +2,7 @@ import unittest
 from typing import Generator
 from unittest import mock
 
+from tests.server_side import test_folders
 from src.tests import client_server_environment as cs_env
 from tests.server_side import test_authentication as server_auth
 from OpenDrive import client_side, server_side
@@ -18,6 +19,7 @@ class TestAuthentication(unittest.TestCase):
 
     def setUp(self) -> None:
         self._server_process = cs_env.start_server_process()
+        test_folders.TestFolders.initialize_standard_folders()
 
     def tearDown(self) -> None:
         cs_env.stop_process(self._server_process)
