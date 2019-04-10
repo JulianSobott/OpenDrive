@@ -7,6 +7,7 @@
 
 @internal_use:
 """
-import client_side
-import server_side
-import general
+
+from OpenDrive import client_side
+from OpenDrive import server_side
+from OpenDrive import general
