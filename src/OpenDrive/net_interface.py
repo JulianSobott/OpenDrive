@@ -1,7 +1,5 @@
 import pynetworking as net
 
-net.Logging.logger.setLevel(10)
-
 
 class ServerCommunicator:
     remote_functions = None
