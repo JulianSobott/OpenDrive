@@ -3,22 +3,19 @@
 :synopsis: Manages all folders, that are located at the server
 :author: Julian Sobott
 
-public classes
----------------
-
-    
 public functions
 -----------------
 
 .. autofunction:: add_folder
 
-private classes
-----------------
-
-.. autofunction:: _create_physical_folder
+.. autofunction:: create_folder_for_new_user
 
 private functions
 ------------------
+
+.. autofunction:: _create_physical_folder
+
+.. autofunction:: _get_users_root_folder
 
 """
 import os
@@ -45,6 +42,8 @@ def _create_physical_folder(user: User, folder_name: str):
 
 
 def create_folder_for_new_user(user: User) -> None:
+    """For every user a folder in the root folder is created. Inside this new  folder every synchronized folder is
+    stored"""
     users_root = _get_users_root_folder(user)
     assert not os.path.exists(str(users_root)), "User folder already exists!"
     os.makedirs(str(users_root))

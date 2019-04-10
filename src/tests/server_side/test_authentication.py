@@ -1,7 +1,7 @@
 import datetime
 import unittest
 import uuid
-import secrets
+import shutil
 from typing import Tuple
 import os
 
@@ -9,11 +9,13 @@ from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side.database import Token
 from tests.od_logging import logger
+from tests.server_side import test_folders
 
 
 class TestRegistration(unittest.TestCase):
 
     def setUp(self):
+        test_folders.TestFolders.initialize_standard_folders()
         self.static_setup()
 
     @staticmethod
@@ -22,13 +24,9 @@ class TestRegistration(unittest.TestCase):
         database.create_database()
         authentication._set_user_authenticated = lambda: None  # Deactivates the function, that is only available,
         # when a client is connected
-        try:
-            os.mkdir(paths.FOLDERS_ROOT)
-        except FileExistsError:
-            pass
 
     def tearDown(self) -> None:
-        os.rmdir(paths.FOLDERS_ROOT)
+        pass
 
     @staticmethod
     def helper_register_dummy_user_device() -> Tuple[database.User, database.Device, Token]:
@@ -87,6 +85,7 @@ class TestRegistration(unittest.TestCase):
 class TestLogin(unittest.TestCase):
 
     def setUp(self):
+        test_folders.TestFolders.initialize_standard_folders()
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
         authentication._set_user_authenticated = lambda: None   # Deactivates the function, that is only available,

@@ -38,5 +38,6 @@ setup(name='OpenDrive',
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         ],
-      zip_safe=False
+      zip_safe=False,
+      install_requires=['pynetworking', 'watchdog', 'passlib']
       )
