@@ -161,8 +161,8 @@ The user/device is now successfully logged in. What actions are possible or rath
 
 TODOS:
 
-- setup tests in setup.py
 - dev_guide
+- pass tests
 
 
 

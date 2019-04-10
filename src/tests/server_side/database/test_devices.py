@@ -11,6 +11,7 @@ import secrets
 
 from OpenDrive.server_side import database, paths
 from OpenDrive.general.database import delete_db_file
+from OpenDrive.server_side.database import Token
 from tests.od_logging import logger
 
 
@@ -23,9 +24,9 @@ class TestDatabaseDevices(unittest.TestCase):
     @staticmethod
     def helper_create_dummy_device():
         mac_address = str(uuid.getnode())
-        token = secrets.token_hex(32)
+        token = Token(32)
         token_expires = datetime.datetime(2020, 12, 31)
-        device_id = database.Device.create(mac_address, token, token_expires) # TODO: to Token
+        device_id = database.Device.create(mac_address, token, token_expires)
         return database.Device(device_id, mac_address, token, token_expires)
 
     def test_columns(self):
@@ -37,7 +38,7 @@ class TestDatabaseDevices(unittest.TestCase):
 
     def test_create_non_existing(self):
         mac_address = str(uuid.getnode())
-        token = secrets.token_hex(32)
+        token = Token(32)
         token_expires = datetime.datetime(2020, 12, 31)
         device_id = database.Device.create(mac_address, token, token_expires)
         device = database.Device.from_id(device_id)
