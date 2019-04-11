@@ -145,4 +145,4 @@ TODO next:
 ==========
 
 - GUI define features
-- Define Interface between backend, ui, gui
+- Implement Interface between backend, ui, gui
