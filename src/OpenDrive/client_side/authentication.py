@@ -29,8 +29,7 @@ from OpenDrive.general.device_data import get_mac
 from OpenDrive.server_side.database import Token
 from OpenDrive.client_side import paths
 from OpenDrive.client_side.od_logging import logger
-
-server = net_interface.ServerCommunicator.remote_functions
+from OpenDrive.net_interface import server
 
 
 def register_user_device_cli() -> None:

@@ -1,7 +1,5 @@
 from OpenDrive import net_interface
 
-server = net_interface.ServerCommunicator.remote_functions
-
 
 def connect():
     address = ("127.0.0.1", 5000)
@@ -10,7 +8,7 @@ def connect():
 
 
 def test():
-    server.test()
+    net_interface.server.test()
 
 
 def close_connection():

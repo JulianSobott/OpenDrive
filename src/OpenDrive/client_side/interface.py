@@ -28,6 +28,9 @@ public functions
 """
 from typing import List
 
+from OpenDrive.general.device_data import get_mac
+from OpenDrive.net_interface import server
+
 
 class Status:
     """Data class that is used to transmit status messages from the backend to the ui."""
@@ -35,7 +38,8 @@ class Status:
 
 
 def register(username: str, password: str, email: str = None) -> Status:
-    pass
+    mac_address = get_mac()
+    ret = server.register_user_device(username, password, mac_address, email)
 
 
 def login_auto() -> bool:
