@@ -1,14 +1,6 @@
 import pynetworking as net
 
 
-class ServerCommunicator:
-    remote_functions = None
-
-
-class ClientCommunicator:
-    remote_functions = None
-
-
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
     from OpenDrive.server_side.net_start import test
@@ -40,3 +32,6 @@ class ClientCommunicator(net.ClientCommunicator):
     @is_authenticated.setter
     def is_authenticated(self, val: bool) -> None:
         self._is_authenticated = val
+
+
+server = ServerCommunicator.remote_functions

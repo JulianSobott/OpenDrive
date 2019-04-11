@@ -2,9 +2,9 @@ import unittest
 import os
 from typing import List
 
-from client_side import database, paths
-from general.database import delete_db_file
-from general.paths import normalize_path
+from OpenDrive.client_side import database, paths
+from OpenDrive.general.database import delete_db_file
+from OpenDrive.general.paths import normalize_path
 from datetime import datetime
 from src.tests.od_logging import logger
 

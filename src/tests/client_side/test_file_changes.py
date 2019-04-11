@@ -4,8 +4,8 @@ import os
 import shutil
 from thread_testing import wait_till_condition
 
-from client_side import database, paths, file_watcher
-from general.database import delete_db_file
+from OpenDrive.client_side import database, paths, file_watcher
+from OpenDrive.general.database import delete_db_file
 from src.tests.od_logging import logger
 
 
