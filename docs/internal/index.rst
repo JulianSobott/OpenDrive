@@ -12,3 +12,4 @@ Internal documentation
     authentication
     folders
     gui
+    interface
