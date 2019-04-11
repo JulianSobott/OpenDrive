@@ -30,16 +30,37 @@ from typing import List
 
 from OpenDrive.general.device_data import get_mac
 from OpenDrive.net_interface import server
+from OpenDrive.client_side import authentication
 
 
 class Status:
     """Data class that is used to transmit status messages from the backend to the ui."""
-    pass
+
+    def __init__(self, success: bool, text: str, error_code: int = -1):
+        self._success = success
+        self._text = text
+        self._error_code = error_code
+
+    @classmethod
+    def fail(cls, text: str, error_code: int = -1) -> 'Status':
+        return Status(success=False, text=text, error_code=error_code)
+
+    @classmethod
+    def success(cls, text: str) -> 'Status':
+        return Status(success=True, text=text)
+
+    def was_successful(self) -> bool:
+        return self._success
+
+    def get_text(self) -> str:
+        return self._text
+
+    def get_error_code(self) -> int:
+        return self._error_code
 
 
 def register(username: str, password: str, email: str = None) -> Status:
-    mac_address = get_mac()
-    ret = server.register_user_device(username, password, mac_address, email)
+    return authentication.register_user_device(username, password, email)
 
 
 def login_auto() -> bool:

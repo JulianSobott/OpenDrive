@@ -3,16 +3,11 @@
 :synopsis: Functions, to authenticate, login, register a user/device, with CLI
 :author: Julian Sobott
 
-public classes
----------------
 
-.. autoclass:: XXX
-    :members:
-    
 public functions
 -----------------
 
-.. autofunction:: XXX
+.. autofunction:: register_user_device
 
 private classes
 ----------------
@@ -30,6 +25,7 @@ from OpenDrive.server_side.database import Token
 from OpenDrive.client_side import paths
 from OpenDrive.client_side.od_logging import logger
 from OpenDrive.net_interface import server
+from OpenDrive.client_side.interface import Status
 
 
 def register_user_device_cli() -> None:
@@ -100,3 +96,13 @@ def _get_token() -> Optional[Token]:
             return Token.from_string(token)
     except FileNotFoundError:
         return None
+
+
+def register_user_device(username: str, password: str, email: str = None) -> Status:
+    mac_address = get_mac()
+    ret = server.register_user_device(username, password, mac_address, email)
+    if isinstance(ret, str):
+        return Status.fail(ret)
+    else:
+        _save_received_token(ret)
+        return Status.success("Successfully registered")
