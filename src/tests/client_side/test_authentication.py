@@ -35,6 +35,12 @@ class TestAuthentication(unittest.TestCase):
         self.assertTrue(status.was_successful())
 
     @cs_env.client_routine(clear_server_db=True)
+    def test_login_manual(self):
+        user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
+        status = client_side.interface.login_manual(user.username, user.password)
+        self.assertTrue(status.was_successful())
+
+    @cs_env.client_routine(clear_server_db=True)
     def test_register_user_device_cli(self):
         inputs = (in_val for in_val in ["RandomUsername", ""])
 

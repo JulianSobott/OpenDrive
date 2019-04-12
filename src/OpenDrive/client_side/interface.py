@@ -72,7 +72,7 @@ def login_auto() -> Status:
 
 
 def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
-    pass
+    return authentication.login_manual(username, password, allow_auto_login)
 
 
 def logout() -> Status:
