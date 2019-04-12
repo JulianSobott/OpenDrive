@@ -79,8 +79,9 @@ def login_auto() -> Status:
         if not success:
             return Status.fail("Failed to automatically log in.")
         else:
-            Status.success("Successfully auto logged in")
             logger.info("Successfully auto logged in")
+            return Status.success("Successfully auto logged in")
+
     else:
         return Status.fail("Failed to automatically log in.")
 
