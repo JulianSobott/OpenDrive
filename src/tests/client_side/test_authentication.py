@@ -30,6 +30,11 @@ class TestAuthentication(unittest.TestCase):
         client_side.authentication._save_received_token(token)
 
     @cs_env.client_routine(clear_server_db=True)
+    def test_register(self):
+        status = client_side.interface.register("Paul", "12P3wÖ")
+        self.assertTrue(status.was_successful())
+
+    @cs_env.client_routine(clear_server_db=True)
     def test_register_user_device_cli(self):
         inputs = (in_val for in_val in ["RandomUsername", ""])
 

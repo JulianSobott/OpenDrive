@@ -44,14 +44,11 @@ def register_user_device_cli() -> None:
         email = input("Email: [None] ")
         if email == "":
             email = None
-        mac_address = get_mac()
-        ret = server.register_user_device(username, password, mac_address, email)
-        if isinstance(ret, str):
-            print(ret)
-        else:
-            print("Successfully registered")
-            _save_received_token(ret)
+        status = register_user_device(username, password, email)
+        if status.was_successful():
             break
+        else:
+            print(status.get_text())
 
 
 def login_manual_user_device_cli() -> None:
