@@ -71,17 +71,18 @@ def login_manual_user_device_cli() -> None:
             break
 
 
-def login_auto() -> None:
+def login_auto() -> Status:
     token = _get_token()
     if token is not None:
         mac = get_mac()
         success = server.login_auto(token, mac)
         if not success:
-            login_manual_user_device_cli()
+            return Status.fail("Failed to automatically log in.")
         else:
+            Status.success("Successfully auto logged in")
             logger.info("Successfully auto logged in")
     else:
-        login_manual_user_device_cli()
+        return Status.fail("Failed to automatically log in.")
 
 
 def _save_received_token(token: Token) -> None:

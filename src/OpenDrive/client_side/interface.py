@@ -3,6 +3,9 @@
 :synopsis: Interface between the gui/ui and the backend
 :author: Julian Sobott
 
+This module does not contain any logic. It only defines the signatures of the interface functions. All functions are
+forwarded to the proper modules.
+
 public classes
 ---------------
 
@@ -63,9 +66,9 @@ def register(username: str, password: str, email: str = None) -> Status:
     return authentication.register_user_device(username, password, email)
 
 
-def login_auto() -> bool:
+def login_auto() -> Status:
     """Try to auto login with a previously stored token. Returns the success status."""
-    pass
+    return authentication.login_auto()
 
 
 def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
