@@ -52,7 +52,7 @@ class TestFileCreate(TestFileChange):
         else:
             change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
             self.assertIsInstance(change, database.Change)
-            expected_change = database.Change(1, self.folder_id, rel_file_path, is_folder=is_folder,
+            expected_change = database.Change(change.id, self.folder_id, rel_file_path, is_folder=is_folder,
                                               last_change_time_stamp=change.last_change_time_stamp, is_created=True,
                                               is_moved=False,
                                               is_deleted=False, is_modified=False,
