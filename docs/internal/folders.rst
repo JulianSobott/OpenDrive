@@ -35,6 +35,30 @@ All synchronized folders are stored inside a DB table:
     - folder_name
 
 
+Considerations
+***************
+
+Is it possible to nest synchronized folders.
+
+e.g. S_A synced with C_A and S_A/S_B synced with C_D.
+
+**Advantages:**
+
+- More user friendly
+    - The user may sync one upper folder at the one device, but one inner folder at another device
+
+**Disadvantages:**
+
+
+**Difficulties:**
+
+- Doubled changes must be prevented
+- Prevent one device to sync with inner folders
+- Allow only for different devices
+- Prevent deleting inner folder, that is synced with other device
+
+
+
 Code docs
 **********
 
