@@ -10,6 +10,13 @@ pynetworking = "*"
 watchdog = "*"
 coverage = "*"
 passlib = "*"
+kivy = "*"
+docutils = "*"
+pygments = "*"
+pypiwin32 = "*"
+kivy-deps-sdl2 = "*"
+kivy-deps-glew = "*"
+kivy-deps-glewkivy-deps-glew = "*"
 
 [requires]
 python_version = "3.7"
