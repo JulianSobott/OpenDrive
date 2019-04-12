@@ -23,7 +23,7 @@ class TestFolders(unittest.TestCase):
     @staticmethod
     def initialize_standard_folders():
         """Create: local/server_side/ROOT/"""
-        shutil.rmtree(server_paths.FOLDERS_ROOT)
+        shutil.rmtree(server_paths.FOLDERS_ROOT, ignore_errors=True)
         os.makedirs(server_paths.FOLDERS_ROOT, exist_ok=True)
 
     def test_create_physical_folder(self):
