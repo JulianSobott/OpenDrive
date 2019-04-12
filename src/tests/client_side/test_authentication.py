@@ -48,7 +48,8 @@ class TestAuthentication(unittest.TestCase):
     @cs_env.client_routine(clear_server_db=True)
     def test_login_auto(self):
         TestAuthentication.helper_register_dummy_user_device()
-        client_side.authentication.login_auto()
+        status = client_side.authentication.login_auto()
+        self.assertTrue(status.was_successful())
 
 
 if __name__ == '__main__':

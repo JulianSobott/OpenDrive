@@ -4,11 +4,6 @@ import time
 from OpenDrive import net_interface
 from OpenDrive.server_side.od_logging import logger
 
-
-def test():
-    logger.debug("Test at server!")
-
-
 def start():
     address = ("0.0.0.0", 5000)
     client_manager = net.ClientManager(address, net_interface.ClientCommunicator)
