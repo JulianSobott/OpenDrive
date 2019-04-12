@@ -146,6 +146,7 @@ class TestEditFile(TestFileChange):
         rel_file_path = "test2.txt"
         with open(os.path.join(self.abs_folder_path, rel_file_path), "w") as f:
             f.write(100*"Edited text")
+        wait_till_condition(lambda: False, timeout=0.5)     # Ensures, both data is in DB
         wait_till_condition(
             lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None,
             interval=0.5, timeout=1)
