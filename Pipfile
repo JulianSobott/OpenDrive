@@ -11,11 +11,6 @@ watchdog = "*"
 coverage = "*"
 passlib = "*"
 kivy = "*"
-docutils = "*"
-pygments = "*"
-kivy-deps-sdl2 = "*"
-kivy-deps-glew = "*"
-kivy-deps-glewkivy-deps-glew = "*"
 
 [requires]
 python_version = "3.7"
