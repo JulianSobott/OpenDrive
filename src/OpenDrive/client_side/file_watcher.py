@@ -176,6 +176,8 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
 
         # ignore
         self._ignore = False
+        if event.is_directory and event.event_type == "modified":
+            self._ignore = True
         if self._rel_path in self._single_ignore_paths.keys():
             ignore = self._single_ignore_paths[self._rel_path]
             if not ignore[1]:   # not changed
