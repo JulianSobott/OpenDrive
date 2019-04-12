@@ -76,7 +76,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
 
 
 def logout() -> Status:
-    pass
+    return authentication.logout()
 
 
 def add_sync_folder(abs_local_path: str, remote_name: str) -> Status:

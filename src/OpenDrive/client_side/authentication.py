@@ -116,3 +116,9 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
         if allow_auto_login:
             _save_received_token(ret)
         return Status.success("Successfully logged in")
+
+
+def logout():
+    server.logout()
+    net_interface.ServerCommunicator.close_connection()
+    return Status.success("Successfully logged out.")

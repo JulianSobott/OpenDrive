@@ -77,6 +77,10 @@ def login_auto(token: Token, mac_address: str) -> bool:
     return True
 
 
+def logout() -> None:
+    _set_user_authenticated(False)
+
+
 def _add_update_device(mac_address: str) -> Tuple[Token, int]:
     """Adds a new device to the db. If the device already exists no device is added. A proper Token that isn't
     expired and the device_id is returned."""
