@@ -43,7 +43,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     user_id = User.create(username, hashed_password, email)
     token, device_id = _add_update_device(mac_address)
     DeviceUser.create(device_id, user_id)
-    _set_user_authenticated()
+    _set_user_authenticated(user_id)
     folders.create_folder_for_new_user(User.from_id(user_id))
     return token
 
@@ -60,7 +60,7 @@ def login_manual_user_device(username: str, password: str, mac_address: str) -> 
     token, device_id = _add_update_device(mac_address)
     if not device_exist:
         DeviceUser.create(device_id, user.id)
-    _set_user_authenticated()
+    _set_user_authenticated(user.id)
     return token
 
 
@@ -73,12 +73,12 @@ def login_auto(token: Token, mac_address: str) -> bool:
         return False
     if token != device.token:
         return False
-    _set_user_authenticated()
+    _set_user_authenticated(-1)     # TODO: FIXME: get user id
     return True
 
 
 def logout() -> None:
-    _set_user_authenticated(False)
+    _set_user_authenticated(-1, False)
 
 
 def _add_update_device(mac_address: str) -> Tuple[Token, int]:
@@ -98,7 +98,8 @@ def _add_update_device(mac_address: str) -> Tuple[Token, int]:
     return device_token, device_id
 
 
-def _set_user_authenticated(value: bool = True) -> None:
-    """Set the client, to be authenticated. This allows further communication."""
+def _set_user_authenticated(user_id: int, value: bool = True) -> None:
+    """Set the client, to be authenticated. This allows further communication. Also stores the user_id"""
     client = net.ClientManager().get()
     client.is_authenticated = value
+    client.user_id = user_id

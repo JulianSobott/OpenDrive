@@ -22,7 +22,8 @@ class TestRegistration(unittest.TestCase):
     def static_setup():
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
-        authentication._set_user_authenticated = lambda: None  # Deactivates the function, that is only available,
+        authentication._set_user_authenticated = lambda user_id: None  # Deactivates the function, that is only
+        # available,
         # when a client is connected
 
     def tearDown(self) -> None:
@@ -88,7 +89,8 @@ class TestLogin(unittest.TestCase):
         test_folders.TestFolders.initialize_standard_folders()
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
-        authentication._set_user_authenticated = lambda: None   # Deactivates the function, that is only available,
+        authentication._set_user_authenticated = lambda user_id: None   # Deactivates the function, that is only
+        # available,
         # when a client is connected
 
     def test_login_manual_user_device(self):

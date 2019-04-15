@@ -25,6 +25,7 @@ class ClientCommunicator(net.ClientCommunicator):
     def __init__(self, id_, address, connection, on_close):
         super().__init__(id_, address, connection, on_close)
         self._is_authenticated = False
+        self.user_id = -1
 
     @property
     def is_authenticated(self) -> bool:
