@@ -2,6 +2,7 @@ import unittest
 from typing import Generator
 from unittest import mock
 
+from tests.server_side.test_folders import TestFolders
 from tests.server_side import test_folders
 from src.tests import client_server_environment as cs_env
 from tests.server_side import test_authentication as server_auth
@@ -26,6 +27,7 @@ class TestAuthentication(unittest.TestCase):
 
     @staticmethod
     def helper_register_dummy_user_device():
+        TestFolders.initialize_standard_folders()
         user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
         client_side.authentication._save_received_token(token)
 

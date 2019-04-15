@@ -131,7 +131,7 @@ class TableEntry(object):
         if len(ret) == 0:
             raise KeyError(f"No entry in '{cls.TABLE_NAME}({column_name})' with value {value}!")
         if len(ret) > 1:
-            raise KeyError(f"To many entries in '{cls.TABLE_NAME}({column_name})' with value {value}! ")
+            raise KeyError(f"Too many entries in '{cls.TABLE_NAME}({column_name})' with value {value}! ")
         return cls(*ret[0])
 
     @classmethod
