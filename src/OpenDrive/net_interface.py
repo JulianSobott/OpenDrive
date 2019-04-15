@@ -3,7 +3,9 @@ import pynetworking as net
 
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
-    from OpenDrive.server_side.authentication import register_user_device, login_manual_user_device, login_auto, logout
+    from OpenDrive.server_side.authentication import register_user_device, login_manual_user_device, login_auto, \
+        logout
+    from OpenDrive.general.file_exchanges import get_file   # TODO: change to server specific
 
 
 class ClientFunctions(net.ClientFunctions):
