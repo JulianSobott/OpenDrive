@@ -72,3 +72,15 @@ There are several ways to achieve this. The user can choose which he/she want to
 To login the user needs an existing account for auto login the device must be registered.
 At manual login the the device may be registered (depends on the users choice). To create
 an account the user needs to register.
+
+Considerations:
+****************
+
+Must haves:
+^^^^^^^^^^^^^^
+
+- At client No sync files inside folders
+- Allow different folder name between server and client
+- Allow device to sync with inner folder
+- Prevent device to sync with inner folder of already synced outer folder (Redundant, can lead to problems)
+

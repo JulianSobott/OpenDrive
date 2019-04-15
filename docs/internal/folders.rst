@@ -53,6 +53,8 @@ e.g. S_A synced with C_A and S_A/S_B synced with C_D.
 **Difficulties:**
 
 - Doubled changes must be prevented
+    - Folder is aware of all its subfolders
+    - These changes can be taken in account
 - Prevent one device to sync with inner folders
 - Allow only for different devices
 - Prevent deleting inner folder, that is synced with other device
