@@ -29,7 +29,7 @@ class TestFileExchanges(unittest.TestCase):
     def helper_create_dummy_file(self):
         path = os.path.join(self._dummy_client_folder, self._file_name)
         with open(path, "w+") as file:
-            file.write("Hello"*10)
+            file.write("Hello" * 10)
         return path
 
     def helper_clean_dummy_folders(self):
@@ -51,6 +51,12 @@ class TestFileExchanges(unittest.TestCase):
         file: net.File = self._server.get_file(abs_file_src_path, abs_file_dest_path)
         self.assertEqual(gen_paths.normalize_path(file.dst_path), gen_paths.normalize_path(abs_file_dest_path))
         self.assertTrue(os.path.isfile(abs_file_dest_path))
+
+    @cs_env.client_routine()
+    def test_get_file_non_exist(self):
+        abs_file_src_path = os.path.join(self._dummy_client_folder, "non_existing.txt")
+        abs_file_dest_path = os.path.join(self._dummy_server_folder, self._file_name)
+        self.assertRaises(FileNotFoundError, self._server.get_file, abs_file_src_path, abs_file_dest_path)
 
 
 if __name__ == '__main__':
