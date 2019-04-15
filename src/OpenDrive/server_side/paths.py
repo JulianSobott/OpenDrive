@@ -9,11 +9,10 @@ public constants
 """
 import os
 
-paths_PATH = os.path.realpath(__file__)
-PROJECT_PATH = os.path.abspath(os.path.join(paths_PATH, "../../../.."))
-CODE_PATH = os.path.join(PROJECT_PATH, "src/OpenDrive/")
+from OpenDrive.general.paths import *
 
-LOCAL_SERVER_DATA = os.path.join(PROJECT_PATH, "local/server_side")
+
+LOCAL_SERVER_DATA = os.path.join(LOCAL_DATA, "server_side/")
 
 SERVER_DB_PATH = os.path.join(LOCAL_SERVER_DATA, "server_data.db")
 

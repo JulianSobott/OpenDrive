@@ -139,6 +139,7 @@ Tasks
                 - Edit
                 - View
                 - Full access (edit, view, delete)
+    - Get files
 
 
 TODO next:
@@ -146,3 +147,4 @@ TODO next:
 
 - GUI define features
 - Implement Interface between backend, ui, gui
+- Get files
