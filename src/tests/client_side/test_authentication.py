@@ -28,8 +28,8 @@ class TestAuthentication(unittest.TestCase):
     @staticmethod
     def helper_register_dummy_user_device():
         TestFolders.initialize_standard_folders()
-        user, device, token = server_auth.TestRegistration.helper_register_dummy_user_device()
-        client_side.authentication._save_received_token(token)
+        server_auth.TestRegistration.helper_clear_database()
+        client_side.authentication.register_user_device("ClientName", "whatanamazingpassword111")
 
     @cs_env.client_routine(clear_server_db=True)
     def test_register(self):

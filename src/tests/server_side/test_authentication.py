@@ -20,8 +20,7 @@ class TestRegistration(unittest.TestCase):
 
     @staticmethod
     def static_setup():
-        delete_db_file(paths.SERVER_DB_PATH)
-        database.create_database()
+        TestRegistration.helper_clear_database()
         authentication._set_user_authenticated = lambda user_id: None  # Deactivates the function, that is only
         # available,
         # when a client is connected
@@ -44,6 +43,11 @@ class TestRegistration(unittest.TestCase):
 
         authentication._set_user_authenticated = copy_set_user_authenticated
         return user, device, token
+
+    @staticmethod
+    def helper_clear_database():
+        delete_db_file(paths.SERVER_DB_PATH)
+        database.create_database()
 
     def test_add_update_device_new(self):
         mac = str(uuid.getnode())
