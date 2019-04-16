@@ -11,7 +11,7 @@ Client
 - folders (What folders watch)
 - ignores (What changes to ignore. In which folder)
 
-Code doc
-^^^^^^^^^^
+Server
+**********
 
 .. automodule:: OpenDrive.server_side.database
