@@ -2,16 +2,12 @@
 :module: OpenDrive.general.file_exchanges
 :synopsis: Send and receive files over the network
 :author: Julian Sobott
-
 public functions
 -----------------
-
 .. autofunction:: get_file
-
 
 private functions
 ------------------
-
 """
 import os
 import pynetworking as net

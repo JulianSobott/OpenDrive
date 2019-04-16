@@ -44,19 +44,16 @@ class TestFileExchanges(unittest.TestCase):
         except FileExistsError:
             pass
 
-    @cs_env.client_routine()
     def test_get_file(self):
         abs_file_src_path = self._dummy_file_path
         abs_file_dest_path = os.path.join(self._dummy_server_folder, self._file_name)
-        file: net.File = self._server.get_file(abs_file_src_path, abs_file_dest_path)
+        file: net.File = file_exchanges.get_file(abs_file_src_path, abs_file_dest_path)
         self.assertEqual(gen_paths.normalize_path(file.dst_path), gen_paths.normalize_path(abs_file_dest_path))
-        self.assertTrue(os.path.isfile(abs_file_dest_path))
 
-    @cs_env.client_routine()
     def test_get_file_non_exist(self):
         abs_file_src_path = os.path.join(self._dummy_client_folder, "non_existing.txt")
         abs_file_dest_path = os.path.join(self._dummy_server_folder, self._file_name)
-        self.assertRaises(FileNotFoundError, self._server.get_file, abs_file_src_path, abs_file_dest_path)
+        self.assertRaises(FileNotFoundError, file_exchanges.get_file, abs_file_src_path, abs_file_dest_path)
 
 
 if __name__ == '__main__':
