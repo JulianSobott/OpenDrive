@@ -110,6 +110,18 @@ This guide defines naming conventions:
 - *Variables*: snake_case
 - *rst file* snake_case
 
+Milestones
+===========
+
+- Exchange files based on actions: 26.04.19
+- System for storing changes: 03.05.19
+- Merge changes between server and client. Result in actions: 12.05.19
+- Merge two existing folders. (Result in actions?): 19.05.19
+- GUI Layouts: 25.05.19
+- Connection between GUI and backend: 02.06.19
+- (Installable)
+- (Start on system start)
+
 Tasks
 =======
 
@@ -146,5 +158,8 @@ TODO next:
 ==========
 
 - GUI define features
+- Database: remove device_user. Instead store user in device.
 - Implement Interface between backend, ui, gui
-- Get files
+- Exchange files based on actions
+    - Create docs
+    - Define actions
