@@ -18,3 +18,12 @@ def get_file(abs_file_src_path: str, abs_file_dest_path: str) -> net.File:
         return net.File(abs_file_src_path, abs_file_dest_path)
     else:
         raise FileNotFoundError
+
+
+class Action:
+
+    def __init__(self, abs_local_path: str):
+        self.abs_local_path = abs_local_path
+
+    def run(self):
+        raise NotImplementedError

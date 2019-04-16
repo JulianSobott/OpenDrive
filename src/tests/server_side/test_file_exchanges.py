@@ -2,6 +2,7 @@ import unittest
 import os
 import pynetworking as net
 
+from server_side.file_exchanges import PullAction
 from tests import client_server_environment as cs_env
 from tests.general import test_file_exchanges as gen_test_file_exchanges
 from tests.client_side.test_authentication import TestAuthentication
@@ -39,3 +40,18 @@ class TestFileExchanges(gen_test_file_exchanges.TestFileExchanges):
         abs_file_dest_path = os.path.join(self._dummy_server_folder, self._file_name)
         rel_file_path = "HA.txt"
         self.assertRaises(FileNotFoundError, self._server.get_file, rel_file_path, abs_file_dest_path)
+
+
+class TestActions(unittest.TestCase):
+
+    def setUp(self) -> None:
+        pass
+
+    def tearDown(self) -> None:
+        pass
+
+    @cs_env.client_routine()
+    def test_pull_action(self):
+        abs_local_path = TestFileExchanges.helper_create_user_dummy_file(1, "File1.txt")
+        abs_remote_path = gen_paths.LOCAL_DATA
+        action = PullAction()
