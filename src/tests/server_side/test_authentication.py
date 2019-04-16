@@ -50,8 +50,9 @@ class TestRegistration(unittest.TestCase):
         database.create_database()
 
     def test_add_update_device_new(self):
+        user_id = 1
         mac = str(uuid.getnode())
-        authentication._add_update_device(mac)
+        authentication._add_update_device(user_id, mac)
         all_devices = database.Device.get_all()
         self.assertEqual(1, len(all_devices))
         self.assertEqual(mac, all_devices[0].mac_address)

@@ -41,6 +41,8 @@ def create_database() -> None:
 
         sql_table_devices = ("CREATE TABLE devices ("
                              "`device_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+                             "user_id   INTEGER NOT NULL "
+                             "  REFERENCES users, "
                              "`mac_address` VARCHAR(17) NOT NULL UNIQUE, "
                              "`token` VARCHAR(64) NOT NULL, "
                              "`token_expires` DATETIME)")
@@ -53,7 +55,7 @@ def create_database() -> None:
                                  "  REFERENCES users, "
                                  "PRIMARY KEY (device_id, user_id) "
                                  ")")
-        db.create(sql_table_device_user)
+        #db.create(sql_table_device_user)
 
         sql_table_folders = ("CREATE TABLE folders ("
                              "folder_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "

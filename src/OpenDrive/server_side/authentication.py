@@ -24,7 +24,7 @@ import pynetworking as net
 from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
 
-from OpenDrive.server_side.database import User, Device, DeviceUser, Token
+from OpenDrive.server_side.database import User, Device, Token
 from OpenDrive.server_side.od_logging import logger
 from OpenDrive.server_side import folders
 
@@ -41,8 +41,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
         return "Username is already taken"
     hashed_password = pwd_context.hash(password)
     user_id = User.create(username, hashed_password, email)
-    token, device_id = _add_update_device(mac_address)
-    DeviceUser.create(device_id, user_id)
+    token, device_id = _add_update_device(user_id, mac_address)
     _set_user_authenticated(user_id)
     folders.create_folder_for_new_user(User.from_id(user_id))
     return token
@@ -56,10 +55,7 @@ def login_manual_user_device(username: str, password: str, mac_address: str) -> 
     user = possible_user
     if not pwd_context.verify(password, user.password):
         return "Entered wrong password."
-    device_exist = Device.get_by_mac(mac_address) is not None
-    token, device_id = _add_update_device(mac_address)
-    if not device_exist:
-        DeviceUser.create(device_id, user.id)
+    token, device_id = _add_update_device(user.id, mac_address)
     _set_user_authenticated(user.id)
     return token
 
@@ -81,7 +77,7 @@ def logout() -> None:
     _set_user_authenticated(-1, False)
 
 
-def _add_update_device(mac_address: str) -> Tuple[Token, int]:
+def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
     """Adds a new device to the db. If the device already exists no device is added. A proper Token that isn't
     expired and the device_id is returned."""
     possible_device = Device.get_by_mac(mac_address)
@@ -93,7 +89,7 @@ def _add_update_device(mac_address: str) -> Tuple[Token, int]:
             return new_token, possible_device.device_id
         else:
             return possible_device.token, possible_device.device_id
-    device_id = Device.create(mac_address, Token(), Token.get_next_expired())
+    device_id = Device.create(user_id, mac_address, Token(), Token.get_next_expired())
     device_token = Device.from_id(device_id).token
     return device_token, device_id
 

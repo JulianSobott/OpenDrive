@@ -25,6 +25,7 @@ from OpenDrive.server_side import paths
 class Device(TableEntry):
     """
     :ivar device_id: Autoincrement id
+    :ivar user_id: foreign_key
     :ivar mac_address: Unique for every device
     :ivar token: Allows auto login
     :ivar token_expires:
@@ -36,11 +37,13 @@ class Device(TableEntry):
 
     def __init__(self,
                  device_id: int,
+                 user_id: int,
                  mac_address: str,
                  token: Union['Token', str],
                  token_expires: datetime.datetime) -> None:
         super().__init__()
         self._id = device_id
+        self._user_id = user_id
         self._mac_address = mac_address
         if not isinstance(token, Token):
             token = Token.from_string(token)
@@ -48,19 +51,26 @@ class Device(TableEntry):
         self._token_expires = token_expires
 
     @staticmethod
-    def create(mac_address: str,
+    def create(user_id: int,
+               mac_address: str,
                token: 'Token',
                token_expires: datetime.datetime) -> int:
-        sql = "INSERT INTO `devices` (mac_address, token, token_expires) VALUES (?, ?, ?)"
+        sql = "INSERT INTO `devices` (user_id, mac_address, token, token_expires) VALUES (?, ?, ?, ?)"
         with DBConnection(paths.SERVER_DB_PATH) as db:
-            user_id = db.insert(sql, (mac_address, token.token, token_expires))
+            user_id = db.insert(sql, (user_id, mac_address, token.token, token_expires))
             return user_id
 
-    """user_id"""
+    """device_id"""
 
     @property
     def device_id(self) -> int:
         return self._id
+
+    """user_id"""
+
+    @property
+    def user_id(self) -> int:
+        return self._user_id
 
     """mac_address"""
 
@@ -105,7 +115,7 @@ class Device(TableEntry):
         return device
 
     def __repr__(self):
-        return f"Device({self._id}, {self._mac_address}, {self._token}, {self._token_expires})"
+        return f"Device({self._id}, {self._user_id}, {self._mac_address}, {self._token}, {self._token_expires})"
 
 
 class Token:
