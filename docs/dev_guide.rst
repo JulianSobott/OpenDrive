@@ -158,7 +158,6 @@ TODO next:
 ==========
 
 - GUI define features
-- Database: remove device_user. Instead store user in device.
 - Implement Interface between backend, ui, gui
 - Exchange files based on actions
     - Create docs

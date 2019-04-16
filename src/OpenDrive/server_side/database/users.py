@@ -12,17 +12,6 @@ public classes
     :members:
     :inherited-members:
     :undoc-members:
-    
-public functions
------------------
-
-.. autofunction:
-
-private classes
-----------------
-
-private functions
-------------------
 
 """
 from typing import Optional

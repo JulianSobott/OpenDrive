@@ -11,19 +11,7 @@ Client
 - folders (What folders watch)
 - ignores (What changes to ignore. In which folder)
 
-Server
-*********
-
-- users (user data)
-- folders (Server paths, user (for path)? )
-- changes (files changed. folder. device)
-- privileges (folder, user, privileges)
-- devices (device_id, mac_address, token)
-- device_user (device, user, extra_data)
-
-- sync_folders (client_folder, server_folder, device_user)
-
 Code doc
 ^^^^^^^^^^
 
-.. automodule:: OpenDrive.server_side.database.users
+.. automodule:: OpenDrive.server_side.database

@@ -3,22 +3,11 @@
 :synopsis: General DB functions at the server-side
 :author: Julian Sobott
 
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
-    
 public functions
 -----------------
 
-.. autofunction:: XXX
+.. autofunction:: create_database
 
-private classes
-----------------
-
-private functions
-------------------
 
 """
 import os
@@ -47,15 +36,6 @@ def create_database() -> None:
                              "`token` VARCHAR(64) NOT NULL, "
                              "`token_expires` DATETIME)")
         db.create(sql_table_devices)
-
-        sql_table_device_user = ("CREATE TABLE device_user ("
-                                 "device_id INTEGER NOT NULL "
-                                 "  REFERENCES devices,"
-                                 "user_id   INTEGER NOT NULL "
-                                 "  REFERENCES users, "
-                                 "PRIMARY KEY (device_id, user_id) "
-                                 ")")
-        #db.create(sql_table_device_user)
 
         sql_table_folders = ("CREATE TABLE folders ("
                              "folder_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "

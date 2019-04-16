@@ -30,6 +30,5 @@ class TestDatabaseConnections(unittest.TestCase):
         tables = [table_name for table_name, in ret]
         self.assertTrue("users" in tables)
         self.assertTrue("devices" in tables)
-        self.assertTrue("device_user" in tables)
         self.assertTrue("folders" in tables)
 
