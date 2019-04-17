@@ -51,7 +51,10 @@ def start_server_process() -> Process:
 
 
 def stop_process(process: Process):
-    process.kill()
+  #  import os
+   # os.kill(process, 1)
+
+    process.join(1)
 
 
 def client_routine(clear_server_db: bool = False, clear_client_db: bool = False):

@@ -179,7 +179,7 @@ class TestRemove(TestFileChange):
         change = database.Change.get_possible_entry(self.folder_id, self.rel_file_path)
         self.assertIsInstance(change, database.Change)
         is_folder = False
-        expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
+        expected_change = database.Change(change.id, self.folder_id, self.rel_file_path, is_folder=is_folder,
                                           last_change_time_stamp=change.last_change_time_stamp,
                                           is_created=False, is_moved=False, is_deleted=True, is_modified=False,
                                           necessary_action=database.Change.ACTION_DELETE)
