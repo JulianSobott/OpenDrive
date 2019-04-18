@@ -4,23 +4,16 @@
 :author: Julian Sobott
 
 """
-import datetime
 import unittest
-import uuid
-import secrets
-
 from OpenDrive.server_side import database, paths
-from OpenDrive.general.database import delete_db_file
-from tests.server_side.database.helper_database import h_setup_server_database
-from tests.server_side.database import test_users
-from tests.od_logging import logger
+from tests.server_side.database.helper_database import h_setup_server_database, h_create_dummy_user
 
 
 class TestDatabaseDevices(unittest.TestCase):
 
     def setUp(self):
         h_setup_server_database()
-        self._dummy_user = test_users.TestDatabaseUsers.helper_create_dummy_user()
+        self._dummy_user = h_create_dummy_user()
 
     def test_columns(self):
         with database.DBConnection(paths.SERVER_DB_PATH) as db:

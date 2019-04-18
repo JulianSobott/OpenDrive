@@ -6,8 +6,7 @@
 import unittest
 
 from OpenDrive.server_side import database, paths
-from OpenDrive.general.database import delete_db_file
-from tests.server_side.database.helper_database import h_setup_server_database
+from tests.server_side.database.helper_database import h_setup_server_database, h_create_dummy_user
 from tests.od_logging import logger
 
 
@@ -15,14 +14,6 @@ class TestDatabaseUsers(unittest.TestCase):
 
     def setUp(self):
         h_setup_server_database()
-
-    @staticmethod
-    def helper_create_dummy_user():
-        username = "Tom"
-        password = "asj&kdkl$asjd345a!d:-"
-        email = "Tom@gmail.com"
-        user_id = database.User.create(username, password, email)
-        return database.User(user_id, username, password, email)
 
     def test_columns(self):
         with database.DBConnection(paths.SERVER_DB_PATH) as db:
@@ -41,8 +32,8 @@ class TestDatabaseUsers(unittest.TestCase):
         self.assertEqual(user.email, None)
 
     def test_get_by_username(self):
-        expected = self.helper_create_dummy_user()
-        user = database.User.get_by_username("Tom")
+        expected = h_create_dummy_user()
+        user = database.User.get_by_username(expected.username)
         self.assertEqual(expected, user)
         user_2 = database.User.get_by_username("tom")
         self.assertEqual(None, user_2)
