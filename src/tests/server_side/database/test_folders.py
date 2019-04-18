@@ -11,6 +11,7 @@ import secrets
 
 from OpenDrive.server_side import database, paths
 from OpenDrive.general.database import delete_db_file
+from tests.server_side.database.helper_database import h_setup_server_database
 from tests.server_side.database import test_users
 from tests.od_logging import logger
 
@@ -18,13 +19,8 @@ from tests.od_logging import logger
 class TestDatabaseDevices(unittest.TestCase):
 
     def setUp(self):
-        delete_db_file(paths.SERVER_DB_PATH)
-        database.create_database()
+        h_setup_server_database()
         self._dummy_user = test_users.TestDatabaseUsers.helper_create_dummy_user()
-
-    @staticmethod
-    def helper_create_dummy_folder():
-        pass
 
     def test_columns(self):
         with database.DBConnection(paths.SERVER_DB_PATH) as db:

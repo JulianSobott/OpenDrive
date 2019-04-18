@@ -7,14 +7,14 @@ import unittest
 
 from OpenDrive.server_side import database, paths
 from OpenDrive.general.database import delete_db_file
+from tests.server_side.database.helper_database import h_setup_server_database
 from tests.od_logging import logger
 
 
 class TestDatabaseUsers(unittest.TestCase):
 
     def setUp(self):
-        delete_db_file(paths.SERVER_DB_PATH)
-        database.create_database()
+        h_setup_server_database()
 
     @staticmethod
     def helper_create_dummy_user():
