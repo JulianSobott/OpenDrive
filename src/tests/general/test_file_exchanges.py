@@ -15,6 +15,7 @@ from OpenDrive.general import file_exchanges
 class TestFileExchanges(unittest.TestCase):
 
     def setUp(self) -> None:
+        cs_env.clear_init_folders()
         self._server_process = cs_env.start_server_process()
         self._dummy_client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "DUMMY_FOLDER")
         self._dummy_server_folder = os.path.join(server_paths.LOCAL_SERVER_DATA, "DUMMY_FOLDER")

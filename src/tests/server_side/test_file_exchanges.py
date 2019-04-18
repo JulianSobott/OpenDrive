@@ -15,6 +15,7 @@ from OpenDrive.server_side.file_exchanges import PullAction
 class TestFileExchanges(gen_test_file_exchanges.TestFileExchanges):
 
     def helper_setup(self):
+        cs_env.clear_init_folders()
         TestAuthentication.helper_register_dummy_user_device()
         self._rel_file_src_path = os.path.join("DummyFolder1", self._file_name)
         self.helper_create_user_dummy_file(1, self._rel_file_src_path)
@@ -55,4 +56,4 @@ class TestActions(unittest.TestCase):
     def test_pull_action(self):
         abs_local_path = TestFileExchanges.helper_create_user_dummy_file(1, "File1.txt")
         abs_remote_path = gen_paths.LOCAL_DATA
-        action = PullAction()
+        #action = PullAction()

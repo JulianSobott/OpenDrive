@@ -18,16 +18,19 @@ def mock_input(inputs: Generator):
 
 class TestAuthentication(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        cs_env.clear_init_folders()
+
     def setUp(self) -> None:
         self._server_process = cs_env.start_server_process()
-        test_folders.TestFolders.initialize_standard_folders()
 
     def tearDown(self) -> None:
         cs_env.stop_process(self._server_process)
 
     @staticmethod
     def helper_register_dummy_user_device():
-        TestFolders.initialize_standard_folders()
+        cs_env.clear_init_folders()
         server_auth.TestRegistration.helper_clear_database()
         client_side.authentication.register_user_device("ClientName", "whatanamazingpassword111")
 

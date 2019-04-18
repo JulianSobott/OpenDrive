@@ -22,6 +22,8 @@ private functions
 ------------------
 
 """
+import shutil
+import os
 from multiprocessing import Process
 
 import OpenDrive.server_side.net_start
@@ -29,6 +31,8 @@ import OpenDrive.client_side.net_start
 from OpenDrive import server_side
 from OpenDrive import client_side
 from OpenDrive.general.database import delete_db_file
+from OpenDrive.server_side import paths as server_paths
+from OpenDrive.client_side import paths as client_paths
 
 
 def delete_recreate_server_db():
@@ -69,6 +73,19 @@ def client_routine(clear_server_db: bool = False, clear_client_db: bool = False)
             return ret_value
         return wrapper
     return decorator
+
+
+def clear_init_folders(client=True, server=True):
+    """
+    server: OpenDrive/local/server_side/ROOT/
+    client: OpenDrive/local/client_side
+    """
+    if server:
+        shutil.rmtree(server_paths.FOLDERS_ROOT, ignore_errors=True)
+        os.makedirs(server_paths.FOLDERS_ROOT, exist_ok=True)
+    if client:
+        shutil.rmtree(client_paths.LOCAL_CLIENT_DATA, ignore_errors=True)
+        os.makedirs(client_paths.LOCAL_CLIENT_DATA, exist_ok=True)
 
 
 def _debug_server_routine():

@@ -8,6 +8,7 @@ import os
 from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side.database import Token
+from tests.client_server_environment import clear_init_folders
 from tests.od_logging import logger
 from tests.server_side import test_folders
 
@@ -15,7 +16,7 @@ from tests.server_side import test_folders
 class TestRegistration(unittest.TestCase):
 
     def setUp(self):
-        test_folders.TestFolders.initialize_standard_folders()
+        clear_init_folders()
         self.static_setup()
 
     @staticmethod
@@ -91,7 +92,7 @@ class TestRegistration(unittest.TestCase):
 class TestLogin(unittest.TestCase):
 
     def setUp(self):
-        test_folders.TestFolders.initialize_standard_folders()
+        clear_init_folders()
         delete_db_file(paths.SERVER_DB_PATH)
         database.create_database()
         authentication._set_user_authenticated = lambda user_id: None   # Deactivates the function, that is only
