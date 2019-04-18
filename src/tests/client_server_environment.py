@@ -24,7 +24,7 @@ private functions
 """
 import shutil
 import os
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 
 import OpenDrive.server_side.net_start
 import OpenDrive.client_side.net_start
@@ -33,6 +33,8 @@ from OpenDrive import client_side
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.client_side import paths as client_paths
+
+server_stop_queue = Queue()
 
 
 def delete_recreate_server_db():
@@ -48,19 +50,21 @@ def delete_recreate_client_db():
 def start_server_process() -> Process:
     server_process = None
     try:
-        server_process = Process(target=_debug_server_routine)
+        server_process = Process(target=_debug_server_routine, args=(server_stop_queue,))
         return server_process
     finally:
         server_process.start()
 
 
 def stop_process(process: Process):
-    process.join(1)
+    server_stop_queue.put("Stop")
+    process.join()
 
 
 def client_routine(clear_server_db: bool = False, clear_client_db: bool = False):
     def decorator(func):
         def wrapper(*args, **kwargs):
+            clear_init_folders()
             if clear_server_db:
                 delete_recreate_server_db()
             if clear_client_db:
@@ -88,6 +92,6 @@ def clear_init_folders(client=True, server=True):
         os.makedirs(client_paths.LOCAL_CLIENT_DATA, exist_ok=True)
 
 
-def _debug_server_routine():
-    OpenDrive.server_side.net_start.start()
+def _debug_server_routine(queue: Queue):
+    OpenDrive.server_side.net_start.start(queue)
 
