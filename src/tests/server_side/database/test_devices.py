@@ -21,15 +21,6 @@ class TestDatabaseDevices(unittest.TestCase):
     def setUp(self):
         h_setup_server_database()
 
-    @staticmethod
-    def helper_create_dummy_device():
-        user_id = 1
-        mac_address = str(uuid.getnode())
-        token = Token(32)
-        token_expires = datetime.datetime(2020, 12, 31)
-        device_id = database.Device.create(user_id, mac_address, token, token_expires)
-        return database.Device(user_id, device_id, mac_address, token, token_expires)
-
     def test_columns(self):
         with database.DBConnection(paths.SERVER_DB_PATH) as db:
             res = db.get("PRAGMA table_info(devices)")
