@@ -1,9 +1,9 @@
 from OpenDrive import net_interface
 
 
-def connect():
+def connect(blocking=True, timeout=float("inf")):
     address = ("127.0.0.1", 5000)
-    net_interface.ServerCommunicator.connect(address)
+    return net_interface.ServerCommunicator.connect(address, blocking=blocking, timeout=timeout)
 
 
 def close_connection():

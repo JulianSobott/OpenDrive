@@ -71,7 +71,9 @@ def client_routine(clear_server_db: bool = False, clear_client_db: bool = False)
                 delete_recreate_client_db()
 
             client_net = OpenDrive.client_side.net_start
-            client_net.connect()
+            connected = client_net.connect(timeout=2)
+            if not connected:
+                raise ConnectionError
             ret_value = func(*args, **kwargs)
             client_net.close_connection()
             return ret_value

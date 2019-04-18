@@ -29,7 +29,7 @@ class TestFileExchanges(gen_test_file_exchanges.TestFileExchanges):
         return path
 
     @cs_env.client_routine()
-    def test_get_file(self):
+    def test_get_file_network(self):
         self.helper_setup()
         abs_file_dest_path = os.path.join(self._dummy_server_folder, self._file_name)
         file: net.File = self._server.get_file(self._rel_file_src_path, abs_file_dest_path)
@@ -37,7 +37,7 @@ class TestFileExchanges(gen_test_file_exchanges.TestFileExchanges):
         self.assertTrue(os.path.isfile(abs_file_dest_path))
 
     @cs_env.client_routine()
-    def test_get_file_non_exist(self):
+    def test_get_file_non_exist_network(self):
         self.helper_setup()
         abs_file_dest_path = os.path.join(self._dummy_server_folder, self._file_name)
         rel_file_path = "HA.txt"
@@ -57,3 +57,7 @@ class TestActions(unittest.TestCase):
         abs_local_path = TestFileExchanges.helper_create_user_dummy_file(1, "File1.txt")
         abs_remote_path = gen_paths.LOCAL_DATA
         #action = PullAction()
+
+
+if __name__ == '__main__':
+    unittest.main()
