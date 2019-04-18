@@ -51,9 +51,6 @@ def start_server_process() -> Process:
 
 
 def stop_process(process: Process):
-  #  import os
-   # os.kill(process, 1)
-
     process.join(1)
 
 

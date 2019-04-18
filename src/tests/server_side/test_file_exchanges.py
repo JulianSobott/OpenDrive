@@ -2,13 +2,14 @@ import unittest
 import os
 import pynetworking as net
 
-from server_side.file_exchanges import PullAction
+
 from tests import client_server_environment as cs_env
 from tests.general import test_file_exchanges as gen_test_file_exchanges
 from tests.client_side.test_authentication import TestAuthentication
 
 from OpenDrive.general import paths as gen_paths
 from OpenDrive.server_side import paths as server_paths
+from OpenDrive.server_side.file_exchanges import PullAction
 
 
 class TestFileExchanges(gen_test_file_exchanges.TestFileExchanges):
