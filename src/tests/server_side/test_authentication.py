@@ -9,8 +9,8 @@ from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side.database import Token
 from tests.client_server_environment import clear_init_folders
-from tests.server_side.helper_server_authentication import h_deactivate_set_user_authenticated, \
-    h_register_dummy_user_device
+from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
+    h_register_dummy_user_device, h_clear_init_folders
 from tests.server_side.database import h_setup_server_database
 from tests.od_logging import logger
 from tests.server_side import test_folders
@@ -72,25 +72,21 @@ class TestRegistration(unittest.TestCase):
 class TestLogin(unittest.TestCase):
 
     def setUp(self):
-        clear_init_folders()
-        delete_db_file(paths.SERVER_DB_PATH)
-        database.create_database()
-        authentication._set_user_authenticated = lambda user_id: None   # Deactivates the function, that is only
-        # available,
-        # when a client is connected
+        h_clear_init_folders()
+        self.user, self.device, self.token = h_register_dummy_user_device()
 
+    @h_deactivate_set_user_authenticated
     def test_login_manual_user_device(self):
-        user, device, token = TestRegistration.helper_register_dummy_user_device()
-        username = user.username
-        password = user.password
-        mac = device.mac_address
+        username = self.user.username
+        password = self.user.password
+        mac = self.device.mac_address
         token = authentication.login_manual_user_device(username, password, mac)
         self.assertIsInstance(token, Token)
 
+    @h_deactivate_set_user_authenticated
     def test_login_auto(self):
-        user, device, token = TestRegistration.helper_register_dummy_user_device()
-        mac = device.mac_address
-        ret = authentication.login_auto(token, mac)
+        mac = self.device.mac_address
+        ret = authentication.login_auto(self.token, mac)
         self.assertTrue(ret)
 
 

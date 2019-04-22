@@ -1,8 +1,11 @@
+import os
+import shutil
 from typing import Tuple
 import uuid
 
 from OpenDrive.server_side import database
 from OpenDrive.server_side import authentication
+from OpenDrive.server_side import paths as server_paths
 
 from tests.server_side.database import h_setup_server_database
 
@@ -12,8 +15,9 @@ def h_deactivate_set_user_authenticated(func):
     def wrapper(*args):
         copy_set_user_authenticated = authentication._set_user_authenticated
         authentication._set_user_authenticated = lambda user_id: None
-        func(*args)
+        ret = func(*args)
         authentication._set_user_authenticated = copy_set_user_authenticated
+        return ret
     return wrapper
 
 
@@ -30,3 +34,11 @@ def h_register_dummy_user_device() -> Tuple[database.User, database.Device, data
     device = database.Device.get_by_mac(mac)
 
     return user, device, token
+
+
+def h_clear_init_folders():
+    """
+    server: OpenDrive/local/server_side/ROOT/
+    """
+    shutil.rmtree(server_paths.FOLDERS_ROOT, ignore_errors=True)
+    os.makedirs(server_paths.FOLDERS_ROOT, exist_ok=True)
