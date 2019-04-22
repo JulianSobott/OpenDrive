@@ -8,7 +8,7 @@ from OpenDrive.client_side import paths as client_paths
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive import net_interface
 
-from src.tests import client_server_environment as cs_env
+from src.tests import helper_all as cs_env
 from OpenDrive.general import file_exchanges
 
 

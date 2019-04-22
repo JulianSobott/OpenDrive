@@ -3,7 +3,7 @@ import os
 import pynetworking as net
 
 
-from tests import client_server_environment as cs_env
+from tests import helper_all as cs_env
 from tests.general import test_file_exchanges as gen_test_file_exchanges
 from tests.client_side.test_authentication import TestAuthentication
 

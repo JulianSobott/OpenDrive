@@ -8,7 +8,6 @@ import os
 from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side.database import Token
-from tests.client_server_environment import clear_init_folders
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
     h_register_dummy_user_device, h_clear_init_folders
 from tests.server_side.database import h_setup_server_database
@@ -19,7 +18,7 @@ from tests.server_side import test_folders
 class TestRegistration(unittest.TestCase):
 
     def setUp(self):
-        clear_init_folders()
+        h_clear_init_folders()
         h_setup_server_database()
 
     def tearDown(self) -> None:

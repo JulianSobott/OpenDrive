@@ -4,7 +4,7 @@ from unittest import mock
 
 from tests.server_side.test_folders import TestFolders
 from tests.server_side import test_folders
-from src.tests import client_server_environment as cs_env
+from src.tests import helper_all as cs_env
 from tests.server_side import test_authentication as server_auth
 from OpenDrive import client_side, server_side
 

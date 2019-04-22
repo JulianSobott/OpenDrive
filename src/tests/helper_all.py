@@ -81,7 +81,7 @@ def client_routine(clear_server_db: bool = False, clear_client_db: bool = False)
     return decorator
 
 
-def clear_init_folders(client=True, server=True):
+def h_clear_init_folders(client=True, server=True):
     """
     server: OpenDrive/local/server_side/ROOT/
     client: OpenDrive/local/client_side
