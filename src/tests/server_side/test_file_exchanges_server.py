@@ -3,7 +3,7 @@ import os
 import pynetworking as net
 
 
-from tests import helper_all as cs_env
+from tests.helper_all import h_clear_init_all_folders
 from tests.general import test_file_exchanges as gen_test_file_exchanges
 from tests.client_side.test_authentication import TestAuthentication
 
@@ -15,7 +15,7 @@ from OpenDrive.server_side.file_exchanges import PullAction
 class TestFileExchanges(gen_test_file_exchanges.TestFileExchanges):
 
     def helper_setup(self):
-        cs_env.clear_init_folders()
+        h_clear_init_all_folders()
         TestAuthentication.helper_register_dummy_user_device()
         self._rel_file_src_path = os.path.join("DummyFolder1", self._file_name)
         self.helper_create_user_dummy_file(1, self._rel_file_src_path)

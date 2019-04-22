@@ -36,7 +36,7 @@ def h_register_dummy_user_device() -> Tuple[database.User, database.Device, data
     return user, device, token
 
 
-def h_clear_init_folders():
+def h_clear_init_server_folders():
     """
     server: OpenDrive/local/server_side/ROOT/
     """

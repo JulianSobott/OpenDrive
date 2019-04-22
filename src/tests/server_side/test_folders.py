@@ -5,7 +5,7 @@ import shutil
 import OpenDrive.server_side.folders as folders
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.server_side import database
-from tests.helper_all import h_clear_init_folders
+from tests.helper_all import h_clear_init_all_folders
 
 from tests.server_side.helper_server import h_register_dummy_user_device
 
@@ -13,7 +13,7 @@ from tests.server_side.helper_server import h_register_dummy_user_device
 class TestFolders(unittest.TestCase):
 
     def setUp(self) -> None:
-        h_clear_init_folders()
+        h_clear_init_all_folders()
         self.user, device, token = h_register_dummy_user_device()
 
     def tearDown(self) -> None:
