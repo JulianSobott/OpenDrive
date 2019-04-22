@@ -3,9 +3,11 @@ import shutil
 from typing import Tuple
 import uuid
 
+import server_side
 from OpenDrive.server_side import database
 from OpenDrive.server_side import authentication
 from OpenDrive.server_side import paths as server_paths
+from general.database import delete_db_file
 
 from tests.server_side.database import h_setup_server_database
 
@@ -42,3 +44,8 @@ def h_clear_init_server_folders():
     """
     shutil.rmtree(server_paths.FOLDERS_ROOT, ignore_errors=True)
     os.makedirs(server_paths.FOLDERS_ROOT, exist_ok=True)
+
+
+def h_delete_recreate_server_db():
+    delete_db_file(server_side.paths.SERVER_DB_PATH)
+    server_side.database.create_database()

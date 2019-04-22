@@ -4,7 +4,7 @@ from unittest import mock
 
 from tests.server_side.test_folders import TestFolders
 from tests.server_side import test_folders
-from src.tests import helper_all as cs_env
+from src.tests.helper_all import h_clear_init_all_folders
 from tests.server_side import test_authentication as server_auth
 from OpenDrive import client_side, server_side
 
@@ -20,7 +20,7 @@ class TestAuthentication(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cs_env.clear_init_folders()
+        h_clear_init_all_folders
 
     def setUp(self) -> None:
         self._server_process = cs_env.start_server_process()

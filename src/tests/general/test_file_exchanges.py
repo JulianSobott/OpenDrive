@@ -16,7 +16,7 @@ class TestFileExchanges(unittest.TestCase):
 
     def setUp(self) -> None:
         cs_env.clear_init_folders()
-        self._server_process = cs_env.start_server_process()
+        self._server_process = cs_env.h_start_server_process()
         self._dummy_client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "DUMMY_FOLDER")
         self._dummy_server_folder = os.path.join(server_paths.LOCAL_SERVER_DATA, "DUMMY_FOLDER")
         self.helper_clean_dummy_folders()
@@ -25,7 +25,7 @@ class TestFileExchanges(unittest.TestCase):
         self._server = net_interface.ServerCommunicator.remote_functions
 
     def tearDown(self) -> None:
-        cs_env.stop_process(self._server_process)
+        cs_env.h_stop_server_process(self._server_process)
 
     def helper_create_dummy_file(self):
         path = os.path.join(self._dummy_client_folder, self._file_name)
