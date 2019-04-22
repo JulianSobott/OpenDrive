@@ -30,8 +30,6 @@ import OpenDrive.server_side.net_start
 import OpenDrive.client_side.net_start
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.client_side import paths as client_paths
-from client_side.helper_client import h_delete_recreate_client_db
-from server_side.helper_server import h_delete_recreate_server_db
 
 server_stop_queue = Queue()
 
@@ -51,6 +49,9 @@ def h_stop_server_process(process: Process):
 
 
 def h_client_routine(clear_server_db: bool = False, clear_client_db: bool = False):
+    from tests.client_side.helper_client import h_delete_recreate_client_db
+    from tests.server_side.helper_server import h_delete_recreate_server_db
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             h_clear_init_all_folders()
