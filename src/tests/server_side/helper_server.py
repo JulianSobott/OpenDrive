@@ -3,7 +3,6 @@ import shutil
 from typing import Tuple
 import uuid
 
-import server_side
 from OpenDrive.server_side import database
 from OpenDrive.server_side import authentication
 from OpenDrive.server_side import paths as server_paths
@@ -47,5 +46,5 @@ def h_clear_init_server_folders():
 
 
 def h_delete_recreate_server_db():
-    delete_db_file(server_side.paths.SERVER_DB_PATH)
-    server_side.database.create_database()
+    delete_db_file(server_paths.SERVER_DB_PATH)
+    database.create_database()

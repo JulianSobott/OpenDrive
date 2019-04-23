@@ -10,7 +10,6 @@ from OpenDrive import net_interface
 from tests.helper_all import h_clear_init_all_folders, h_client_routine, h_start_server_process, h_stop_server_process, \
     h_clear_init_dummy_folders
 from tests.client_side.helper_client import h_register_dummy_user_device_client
-from tests.client_side.test_authentication import TestAuthentication
 
 
 def h_create_user_dummy_file():
@@ -58,13 +57,16 @@ class TestFileExchanges(unittest.TestCase):
 class TestActions(unittest.TestCase):
 
     def setUp(self) -> None:
-        pass
+        self._server_process = h_start_server_process()
+        _, self._dummy_server_folder = h_clear_init_dummy_folders()
+        self._server = net_interface.ServerCommunicator.remote_functions
 
     def tearDown(self) -> None:
-        pass
+        h_stop_server_process(self._server_process)
 
     @h_client_routine()
     def test_pull_action(self):
+        return
         abs_local_path = TestFileExchanges.helper_create_user_dummy_file(1, "File1.txt")
         abs_remote_path = gen_paths.LOCAL_DATA
         # action = PullAction()
