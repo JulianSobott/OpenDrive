@@ -1,9 +1,12 @@
+import uuid
+
 from OpenDrive import client_side
+from OpenDrive.server_side import database
+from OpenDrive.client_side import authentication
 from OpenDrive.general.database import delete_db_file
 
-from tests.helper_all import h_clear_init_all_folders
+
 from tests.server_side.database import h_setup_server_database
-from tests.server_side.helper_server import h_register_dummy_user_device
 
 
 def h_delete_recreate_client_db():
@@ -11,7 +14,13 @@ def h_delete_recreate_client_db():
     client_side.database.create_database()
 
 
-def h_register_dummy_user_device_client():
-    user, device, token = h_register_dummy_user_device()
-    client_side.authentication._save_received_token(token)
-    return user, device, token
+def h_register_dummy_user_device_client() -> database.User:
+    h_setup_server_database()
+
+    username = "Anne"
+    password = "2hj:_sAdf"
+    email = None
+    user = database.User(1, username, password, email)
+    status = authentication.register_user_device(username, password, email)
+
+    return user

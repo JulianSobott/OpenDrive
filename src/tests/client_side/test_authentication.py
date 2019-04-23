@@ -34,14 +34,13 @@ class TestAuthentication(unittest.TestCase):
 
     @h_client_routine(clear_server_db=True)
     def test_login_manual(self):
-        user, device, token = h_register_dummy_user_device_client()
+        user = h_register_dummy_user_device_client()
         status = client_side.interface.login_manual(user.username, user.password)
         self.assertTrue(status.was_successful())
 
     @h_client_routine(clear_server_db=True)
     def test_logout(self):
-        user, device, token = h_register_dummy_user_device_client()
-        client_side.authentication._save_received_token(token)
+        h_register_dummy_user_device_client()
         client_side.interface.login_auto()
         status = client_side.interface.logout()
         self.assertTrue(status.was_successful())
@@ -56,7 +55,7 @@ class TestAuthentication(unittest.TestCase):
 
     @h_client_routine(clear_server_db=True)
     def test_login_manual_user_device_cli(self):
-        user, device, token = h_register_dummy_user_device_client()
+        user = h_register_dummy_user_device_client()
         inputs = (in_val for in_val in [user.username])
         with mock.patch('builtins.input', mock_input(inputs)), mock.patch("getpass.getpass",
                                                                           return_value=user.password):
