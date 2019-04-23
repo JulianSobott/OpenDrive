@@ -7,16 +7,29 @@ from OpenDrive.general import paths as gen_paths
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive import net_interface
-
-from src.tests import helper_all as cs_env
 from OpenDrive.general import file_exchanges
+
+from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process
+
+
+def helper_clean_dummy_folders(self):
+    shutil.rmtree(self._dummy_client_folder, ignore_errors=True)
+    shutil.rmtree(self._dummy_server_folder, ignore_errors=True)
+    try:
+        os.mkdir(self._dummy_client_folder)
+    except FileExistsError:
+        pass
+    try:
+        os.mkdir(self._dummy_server_folder)
+    except FileExistsError:
+        pass
 
 
 class TestFileExchanges(unittest.TestCase):
 
     def setUp(self) -> None:
-        cs_env.clear_init_folders()
-        self._server_process = cs_env.h_start_server_process()
+        h_clear_init_all_folders()
+        self._server_process = h_start_server_process()
         self._dummy_client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "DUMMY_FOLDER")
         self._dummy_server_folder = os.path.join(server_paths.LOCAL_SERVER_DATA, "DUMMY_FOLDER")
         self.helper_clean_dummy_folders()
@@ -25,25 +38,13 @@ class TestFileExchanges(unittest.TestCase):
         self._server = net_interface.ServerCommunicator.remote_functions
 
     def tearDown(self) -> None:
-        cs_env.h_stop_server_process(self._server_process)
+        h_stop_server_process(self._server_process)
 
     def helper_create_dummy_file(self):
         path = os.path.join(self._dummy_client_folder, self._file_name)
         with open(path, "w+") as file:
             file.write("Hello" * 10)
         return path
-
-    def helper_clean_dummy_folders(self):
-        shutil.rmtree(self._dummy_client_folder, ignore_errors=True)
-        shutil.rmtree(self._dummy_server_folder, ignore_errors=True)
-        try:
-            os.mkdir(self._dummy_client_folder)
-        except FileExistsError:
-            pass
-        try:
-            os.mkdir(self._dummy_server_folder)
-        except FileExistsError:
-            pass
 
     def test_get_file(self):
         abs_file_src_path = self._dummy_file_path
