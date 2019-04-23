@@ -1,49 +1,36 @@
 import unittest
 import os
-import shutil
+from typing import Tuple
+
 import pynetworking as net
 
 from OpenDrive.general import paths as gen_paths
-from OpenDrive.client_side import paths as client_paths
-from OpenDrive.server_side import paths as server_paths
 from OpenDrive import net_interface
-
-from src.tests import client_server_environment as cs_env
 from OpenDrive.general import file_exchanges
+
+from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, \
+    h_clear_init_dummy_folders
+
+
+def h_create_dummy_client_file(dummy_folder_path: str) -> Tuple[str, str]:
+    file_name = "dummy.txt"
+    path = os.path.join(dummy_folder_path, file_name)
+    with open(path, "w+") as file:
+        file.write("Hello" * 10)
+    return file_name, path
 
 
 class TestFileExchanges(unittest.TestCase):
 
     def setUp(self) -> None:
-        cs_env.clear_init_folders()
-        self._server_process = cs_env.start_server_process()
-        self._dummy_client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "DUMMY_FOLDER")
-        self._dummy_server_folder = os.path.join(server_paths.LOCAL_SERVER_DATA, "DUMMY_FOLDER")
-        self.helper_clean_dummy_folders()
-        self._file_name = "dummy.txt"
-        self._dummy_file_path = self.helper_create_dummy_file()
+        h_clear_init_all_folders()
+        self._server_process = h_start_server_process()
+        self._dummy_client_folder, self._dummy_server_folder = h_clear_init_dummy_folders()
+        self._file_name, self._dummy_file_path = h_create_dummy_client_file(self._dummy_client_folder)
         self._server = net_interface.ServerCommunicator.remote_functions
 
     def tearDown(self) -> None:
-        cs_env.stop_process(self._server_process)
-
-    def helper_create_dummy_file(self):
-        path = os.path.join(self._dummy_client_folder, self._file_name)
-        with open(path, "w+") as file:
-            file.write("Hello" * 10)
-        return path
-
-    def helper_clean_dummy_folders(self):
-        shutil.rmtree(self._dummy_client_folder, ignore_errors=True)
-        shutil.rmtree(self._dummy_server_folder, ignore_errors=True)
-        try:
-            os.mkdir(self._dummy_client_folder)
-        except FileExistsError:
-            pass
-        try:
-            os.mkdir(self._dummy_server_folder)
-        except FileExistsError:
-            pass
+        h_stop_server_process(self._server_process)
 
     def test_get_file(self):
         abs_file_src_path = self._dummy_file_path

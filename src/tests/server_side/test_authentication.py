@@ -8,7 +8,9 @@ import os
 from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side.database import Token
-from tests.client_server_environment import clear_init_folders
+from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
+    h_register_dummy_user_device, h_clear_init_server_folders
+from tests.server_side.database import h_setup_server_database
 from tests.od_logging import logger
 from tests.server_side import test_folders
 
@@ -16,40 +18,13 @@ from tests.server_side import test_folders
 class TestRegistration(unittest.TestCase):
 
     def setUp(self):
-        clear_init_folders()
-        self.static_setup()
-
-    @staticmethod
-    def static_setup():
-        TestRegistration.helper_clear_database()
-        authentication._set_user_authenticated = lambda user_id: None  # Deactivates the function, that is only
-        # available,
-        # when a client is connected
+        h_clear_init_server_folders()
+        h_setup_server_database()
 
     def tearDown(self) -> None:
         pass
 
-    @staticmethod
-    def helper_register_dummy_user_device() -> Tuple[database.User, database.Device, Token]:
-        copy_set_user_authenticated = authentication._set_user_authenticated
-        TestRegistration.static_setup()
-
-        username = "Anne"
-        password = "2hj:_sAdf"
-        email = None
-        mac = str(uuid.getnode())
-        token = authentication.register_user_device(username, password, mac, email)
-        user = database.User(1, username, password, email)
-        device = database.Device.get_by_mac(mac)
-
-        authentication._set_user_authenticated = copy_set_user_authenticated
-        return user, device, token
-
-    @staticmethod
-    def helper_clear_database():
-        delete_db_file(paths.SERVER_DB_PATH)
-        database.create_database()
-
+    @h_deactivate_set_user_authenticated
     def test_add_update_device_new(self):
         user_id = 1
         mac = str(uuid.getnode())
@@ -58,12 +33,15 @@ class TestRegistration(unittest.TestCase):
         self.assertEqual(1, len(all_devices))
         self.assertEqual(mac, all_devices[0].mac_address)
 
+    @h_deactivate_set_user_authenticated
     def test_add_update_device_expires(self):
         pass
 
+    @h_deactivate_set_user_authenticated
     def test_add_update_device_existing(self):
         pass
 
+    @h_deactivate_set_user_authenticated
     def test_register_user_device(self):
         username = "Anne"
         password = "2hj:_sAdf"
@@ -78,6 +56,7 @@ class TestRegistration(unittest.TestCase):
         user = all_users[0]
         self.assertEqual(user, database.User(1, username, user.password, email))
 
+    @h_deactivate_set_user_authenticated
     def test_register_user_device_existing(self):
         username = "Anne"
         password = "2hj:_sAdf"
@@ -92,25 +71,21 @@ class TestRegistration(unittest.TestCase):
 class TestLogin(unittest.TestCase):
 
     def setUp(self):
-        clear_init_folders()
-        delete_db_file(paths.SERVER_DB_PATH)
-        database.create_database()
-        authentication._set_user_authenticated = lambda user_id: None   # Deactivates the function, that is only
-        # available,
-        # when a client is connected
+        h_clear_init_server_folders()
+        self.user, self.device, self.token = h_register_dummy_user_device()
 
+    @h_deactivate_set_user_authenticated
     def test_login_manual_user_device(self):
-        user, device, token = TestRegistration.helper_register_dummy_user_device()
-        username = user.username
-        password = user.password
-        mac = device.mac_address
+        username = self.user.username
+        password = self.user.password
+        mac = self.device.mac_address
         token = authentication.login_manual_user_device(username, password, mac)
         self.assertIsInstance(token, Token)
 
+    @h_deactivate_set_user_authenticated
     def test_login_auto(self):
-        user, device, token = TestRegistration.helper_register_dummy_user_device()
-        mac = device.mac_address
-        ret = authentication.login_auto(token, mac)
+        mac = self.device.mac_address
+        ret = authentication.login_auto(self.token, mac)
         self.assertTrue(ret)
 
 

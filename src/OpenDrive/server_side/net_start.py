@@ -10,6 +10,7 @@ def start(queue: multiprocessing.Queue):
     address = ("0.0.0.0", 5000)
     client_manager = net.ClientManager(address, net_interface.ClientCommunicator)
     client_manager.start()
+    logger.debug("Server is now listening")
     try:
         while True:
             msg = queue.get()

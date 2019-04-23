@@ -6,7 +6,7 @@ from thread_testing import wait_till_condition
 
 from OpenDrive.client_side import database, paths, file_watcher
 from OpenDrive.general.database import delete_db_file
-from tests.client_server_environment import clear_init_folders
+from tests.helper_all import h_clear_init_all_folders
 from src.tests.od_logging import logger
 
 
@@ -16,7 +16,7 @@ class TestFileChange(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        clear_init_folders()
+        h_clear_init_all_folders()
 
     def setUp(self):
         delete_db_file(paths.LOCAL_DB_PATH)
