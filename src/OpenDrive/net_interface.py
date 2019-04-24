@@ -6,6 +6,7 @@ class ServerFunctions(net.ServerFunctions):
     from OpenDrive.server_side.authentication import register_user_device, login_manual_user_device, login_auto, \
         logout
     from OpenDrive.server_side.file_exchanges import get_file
+    from OpenDrive.server_side import h_execute_function, h_dummy
 
 
 class ClientFunctions(net.ClientFunctions):
