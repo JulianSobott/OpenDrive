@@ -27,10 +27,7 @@ from OpenDrive.server_side import paths as server_paths
 
 
 def get_file(rel_src_path: str, abs_file_dest_path: str) -> net.File:
-    # TODO: use function from server_paths
-    client: net_interface.ClientCommunicator = net.ClientManager().get()
-    user: User = User.from_id(client.user_id)
-    abs_file_src_path = os.path.join(str(folders.get_users_root_folder(user)), rel_src_path)
+    abs_file_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
     return gen_file_exchanges.get_file(abs_file_src_path, abs_file_dest_path)
 
 
