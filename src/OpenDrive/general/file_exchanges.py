@@ -33,3 +33,7 @@ class Action:
 
 def move_file(abs_src_path: str, abs_dest_path: str):
     shutil.move(abs_src_path, abs_dest_path)
+
+
+def remove_file(abs_src_path: str):
+    os.remove(abs_src_path)

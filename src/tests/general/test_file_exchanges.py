@@ -50,6 +50,11 @@ class TestFileExchanges(unittest.TestCase):
         self.assertTrue(os.path.isfile(abs_dest_path))
         self.assertFalse(os.path.isfile(abs_src_path))
 
+    def test_remove_file(self):
+        abs_src_path = self._dummy_file_path
+        file_exchanges.remove_file(abs_src_path)
+        self.assertFalse(os.path.isfile(abs_src_path))
+
 
 if __name__ == '__main__':
     unittest.main()
