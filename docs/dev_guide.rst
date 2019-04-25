@@ -161,4 +161,7 @@ TODO next:
 - Implement Interface between backend, ui, gui
 - Exchange files based on actions
     - Create docs
-    - Define actions
+    - All client side
+    - Client calls at server: pull, move, delete
+    - Client can call get file from server
+    - Client merges changes
