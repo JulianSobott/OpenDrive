@@ -2,27 +2,13 @@ import unittest
 import os
 import pynetworking as net
 
-from OpenDrive.general import paths as gen_paths
-from OpenDrive.client_side import paths as client_paths
-from OpenDrive.server_side import paths as server_paths
-from OpenDrive.server_side.file_exchanges import PullAction
 from OpenDrive import net_interface
 
+from tests.client_side.helper_client import h_create_client_dummy_file
 from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, \
     h_clear_init_dummy_folders
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.od_logging import logger
-
-
-def h_create_client_dummy_file():
-    """OpenDrive/local/client_side/DUMMY/dummy.txt"""
-    file_name = "dummy.txt"
-    rel_path = os.path.join("DUMMY", file_name)
-    path = os.path.join(client_paths.LOCAL_CLIENT_DATA, rel_path)
-    os.makedirs(os.path.split(path)[0], exist_ok=True)
-    with open(path, "w+") as file:
-        file.write("Hello" * 10)
-    return path
 
 
 class TestFileExchanges(unittest.TestCase):
