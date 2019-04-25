@@ -9,7 +9,7 @@ from OpenDrive import net_interface
 
 from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, \
     h_clear_init_dummy_folders
-from tests.client_side.helper_client import h_register_dummy_user_device_client
+from tests.client_side.helper_client import h_register_dummy_user_device_client, h_create_client_dummy_file
 
 
 def h_create_user_dummy_file():
@@ -86,6 +86,20 @@ class TestFileExchanges(unittest.TestCase):
 
         abs_src_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", rel_src_path)
         self.assertFalse(os.path.isfile(abs_src_path))
+
+    @h_client_routine()
+    def test_pull_file(self):
+        """pulls a file from the client and saves it at the server.
+        client_path: (...)/local/client_side/DUMMY/dummy.txt
+        server_path: (...)/local/server_side/ROOT/user_1/DUMMY/dummy.txt"""
+        h_register_dummy_user_device_client()
+
+        abs_client_path = h_create_client_dummy_file()
+        rel_server_path = "DUMMY/dummy.txt"
+        self._server.pull_file(abs_client_path, rel_server_path)
+
+        abs_server_path = server_paths.rel_user_path_to_abs(rel_server_path, 1)
+        self.assertTrue(os.path.isfile(abs_server_path))
 
 
 if __name__ == '__main__':

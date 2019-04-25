@@ -27,6 +27,7 @@ from OpenDrive.server_side import paths as server_paths
 
 
 def get_file(rel_src_path: str, abs_file_dest_path: str) -> net.File:
+    # TODO: use function from server_paths
     client: net_interface.ClientCommunicator = net.ClientManager().get()
     user: User = User.from_id(client.user_id)
     abs_file_src_path = os.path.join(str(folders.get_users_root_folder(user)), rel_src_path)
@@ -44,3 +45,12 @@ def move_file(rel_src_path: str, rel_dest_path: str) -> None:
 def remove_file(rel_src_path: str) -> None:
     abs_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
     return gen_file_exchanges.remove_file(abs_src_path)
+
+
+def pull_file(abs_client_path: str, rel_server_path: str) -> None:
+    """Pulls a file from the client and saves it at the server. The server path is relative to the users root folder.
+    Folders that don't exist are created."""
+    client: net_interface.ClientCommunicator = net.ClientManager().get()
+    abs_server_path = server_paths.rel_user_path_to_abs(rel_server_path, client.user_id)
+    os.makedirs(os.path.split(abs_server_path)[0], exist_ok=True)
+    file = client.remote_functions.get_file(abs_client_path, abs_server_path)
