@@ -10,6 +10,8 @@ private functions
 ------------------
 """
 import os
+import shutil
+
 import pynetworking as net
 
 
@@ -27,3 +29,7 @@ class Action:
 
     def run(self):
         raise NotImplementedError
+
+
+def move_file(abs_src_path: str, abs_dest_path: str):
+    shutil.move(abs_src_path, abs_dest_path)
