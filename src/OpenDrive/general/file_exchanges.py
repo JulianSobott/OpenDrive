@@ -32,6 +32,8 @@ class Action:
 
 
 def move_file(abs_src_path: str, abs_dest_path: str):
+    """Folders that don't exist are created"""
+    os.makedirs(os.path.split(abs_dest_path)[0], exist_ok=True)
     shutil.move(abs_src_path, abs_dest_path)
 
 

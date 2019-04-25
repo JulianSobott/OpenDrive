@@ -5,7 +5,6 @@ import pynetworking as net
 from OpenDrive.general import paths as gen_paths
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.server_side import paths as server_paths
-from OpenDrive.server_side.file_exchanges import PullAction
 from OpenDrive import net_interface
 
 from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, \
@@ -63,27 +62,19 @@ class TestFileExchanges(unittest.TestCase):
         abs_file_dest_path = os.path.join(self._dummy_server_folder, file_name)
         self.assertRaises(FileNotFoundError, self._server.get_file, rel_file_src_path, abs_file_dest_path)
 
-
-class TestActions(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self._server_process = h_start_server_process()
-        self._dummy_client_folder, self._dummy_server_folder = h_clear_init_dummy_folders()
-        self._server = net_interface.ServerCommunicator.remote_functions
-
-    def tearDown(self) -> None:
-        h_stop_server_process(self._server_process)
-
     @h_client_routine()
-    def test_pull_action(self):
-        """pull file from client to server"""
+    def test_move_file(self):
+        """Move: user_1/DUMMY/dummy.txt -> user_1/folder_2/file.txt"""
         h_register_dummy_user_device_client()
 
-        abs_server_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", "folder1", "dummy.txt")
-        abs_client_path = h_create_dummy_file(self._dummy_client_folder, "dummy.txt")
-        action = PullAction(abs_server_path, abs_client_path)
-        action.run()
-        self.assertTrue(os.path.isfile(abs_server_path))
+        rel_src_path = h_create_user_dummy_file()
+        rel_dest_path = "folder_2/file.txt"
+        self._server.move_file(rel_src_path, rel_dest_path)
+
+        abs_src_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", rel_src_path)
+        abs_dest_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", rel_dest_path)
+        self.assertFalse(os.path.isfile(abs_src_path))
+        self.assertTrue(os.path.isfile(abs_dest_path))
 
 
 if __name__ == '__main__':
