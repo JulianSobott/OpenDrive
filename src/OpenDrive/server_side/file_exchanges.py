@@ -7,6 +7,8 @@ public functions
 -----------------
 
 .. autofunction:: get_file
+.. autofunction:: move_file
+.. autofunction:: remove_file
 
 
 private functions
@@ -37,3 +39,8 @@ def move_file(rel_src_path: str, rel_dest_path: str) -> None:
     abs_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
     abs_dest_path = server_paths.rel_user_path_to_abs(rel_dest_path)
     return gen_file_exchanges.move_file(abs_src_path, abs_dest_path)
+
+
+def remove_file(rel_src_path: str) -> None:
+    abs_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
+    return gen_file_exchanges.remove_file(abs_src_path)

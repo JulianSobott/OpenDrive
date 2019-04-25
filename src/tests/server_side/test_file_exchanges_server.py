@@ -76,6 +76,17 @@ class TestFileExchanges(unittest.TestCase):
         self.assertFalse(os.path.isfile(abs_src_path))
         self.assertTrue(os.path.isfile(abs_dest_path))
 
+    @h_client_routine()
+    def test_remove_file(self):
+        """Remove: user_1/DUMMY/dummy.txt"""
+        h_register_dummy_user_device_client()
+
+        rel_src_path = h_create_user_dummy_file()
+        self._server.remove_file(rel_src_path)
+
+        abs_src_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", rel_src_path)
+        self.assertFalse(os.path.isfile(abs_src_path))
+
 
 if __name__ == '__main__':
     unittest.main()
