@@ -8,8 +8,21 @@ client. So it iterates over all actions of the client. It calls locally: ``move`
 ``get_file``. ``move`` and ``delete`` may be defined in general. I start with implementation with the simple ones
 (move and delete).
 
-The client calls move file: WOnly possible to move inside users root folder. relative path to users root as argument
-is sufficent. server functions then adds the users path and calls the general function. Where to test it: server
+The client calls move file: Only possible to move inside users root folder. relative path to users root as argument
+is sufficient. server functions then adds the users path and calls the general function. Where to test it: server
+
+Client:
+- move
+- delete
+- get_file # from server
+
+
+Server:
+- move
+- delete
+- pull_file # from client
+
+A loop at the client side is needed, that loops though all changes and executes the proper functions.
 
 
 Files between the server and the client are exchanged after all necessary actions are calculated. Actions are
