@@ -34,35 +34,34 @@ from watchdog.observers.api import ObservedWatch
 import datetime
 
 from OpenDrive.client_side.od_logging import logger
-from OpenDrive.client_side import database, paths
+from OpenDrive.client_side import paths, file_changes_json
+
 from OpenDrive.general.paths import normalize_path
 
 observer = watchdog_observers.Observer()
-watchers: Dict[int, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
+watchers: Dict[str, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
 
-__all__ = ["start"]
+__all__ = ["start", "add_folder"]
 
 
 def start() -> None:
     """Start watching at all folders in a new thread. Calling this is enough and no further function calls inside this
     module are needed."""
-    all_folders = database.SyncFolder.get_all()
+    all_folders = file_changes_json.get_all_synced_folders()
     for folder in all_folders:
-        ignores = database.Ignore.get_by_folder(folder.id)
-        patterns = [ignore.pattern for ignore in ignores]
-        add_watcher(folder.abs_path, patterns, folder.id)
+        add_watcher(folder["folder_path"], folder["include_regexes"], folder["exclude_regexes"])
     observer.start()
 
 
-def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> None:
-    """Check is folder possible, insert in DB, start watching"""
+def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> bool:
+    """If possible add folder to file and start watching. Returns True, if the folder was added."""
+    assert isinstance(include_regexes, list)
+    assert isinstance(exclude_regexes, list)
     abs_folder_path = normalize_path(abs_folder_path)
-    can_added = _exist_folder(abs_folder_path)
-    if not can_added:
-        logger.info(f"Folder {abs_folder_path} can not be added, because it dont exist!")
-        return  # TODO: Notify user
-    folder_id = _add_folder_to_db(abs_folder_path)
-    add_watcher(abs_folder_path, include_regexes, exclude_regexes, folder_id)
+    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes)
+    if not added:
+        return False
+    add_watcher(abs_folder_path, include_regexes, exclude_regexes)
 
 
 def remove_folder_from_watching(abs_folder_path: str = None, folder_id: int = None) -> None:
@@ -131,15 +130,11 @@ def stop_observing():
     observer.__init__()
 
 
-def add_watcher(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = (),
-                folder_id: int = None):
+def add_watcher(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()):
     """Watcher, that handles changes to the specified folder."""
-    if folder_id is None:
-        sync_folder = database.SyncFolder.from_path(abs_folder_path)
-        folder_id = sync_folder.id
-    event_handler = FileSystemEventHandler(abs_folder_path, folder_id, include_regexes, exclude_regexes)
+    event_handler = FileSystemEventHandler(abs_folder_path, include_regexes, exclude_regexes)
     watch = observer.schedule(event_handler, abs_folder_path, recursive=True)
-    watchers[folder_id] = event_handler, watch
+    watchers[abs_folder_path] = event_handler, watch
 
 
 def _remove_watcher(folder_id: int):
@@ -155,12 +150,11 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     It is possible to exclude (don't handle) respectively include certain regex patterns. Whereby exclude patterns
     are 'stronger' than include."""
 
-    def __init__(self, abs_folder_path: str, folder_id: int, include_regexes: List[str] = (".*",),
+    def __init__(self, abs_folder_path: str, include_regexes: List[str] = (".*",),
                  exclude_regexes: List[str] = ()):
         super().__init__(regexes=include_regexes, ignore_regexes=exclude_regexes, case_sensitive=False)
         self.folder_path = abs_folder_path
         self._single_ignore_paths: Dict[str, Tuple[datetime.datetime, bool]] = {}
-        self._folder_id: int = folder_id
         self._is_dir: bool = False
         self._rel_path: str = ""
         self._ignore = False

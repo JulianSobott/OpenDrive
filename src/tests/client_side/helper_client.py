@@ -39,7 +39,7 @@ def h_create_client_dummy_file():
 
 
 def h_get_dummy_folder_data():
-    path = client_paths.LOCAL_CLIENT_DATA
+    path = client_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA)
     include = [".*"]
     exclude = []
     return path, include, exclude

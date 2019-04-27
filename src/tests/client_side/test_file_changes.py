@@ -276,16 +276,11 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(0, len(database.Change.get_all()))
 
     def test_add_folder(self):
-        delete_db_file(paths.LOCAL_DB_PATH)
-        database.create_database()
-        file_changes.start()
-        file_changes.add_folder(self.abs_folder_path_1)
-        wait_till_condition(lambda: len(database.SyncFolder.get_all()) == 1, timeout=1)
-        rel_file_path = "test.txt"
-        with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
-            f.write("Hello World" * 100)
-        wait_till_condition(lambda: len(database.Change.get_all()) >= 1, timeout=1)
-        self.assertEqual(1, len(database.Change.get_all()))
+        file_changes_json.init_file()
+        path, include, exclude = h_get_dummy_folder_data()
+        file_changes.add_folder(path, include, exclude)
+        self.assertEqual(1, len(file_changes.watchers))
+        self.assertEqual([path], file_changes_json.get_all_synced_folders_paths())
 
     def test_remove_folder(self):
         file_changes.start()
