@@ -36,12 +36,12 @@ import datetime
 from OpenDrive.client_side.od_logging import logger
 from OpenDrive.client_side import paths, file_changes_json
 
-from OpenDrive.general.paths import normalize_path
+from OpenDrive.general.paths import normalize_path, NormalizedPath
 
 observer = watchdog_observers.Observer()
-watchers: Dict[str, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
+watchers: Dict[NormalizedPath, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
 
-__all__ = ["start", "add_folder"]
+__all__ = ["start", "add_folder", "remove_folder_from_watching"]
 
 
 def start() -> None:
@@ -55,8 +55,8 @@ def start() -> None:
 
 def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> bool:
     """If possible add folder to file and start watching. Returns True, if the folder was added."""
-    assert isinstance(include_regexes, list)
-    assert isinstance(exclude_regexes, list)
+    assert isinstance(include_regexes, list) or isinstance(include_regexes, tuple)
+    assert isinstance(exclude_regexes, list) or isinstance(exclude_regexes, tuple)
     abs_folder_path = normalize_path(abs_folder_path)
     added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes)
     if not added:
@@ -64,13 +64,11 @@ def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclu
     add_watcher(abs_folder_path, include_regexes, exclude_regexes)
 
 
-def remove_folder_from_watching(abs_folder_path: str = None, folder_id: int = None) -> None:
-    """Stops watching at the folder and removes it permanently from the db"""
-    assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
-    if folder_id is None:
-        folder_id = database.SyncFolder.from_path(abs_folder_path)
-    _remove_watcher(folder_id)
-    database.SyncFolder.remove_entry(folder_id)
+def remove_folder_from_watching(abs_folder_path: str) -> None:
+    """Stops watching at the folder and removes it permanently from the json file"""
+    norm_folder_path = normalize_path(abs_folder_path)
+    _remove_watcher(norm_folder_path)
+    file_changes_json.remove_folder(norm_folder_path)
 
 
 def add_single_ignores(folder_id: int, rel_paths: List[str]) -> None:
@@ -137,9 +135,9 @@ def add_watcher(abs_folder_path: str, include_regexes: List[str] = (".*",), excl
     watchers[abs_folder_path] = event_handler, watch
 
 
-def _remove_watcher(folder_id: int):
+def _remove_watcher(abs_folder_path: NormalizedPath):
     """Stops watching"""
-    event_handler, watch = watchers.pop(folder_id)
+    event_handler, watch = watchers.pop(abs_folder_path)
     observer.remove_handler_for_watch(event_handler, watch)
     observer.unschedule(watch)
 

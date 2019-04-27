@@ -233,12 +233,9 @@ class TestMove(TestFileChange):
 class TestAPI(unittest.TestCase):
     abs_folder_path_1 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_1/")
     abs_folder_path_2 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_2/")
-    folder_id_1: int
-    folder_id_2: int
 
     def setUp(self):
-        delete_db_file(paths.LOCAL_DB_PATH)
-        database.create_database()
+        file_changes_json.init_file()
         try:
             os.mkdir(self.abs_folder_path_1)
         except FileExistsError:
@@ -249,8 +246,8 @@ class TestAPI(unittest.TestCase):
         except FileExistsError:
             shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
             os.mkdir(self.abs_folder_path_2)
-        self.folder_id_1 = database.SyncFolder.create(self.abs_folder_path_1)
-        self.folder_id_2 = database.SyncFolder.create(self.abs_folder_path_2)
+        file_changes.add_folder(self.abs_folder_path_1)
+        file_changes.add_folder(self.abs_folder_path_2)
 
     def tearDown(self):
         file_changes.stop_observing()
@@ -284,12 +281,8 @@ class TestAPI(unittest.TestCase):
 
     def test_remove_folder(self):
         file_changes.start()
-        file_changes.remove_folder_from_watching(folder_id=self.folder_id_1)
-        rel_file_path = "test.txt"
-        with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
-            f.write("Hello World" * 100)
-        wait_till_condition(lambda: True is False, timeout=0.5)
-        self.assertEqual(0, len(database.Change.get_all()))
+        file_changes.remove_folder_from_watching(self.abs_folder_path_1)
+        self.assertEqual(1, len(file_changes.watchers))
 
     def test_add_permanent_ignores(self):
         num_ignores = 100
