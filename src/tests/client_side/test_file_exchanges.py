@@ -43,21 +43,5 @@ class TestFileExchanges(unittest.TestCase):
         pass
 
 
-class TestActions(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self._server_process = h_start_server_process()
-        self._dummy_client_folder, self._dummy_server_folder = h_clear_init_dummy_folders()
-        self._server = net_interface.ServerCommunicator.remote_functions
-
-    def tearDown(self) -> None:
-        h_stop_server_process(self._server_process)
-
-    @h_client_routine()
-    def test_pull_action(self):
-        """pull file from server to client"""
-        pass
-
-
 if __name__ == '__main__':
     unittest.main()
