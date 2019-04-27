@@ -8,6 +8,9 @@
 @internal_use:
 """
 import os
+import typing
+
+NormalizedPath = typing.NewType("NormalizedPath", str)
 
 paths_PATH = os.path.realpath(__file__)
 PROJECT_PATH = os.path.abspath(os.path.join(paths_PATH, "../../../.."))
