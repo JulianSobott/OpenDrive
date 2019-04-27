@@ -47,3 +47,13 @@ class TestJson(unittest.TestCase):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder()
         self.assertRaises(KeyError, file_changes_json.remove_folder, path, non_exists_ok=False)
+
+    def test_set_include_regexes(self):
+        file_changes_json.init_file()
+        path, include, exclude = h_get_dummy_folder()
+        file_changes_json.add_folder(path, include, exclude)
+
+        new_include = ["hello", "you"]
+        file_changes_json.set_include_regexes(path, new_include)
+        folder = file_changes_json.get_folder_entry(path)
+        self.assertEqual(new_include, folder["include_regexes"])

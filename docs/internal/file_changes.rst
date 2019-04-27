@@ -30,8 +30,8 @@ API
 - add_single_ignores() -> ignore pulled files
 - set_include_regexes()
 - set_exclude_regexes()
-- get_include_regexes()
-- get_exclude_regexes()
+- get_include_regexes()?
+- get_exclude_regexes()?
 
 
 Details

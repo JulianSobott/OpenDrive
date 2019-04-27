@@ -10,6 +10,9 @@ public functions
 .. autofunction:: add_folder
 .. autofunction:: remove_folder
 .. autofunction:: get_all_synced_folders_paths
+.. autofunction:: get_folder_entry
+.. autofunction:: set_include_regexes
+.. autofunction:: set_exclude_regexes
 
 private functions
 ------------------
@@ -22,12 +25,12 @@ private functions
 """
 import json
 import os
-from typing import List
+from typing import List, Union
 
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
 
-__all__ = ["init_file", "add_folder", "remove_folder"]
+__all__ = ["init_file", "add_folder", "remove_folder", "get_folder_entry"]
 
 
 def init_file() -> None:
@@ -63,6 +66,21 @@ def get_all_synced_folders_paths() -> List[NormalizedPath]:
     return [folder_entry["folder_path"] for folder_entry in data]
 
 
+def set_include_regexes(abs_folder_path: NormalizedPath, include_regexes: List[str]) -> None:
+    _set_folder_attribute(abs_folder_path, "include_regexes", include_regexes)
+
+
+def set_exclude_regexes(abs_folder_path: NormalizedPath, exclude_regexes: List[str]) -> None:
+    _set_folder_attribute(abs_folder_path, "exclude_regexes", exclude_regexes)
+
+
+def get_folder_entry(abs_folder_path: NormalizedPath):
+    data = _get_json_data()
+    for entry in data:
+        if abs_folder_path == entry["folder_path"]:
+            return entry
+
+
 def _can_folder_be_added(abs_folder_path: NormalizedPath) -> bool:
     """If new folder is not nested in any existing folder or would wrap around an existing folder, it can be added."""
     all_synced_folders = get_all_synced_folders_paths()
@@ -87,3 +105,12 @@ def _create_folder_entry(abs_folder_path: NormalizedPath, include_regexes: List[
             "exclude_regexes": exclude_regexes,
             "changes": [],
             }
+
+
+def _set_folder_attribute(abs_folder_path: NormalizedPath, key: str, value: Union[str, list, int, dict]) -> None:
+    data = _get_json_data()
+    for entry in data:
+        if abs_folder_path == entry["folder_path"]:
+            entry[key] = value
+            break
+    _set_json_data(data)
