@@ -54,7 +54,7 @@ def start() -> None:
     observer.start()
 
 
-def add_folder(abs_folder_path: str, ignore_patterns: List[str] = ()) -> None:
+def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> None:
     """Check is folder possible, insert in DB, start watching"""
     abs_folder_path = normalize_path(abs_folder_path)
     can_added = _exist_folder(abs_folder_path)
@@ -62,7 +62,7 @@ def add_folder(abs_folder_path: str, ignore_patterns: List[str] = ()) -> None:
         logger.info(f"Folder {abs_folder_path} can not be added, because it dont exist!")
         return  # TODO: Notify user
     folder_id = _add_folder_to_db(abs_folder_path)
-    add_watcher(abs_folder_path, ignore_patterns, folder_id)
+    add_watcher(abs_folder_path, include_regexes, exclude_regexes, folder_id)
 
 
 def remove_folder_from_watching(abs_folder_path: str = None, folder_id: int = None) -> None:
@@ -99,7 +99,7 @@ def remove_permanent_ignores(ignores: List[str], folder_id: int = None, abs_fold
     if folder_id is None:
         folder_id = database.SyncFolder.from_path(abs_folder_path)
     with database.DBConnection(paths.LOCAL_DB_PATH) as db:
-        sql = f"DELETE FROM ignores WHERE folder_id = ? and pattern in ({','.join(['?']*len(ignores))})"
+        sql = f"DELETE FROM ignores WHERE folder_id = ? and pattern in ({','.join(['?'] * len(ignores))})"
         db.delete(sql, (folder_id, *ignores))
 
 
@@ -131,13 +131,13 @@ def stop_observing():
     observer.__init__()
 
 
-def add_watcher(abs_folder_path: str, ignore_patterns: List[str] = (), folder_id: int = None):
-    """Watcher, that handles changes to the specified folder.
-    `ignore_patterns` is a ist of all patterns to ignore in regex style."""
+def add_watcher(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = (),
+                folder_id: int = None):
+    """Watcher, that handles changes to the specified folder."""
     if folder_id is None:
         sync_folder = database.SyncFolder.from_path(abs_folder_path)
         folder_id = sync_folder.id
-    event_handler = FileSystemEventHandler(abs_folder_path, folder_id, ignore_patterns)
+    event_handler = FileSystemEventHandler(abs_folder_path, folder_id, include_regexes, exclude_regexes)
     watch = observer.schedule(event_handler, abs_folder_path, recursive=True)
     watchers[folder_id] = event_handler, watch
 
@@ -151,9 +151,13 @@ def _remove_watcher(folder_id: int):
 
 class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     """Track changes inside a folder. Every change will either create a new entry in the `changes` table or change
-    an existing one, if no ignore pattern matches."""
-    def __init__(self, abs_folder_path: str, folder_id: int, ignore_patterns: List[str] = ()):
-        super().__init__(ignore_regexes=ignore_patterns, case_sensitive=False)
+    an existing one.
+    It is possible to exclude (don't handle) respectively include certain regex patterns. Whereby exclude patterns
+    are 'stronger' than include."""
+
+    def __init__(self, abs_folder_path: str, folder_id: int, include_regexes: List[str] = (".*",),
+                 exclude_regexes: List[str] = ()):
+        super().__init__(regexes=include_regexes, ignore_regexes=exclude_regexes, case_sensitive=False)
         self.folder_path = abs_folder_path
         self._single_ignore_paths: Dict[str, Tuple[datetime.datetime, bool]] = {}
         self._folder_id: int = folder_id
@@ -180,7 +184,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
             self._ignore = True
         if self._rel_path in self._single_ignore_paths.keys():
             ignore = self._single_ignore_paths[self._rel_path]
-            if not ignore[1]:   # not changed
+            if not ignore[1]:  # not changed
                 self._single_ignore_paths[self._rel_path] = (datetime.datetime.now(), False)
                 self._ignore = True
             else:

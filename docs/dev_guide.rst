@@ -159,9 +159,8 @@ TODO next:
 
 - GUI define features
 - Implement Interface between backend, ui, gui
-- Exchange files based on actions
-    - Create docs
-    - All client side
-    - Client calls at server: pull, move, delete
-    - Client can call get file from server
-    - Client merges changes
+- Add include exclude principal to FileWatcher
+- Rework storing changes
+    - define features
+    - implement features
+

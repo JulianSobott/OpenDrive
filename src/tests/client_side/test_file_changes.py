@@ -40,7 +40,7 @@ class TestFileCreate(TestFileChange):
         ignore_patterns = []
         if ignore:
             ignore_patterns = [".*\\.txt"]
-        file_watcher.add_watcher(self.abs_folder_path, ignore_patterns=ignore_patterns, folder_id=folder_id)
+        file_watcher.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=folder_id)
         if is_folder:
             rel_file_path = "dummy"
             os.mkdir(os.path.join(self.abs_folder_path, rel_file_path))
@@ -79,10 +79,18 @@ class TestFileCreate(TestFileChange):
     def test_create_folder(self):
         self.create_file(is_folder=True)
 
+    def test_create_file_not_included(self):
+        file_watcher.start_observing()
+        file_watcher.add_watcher(self.abs_folder_path, include_regexes=[".*\\.txt"], )
+        with open(os.path.join(self.abs_folder_path, "dummy.py"), "w+") as f:
+            pass
+        wait_till_condition(lambda: True is False, timeout=0.5)
+        self.assertIsNone(database.Change.get_possible_entry(self.folder_id, "dummy.py"))
+
     def test_create_many(self):
         file_watcher.start_observing()
         ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+"]
-        file_watcher.add_watcher(self.abs_folder_path, ignore_patterns=ignore_patterns, folder_id=self.folder_id)
+        file_watcher.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=self.folder_id)
         # root: 10 files + 1 folder
         for i in range(10):
             rel_file_path = f"file_{i}.txt"
@@ -289,7 +297,7 @@ class TestAPI(unittest.TestCase):
         delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
         file_watcher.start()
-        file_watcher.add_folder(self.abs_folder_path_1, [])
+        file_watcher.add_folder(self.abs_folder_path_1)
         wait_till_condition(lambda: len(database.SyncFolder.get_all()) == 1, timeout=1)
         rel_file_path = "test.txt"
         with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
