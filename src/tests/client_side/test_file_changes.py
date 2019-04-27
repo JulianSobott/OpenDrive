@@ -4,9 +4,10 @@ import os
 import shutil
 from thread_testing import wait_till_condition
 
-from OpenDrive.client_side import database, paths, file_changes
+from OpenDrive.client_side import database, paths, file_changes, file_changes_json
 from OpenDrive.general.database import delete_db_file
 from tests.helper_all import h_clear_init_all_folders
+from tests.client_side.helper_client import h_get_dummy_folder_data
 from src.tests.od_logging import logger
 
 
@@ -35,12 +36,12 @@ class TestFileChange(unittest.TestCase):
 
 class TestFileCreate(TestFileChange):
 
-    def create_file(self, ignore=False, folder_id=None, is_folder=False):
+    def create_file(self, ignore=False, is_folder=False):
         file_changes.start_observing()
         ignore_patterns = []
         if ignore:
             ignore_patterns = [".*\\.txt"]
-        file_changes.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=folder_id)
+        file_changes.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns)
         if is_folder:
             rel_file_path = "dummy"
             os.mkdir(os.path.join(self.abs_folder_path, rel_file_path))
@@ -67,10 +68,6 @@ class TestFileCreate(TestFileChange):
     def test_create_file(self):
         """no folder_id, no ignore_patterns"""
         self.create_file()
-
-    def test_create_file_folder_id(self):
-        """folder_id, no ignore_patterns"""
-        self.create_file(folder_id=self.folder_id)
 
     def test_create_file_ignored(self):
         """no folder_id, ignore_patterns"""
@@ -261,26 +258,11 @@ class TestAPI(unittest.TestCase):
         shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
 
     def test_start(self):
-        database.Ignore.create(self.folder_id_1, ".*\\.pyc", True)
+        file_changes_json.init_file()
+        path, include, exclude = h_get_dummy_folder_data()
+        file_changes.add_folder(path, include, exclude)
         file_changes.start()
-        rel_file_path = "test.txt"
-        with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
-            f.write("Hello World" * 100)
-        with open(os.path.join(self.abs_folder_path_1, "test.pyc"), "w") as f:
-            f.write("Hello World" * 100)
-
-        wait_till_condition(
-            lambda: database.Change.get_possible_entry(self.folder_id_1, rel_file_path) is not None,
-            interval=0.1, timeout=1)
-        change = database.Change.get_possible_entry(self.folder_id_1, rel_file_path)
-        self.assertIsInstance(change, database.Change)
-        expected_change = database.Change(1, self.folder_id_1, rel_file_path, is_folder=False,
-                                          last_change_time_stamp=change.last_change_time_stamp,
-                                          is_created=True, is_moved=False, is_deleted=False,
-                                          is_modified=change.is_modified,
-                                          necessary_action=database.Change.ACTION_PULL)
-        self.assertEqual(expected_change, change)
-        self.assertEqual(1, len(database.Change.get_all()))
+        self.assertEqual(1, len(file_changes.watchers))
 
     def test_add_single_ignores(self):
         rel_file_path = "test.txt"

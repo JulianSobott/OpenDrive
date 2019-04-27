@@ -30,7 +30,8 @@ from typing import List, Union
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
 
-__all__ = ["init_file", "add_folder", "remove_folder", "get_folder_entry"]
+__all__ = ["init_file", "add_folder", "remove_folder", "get_all_synced_folders_paths","get_folder_entry",
+           "set_include_regexes", "set_exclude_regexes"]
 
 
 def init_file() -> None:
@@ -64,6 +65,10 @@ def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
 def get_all_synced_folders_paths() -> List[NormalizedPath]:
     data = _get_json_data()
     return [folder_entry["folder_path"] for folder_entry in data]
+
+
+def get_all_synced_folders() -> List:
+    return _get_json_data()
 
 
 def set_include_regexes(abs_folder_path: NormalizedPath, include_regexes: List[str]) -> None:
