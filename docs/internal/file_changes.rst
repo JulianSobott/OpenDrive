@@ -24,12 +24,15 @@ API
 -----
 
 - start() -> watching at all specified folders
-- add_folder() -> Check is folder possible, insert in DB, start watching
-- remove_folder -> remove from DB, Stop watching
+- add_folder() -> Check is folder possible, insert in json, start watching
+- remove_folder -> remove from json, Stop watching (changes are deleted too)
 - get_all_folders() -> return list of all folders
 - add_single_ignores() -> ignore pulled files
-- add_permanent_ignores() -> ...
-- remove_permanent_ignores() -> ...
+- set_include_regexes()
+- set_exclude_regexes()
+- get_include_regexes()
+- get_exclude_regexes()
+
 
 Details
 --------
@@ -42,16 +45,41 @@ What data to store:
     - is directory
     - old_file_path (Only on move)
 
+What folders are watched and the changes are stored in one single json file.
 
-Store changes in a database.
-There are two tables in the local database, that are responsible for file changes.
-One stores all folders, to keep track of. The other stores all file changes. The second one has the folder_id as
-foreign key. Some advantages are, that the folders, and the files can be stored in one db. No redundant paths can occur.
-Easy to select changes in a specific folder.
+**Json structure: changes.json**
 
-**Database structure:** See: :doc:`client_database`.
+File:
+    List[Folder]
+Folder:
+    folder_path: str,
+    include_regexes: List[str],
+    exclude_regexes: List[str],
+    changes: List[Change]
+Change:
+    new_file_path: str,
+    last_change_time_stamp: int,
+    changes: List[str], # move, delete, create, modify
+    necessary_action: str, # pull, move, delete
+    is directory: bool,
+    ~old_file_path: str # Only on move
 
-The code, that is responsible for this task is located at `client_side/file_watcher.py`.
+
+The code, that is responsible for this task is located at `client_side/file_changes.py`.
+
+**Subfolders:**
+
+It is NOT possible to nest folders.
+
+- No use case
+- Redundant files
+- Harder to implement
+
+But it is possible to add specific exclude include rules for subfolders, because of the power of regex. So instead
+of adding a new folder with new rules, add new regex rules that only apply inside this folder. e.g. "inner/.*\.txt".
+In the gui this may be shown as it where a special rule for the subfolder.
+
+
 
 Implementation
 --------------
