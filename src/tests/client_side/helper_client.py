@@ -36,3 +36,10 @@ def h_create_client_dummy_file():
     with open(path, "w+") as file:
         file.write("Hello" * 10)
     return path
+
+
+def h_get_dummy_folder_data():
+    path = client_paths.LOCAL_CLIENT_DATA
+    include = [".*"]
+    exclude = []
+    return path, include, exclude
