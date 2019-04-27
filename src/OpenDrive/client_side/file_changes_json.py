@@ -8,6 +8,7 @@ public functions
 
 .. autofunction:: init_file
 .. autofunction:: add_folder
+.. autofunction:: remove_folder
 .. autofunction:: get_all_synced_folders_paths
 
 private functions
@@ -26,7 +27,7 @@ from typing import List
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
 
-__all__ = ["init_file"]
+__all__ = ["init_file", "add_folder", "remove_folder"]
 
 
 def init_file() -> None:
@@ -44,6 +45,17 @@ def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], excl
     data.append(new_folder_entry)
     _set_json_data(data)
     return True
+
+
+def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
+    data = _get_json_data()
+    for idx, entry in enumerate(data):
+        if abs_folder_path == entry["folder_path"]:
+            data.pop(idx)
+            _set_json_data(data)
+            return
+    if not non_exists_ok:
+        raise KeyError(f"Folder {abs_folder_path} is not in json file!")
 
 
 def get_all_synced_folders_paths() -> List[NormalizedPath]:

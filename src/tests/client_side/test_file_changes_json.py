@@ -34,3 +34,16 @@ class TestJson(unittest.TestCase):
         self.assertTrue(added)
         added = file_changes_json.add_folder(path, include, exclude)
         self.assertFalse(added)
+
+    def test_remove_folder(self):
+        file_changes_json.init_file()
+        path, include, exclude = h_get_dummy_folder()
+        file_changes_json.add_folder(path, include, exclude)
+        file_changes_json.remove_folder(path)
+        data = file_changes_json._get_json_data()
+        self.assertEqual([], data)
+
+    def test_remove_folder_not_existing(self):
+        file_changes_json.init_file()
+        path, include, exclude = h_get_dummy_folder()
+        self.assertRaises(KeyError, file_changes_json.remove_folder, path, non_exists_ok=False)
