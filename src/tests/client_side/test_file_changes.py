@@ -4,7 +4,7 @@ import os
 import shutil
 from thread_testing import wait_till_condition
 
-from OpenDrive.client_side import database, paths, file_watcher
+from OpenDrive.client_side import database, paths, file_changes
 from OpenDrive.general.database import delete_db_file
 from tests.helper_all import h_clear_init_all_folders
 from src.tests.od_logging import logger
@@ -29,18 +29,18 @@ class TestFileChange(unittest.TestCase):
         self.folder_id = database.SyncFolder.create(self.abs_folder_path)
 
     def tearDown(self):
-        file_watcher.stop_observing()
+        file_changes.stop_observing()
         shutil.rmtree(self.abs_folder_path, ignore_errors=True)
 
 
 class TestFileCreate(TestFileChange):
 
     def create_file(self, ignore=False, folder_id=None, is_folder=False):
-        file_watcher.start_observing()
+        file_changes.start_observing()
         ignore_patterns = []
         if ignore:
             ignore_patterns = [".*\\.txt"]
-        file_watcher.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=folder_id)
+        file_changes.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=folder_id)
         if is_folder:
             rel_file_path = "dummy"
             os.mkdir(os.path.join(self.abs_folder_path, rel_file_path))
@@ -80,17 +80,17 @@ class TestFileCreate(TestFileChange):
         self.create_file(is_folder=True)
 
     def test_create_file_not_included(self):
-        file_watcher.start_observing()
-        file_watcher.add_watcher(self.abs_folder_path, include_regexes=[".*\\.txt"], )
+        file_changes.start_observing()
+        file_changes.add_watcher(self.abs_folder_path, include_regexes=[".*\\.txt"], )
         with open(os.path.join(self.abs_folder_path, "dummy.py"), "w+") as f:
             pass
         wait_till_condition(lambda: True is False, timeout=0.5)
         self.assertIsNone(database.Change.get_possible_entry(self.folder_id, "dummy.py"))
 
     def test_create_many(self):
-        file_watcher.start_observing()
+        file_changes.start_observing()
         ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+"]
-        file_watcher.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=self.folder_id)
+        file_changes.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=self.folder_id)
         # root: 10 files + 1 folder
         for i in range(10):
             rel_file_path = f"file_{i}.txt"
@@ -137,8 +137,8 @@ class TestEditFile(TestFileChange):
         self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
         with open(self.abs_file_path, "w"):
             pass
-        file_watcher.start_observing()
-        file_watcher.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        file_changes.start_observing()
+        file_changes.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
 
     def test_edit_file(self):
         with open(self.abs_file_path, "w") as f:
@@ -181,8 +181,8 @@ class TestRemove(TestFileChange):
         self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
         with open(self.abs_file_path, "w"):
             pass
-        file_watcher.start_observing()
-        file_watcher.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        file_changes.start_observing()
+        file_changes.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
 
     def test_remove_file(self):
         os.remove(self.abs_file_path)
@@ -213,9 +213,9 @@ class TestMove(TestFileChange):
         self.test_file_path = os.path.join(self.folder_1_path, self.rel_test_file_path)
         with open(self.test_file_path, "w"):
             pass
-        file_watcher.start_observing()
-        file_watcher.add_watcher(self.folder_1_path, folder_id=self.folder_1_id)
-        file_watcher.add_watcher(self.folder_2_path, folder_id=self.folder_2_id)
+        file_changes.start_observing()
+        file_changes.add_watcher(self.folder_1_path, folder_id=self.folder_1_id)
+        file_changes.add_watcher(self.folder_2_path, folder_id=self.folder_2_id)
 
     def test_move_same_folder(self):
         new_rel_path = "test2.txt"
@@ -256,13 +256,13 @@ class TestAPI(unittest.TestCase):
         self.folder_id_2 = database.SyncFolder.create(self.abs_folder_path_2)
 
     def tearDown(self):
-        file_watcher.stop_observing()
+        file_changes.stop_observing()
         shutil.rmtree(self.abs_folder_path_1, ignore_errors=True)
         shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
 
     def test_start(self):
         database.Ignore.create(self.folder_id_1, ".*\\.pyc", True)
-        file_watcher.start()
+        file_changes.start()
         rel_file_path = "test.txt"
         with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
             f.write("Hello World" * 100)
@@ -287,8 +287,8 @@ class TestAPI(unittest.TestCase):
         abs_file_path = os.path.join(self.abs_folder_path_2, rel_file_path)
         with open(abs_file_path, "w") as f:
             f.write("Hello World" * 100)
-        file_watcher.start()
-        file_watcher.add_single_ignores(self.folder_id_1, [rel_file_path])
+        file_changes.start()
+        file_changes.add_single_ignores(self.folder_id_1, [rel_file_path])
         time.sleep(1)
         shutil.copy(abs_file_path, self.abs_folder_path_1)
         self.assertEqual(0, len(database.Change.get_all()))
@@ -296,8 +296,8 @@ class TestAPI(unittest.TestCase):
     def test_add_folder(self):
         delete_db_file(paths.LOCAL_DB_PATH)
         database.create_database()
-        file_watcher.start()
-        file_watcher.add_folder(self.abs_folder_path_1)
+        file_changes.start()
+        file_changes.add_folder(self.abs_folder_path_1)
         wait_till_condition(lambda: len(database.SyncFolder.get_all()) == 1, timeout=1)
         rel_file_path = "test.txt"
         with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
@@ -306,8 +306,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(1, len(database.Change.get_all()))
 
     def test_remove_folder(self):
-        file_watcher.start()
-        file_watcher.remove_folder_from_watching(folder_id=self.folder_id_1)
+        file_changes.start()
+        file_changes.remove_folder_from_watching(folder_id=self.folder_id_1)
         rel_file_path = "test.txt"
         with open(os.path.join(self.abs_folder_path_1, rel_file_path), "w") as f:
             f.write("Hello World" * 100)
@@ -317,15 +317,15 @@ class TestAPI(unittest.TestCase):
     def test_add_permanent_ignores(self):
         num_ignores = 100
         ignores = [str(i) for i in range(num_ignores)]
-        file_watcher.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
+        file_changes.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
         self.assertEqual(num_ignores, len(database.Ignore.get_all()))
 
     def test_remove_permanent_ignores(self):
         num_ignores = 3
         ignores = [str(i) for i in range(num_ignores)]
-        file_watcher.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
+        file_changes.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
         self.assertEqual(num_ignores, len(database.Ignore.get_all()))
-        file_watcher.remove_permanent_ignores(ignores, folder_id=self.folder_id_1)
+        file_changes.remove_permanent_ignores(ignores, folder_id=self.folder_id_1)
         self.assertEqual(0, len(database.Ignore.get_all()))
 
 
