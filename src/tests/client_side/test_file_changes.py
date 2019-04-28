@@ -267,10 +267,11 @@ class TestAPI(unittest.TestCase):
         with open(abs_file_path, "w") as f:
             f.write("Hello World" * 100)
         file_changes.start()
-        file_changes.add_single_ignores(self.folder_id_1, [rel_file_path])
-        time.sleep(1)
+        file_changes.add_single_ignores(self.abs_folder_path_1, [rel_file_path])
         shutil.copy(abs_file_path, self.abs_folder_path_1)
-        self.assertEqual(0, len(database.Change.get_all()))
+        norm_path = paths.normalize_path(self.abs_folder_path_1)
+        folder = file_changes_json.get_folder_entry(norm_path)
+        self.assertEqual(0, len(folder["changes"]))
 
     def test_add_folder(self):
         file_changes_json.init_file()

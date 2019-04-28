@@ -25,13 +25,26 @@ private functions
 """
 import json
 import os
-from typing import List, Union
+from typing import List, Union, TypeVar
 
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
 
 __all__ = ["init_file", "add_folder", "remove_folder", "get_all_synced_folders_paths","get_folder_entry",
            "set_include_regexes", "set_exclude_regexes"]
+
+
+CHANGE_MOVED = ("moved", 1<<0)
+CHANGE_CREATED = ("created", 1 << 0)
+CHANGE_MODIFIED = ("modified", 1 << 0)
+CHANGE_DELETED = ("deleted", 1 << 0)
+
+ACTION_PULL = ("pull", 1 << 0)
+ACTION_MOVE = ("move", 1 << 0)
+ACTION_DELETE = ("delete", 1 << 0)
+
+ChangeType = TypeVar["ChangeType", CHANGE_CREATED, CHANGE_DELETED, CHANGE_MODIFIED, CHANGE_MOVED]
+ActionType = TypeVar["ActionType", ACTION_DELETE, ACTION_MOVE, ACTION_PULL]
 
 
 def init_file() -> None:
@@ -85,6 +98,13 @@ def get_folder_entry(abs_folder_path: NormalizedPath):
         if abs_folder_path == entry["folder_path"]:
             return entry
 
+
+def add_change_entry(abs_folder_path: NormalizedPath, abs_entry_path: NormalizedPath, change_type: ChangeType,
+                     action: ActionType, is_directory: bool = False, old_file_path: NormalizedPath = None) -> None:
+    folder = get_folder_entry(abs_folder_path)
+    changes = folder["changes"]
+    if abs_entry_path in [entry["new_file_path"] for entry in changes]:
+        pass # TODO
 
 def _can_folder_be_added(abs_folder_path: NormalizedPath) -> bool:
     """If new folder is not nested in any existing folder or would wrap around an existing folder, it can be added."""

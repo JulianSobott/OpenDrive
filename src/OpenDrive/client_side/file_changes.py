@@ -71,10 +71,11 @@ def remove_folder_from_watching(abs_folder_path: str) -> None:
     file_changes_json.remove_folder(norm_folder_path)
 
 
-def add_single_ignores(folder_id: int, rel_paths: List[str]) -> None:
+def add_single_ignores(abs_folder_path: str, rel_paths: List[str]) -> None:
     """Add folder and file names that shall be ignored, because they are pulled from the server."""
-    assert folder_id in watchers.keys(), f"No event_handler, watches at the specified folder with id {folder_id}"
-    event_handler, _ = watchers[folder_id]
+    norm_folder_path = normalize_path(abs_folder_path)
+    assert norm_folder_path in watchers.keys(), f"No event_handler, watches at the specified folder: {norm_folder_path}"
+    event_handler, _ = watchers[norm_folder_path]
     event_handler.add_single_ignores(rel_paths)
 
 
@@ -148,7 +149,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     It is possible to exclude (don't handle) respectively include certain regex patterns. Whereby exclude patterns
     are 'stronger' than include."""
 
-    def __init__(self, abs_folder_path: str, include_regexes: List[str] = (".*",),
+    def __init__(self, abs_folder_path: NormalizedPath, include_regexes: List[str] = (".*",),
                  exclude_regexes: List[str] = ()):
         super().__init__(regexes=include_regexes, ignore_regexes=exclude_regexes, case_sensitive=False)
         self.folder_path = abs_folder_path
@@ -189,6 +190,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def on_created(self, event):
         if self._ignore:
             return
+        file_changes_json.
         try:
             database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
         except database.UniqueError:
