@@ -18,22 +18,15 @@ def h_create_empty_dummy_folder(id_: int = 1) -> paths.NormalizedPath:
 
 
 class TestFileChange(unittest.TestCase):
-    abs_folder_path = os.path.join(paths.LOCAL_CLIENT_DATA, "dummy_folder/")
-    folder_id: int
 
     @classmethod
     def setUpClass(cls) -> None:
         h_clear_init_all_folders()
 
     def setUp(self):
-        delete_db_file(paths.LOCAL_DB_PATH)
-        database.create_database()
-        try:
-            os.mkdir(self.abs_folder_path)
-        except FileExistsError:
-            shutil.rmtree(self.abs_folder_path, ignore_errors=True)
-            os.mkdir(self.abs_folder_path)
-        self.folder_id = database.SyncFolder.create(self.abs_folder_path)
+        file_changes_json.init_file()
+        self.abs_folder_path = h_create_empty_dummy_folder()
+        file_changes.start_observing()
 
     def tearDown(self):
         file_changes.stop_observing()
@@ -43,63 +36,54 @@ class TestFileChange(unittest.TestCase):
 class TestFileCreate(TestFileChange):
 
     def create_file(self, ignore=False, is_folder=False):
-        file_changes.start_observing()
         ignore_patterns = []
         if ignore:
             ignore_patterns = [".*\\.txt"]
-        file_changes._add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns)
+        file_changes.add_folder(self.abs_folder_path, exclude_regexes=ignore_patterns)
         if is_folder:
             rel_file_path = "dummy"
             os.mkdir(os.path.join(self.abs_folder_path, rel_file_path))
         else:
             rel_file_path = "test.txt"
             abs_file_path = os.path.join(self.abs_folder_path, rel_file_path)
-            with open(abs_file_path, "w"):
-                pass
-        found_possible = wait_till_condition(
-            lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None,
-            interval=0.5, timeout=1)
+            with open(abs_file_path, "w") as f:
+                f.write("Hello" * 10)
+        time.sleep(1)
+        folder = file_changes_json.get_folder_entry(self.abs_folder_path)
         if ignore:
-            self.assertEqual(found_possible, False)
+            self.assertEqual(0, len(folder["changes"]))
         else:
-            change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
-            self.assertIsInstance(change, database.Change)
-            expected_change = database.Change(change.id, self.folder_id, rel_file_path, is_folder=is_folder,
-                                              last_change_time_stamp=change.last_change_time_stamp, is_created=True,
-                                              is_moved=False,
-                                              is_deleted=False, is_modified=False,
-                                              necessary_action=database.Change.ACTION_PULL)
+            change = folder["changes"][0]
+            dummy_changes = []
+            file_changes_json._add_new_change_entry(dummy_changes, paths.normalize_path(rel_file_path),
+                                                    file_changes_json.CHANGE_CREATED,
+                                                    file_changes_json.ACTION_PULL, is_folder)
+
+            expected_change = dummy_changes[0]
+            if not is_folder:
+                expected_change["changes"].append(file_changes_json.CHANGE_MODIFIED[0])
+            expected_change["last_change_time_stamp"] = change["last_change_time_stamp"]
             self.assertEqual(expected_change, change)
 
     def test_create_file(self):
         """no folder_id, no ignore_patterns"""
         self.create_file()
 
-    def test_create_file_ignored(self):
-        """no folder_id, ignore_patterns"""
-        self.create_file(ignore=True)
-
     def test_create_folder(self):
         self.create_file(is_folder=True)
 
     def test_create_file_not_included(self):
-        file_changes.start_observing()
-        file_changes._add_watcher(self.abs_folder_path, include_regexes=[".*\\.txt"], )
-        with open(os.path.join(self.abs_folder_path, "dummy.py"), "w+") as f:
-            pass
-        wait_till_condition(lambda: True is False, timeout=0.5)
-        self.assertIsNone(database.Change.get_possible_entry(self.folder_id, "dummy.py"))
+        self.create_file(ignore=True)
 
     def test_create_many(self):
-        file_changes.start_observing()
         ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+"]
-        file_changes._add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=self.folder_id)
+        file_changes.add_folder(self.abs_folder_path, exclude_regexes=ignore_patterns)
         # root: 10 files + 1 folder
         for i in range(10):
             rel_file_path = f"file_{i}.txt"
             abs_file_path = os.path.join(self.abs_folder_path, rel_file_path)
-            with open(abs_file_path, "w"):
-                pass
+            with open(abs_file_path, "w") as f:
+                f.write("HeHe"*10)
         rel_folder_path = "folder_1"
         folder_1_path = os.path.join(self.abs_folder_path, rel_folder_path)
         os.mkdir(folder_1_path)
@@ -121,13 +105,14 @@ class TestFileCreate(TestFileChange):
         abs_file_path = os.path.join(ignore_folder_path, "file_1.txt")
         with open(abs_file_path, "w"):
             pass
-        wait_till_condition(lambda: database.Change.get_possible_entry(self.folder_id, "folder_1/not_ignore_file.txt") is not None)
-        changes = database.Change.get_all_folder_entries(self.folder_id)
+        time.sleep(2)
+        folder = file_changes_json.get_folder_entry(self.abs_folder_path)
+        changes = folder["changes"]
         num_files = 0
         num_folders = 0
         for change in changes:
-            num_folders += change.is_folder
-            num_files += not change.is_folder
+            num_folders += change["is_directory"]
+            num_files += not change["is_directory"]
         self.assertEqual(11, num_files)
         self.assertEqual(2, num_folders)
 
@@ -145,7 +130,7 @@ class TestEditFile(TestFileChange):
 
     def test_edit_file(self):
         with open(self.abs_file_path, "w") as f:
-            f.write(100*"Edited text")
+            f.write(100 * "Edited text")
         found_possible = wait_till_condition(
             lambda: database.Change.get_possible_entry(self.folder_id, self.rel_file_path) is not None,
             interval=0.5, timeout=1)
@@ -161,8 +146,8 @@ class TestEditFile(TestFileChange):
     def test_create_edit_file(self):
         rel_file_path = "test2.txt"
         with open(os.path.join(self.abs_folder_path, rel_file_path), "w") as f:
-            f.write(100*"Edited text")
-        wait_till_condition(lambda: False, timeout=0.5)     # Ensures, both data is in DB
+            f.write(100 * "Edited text")
+        wait_till_condition(lambda: False, timeout=0.5)  # Ensures, both data is in DB
         wait_till_condition(
             lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None,
             interval=0.5, timeout=1)
@@ -258,7 +243,7 @@ class TestAPI(unittest.TestCase):
         rel_path = paths.normalize_path("test.txt")
         file_changes.add_single_ignores(folder_path, [rel_path])
         with open(os.path.join(folder_path, rel_path), "w+") as f:
-            f.write("Hello"*100)
+            f.write("Hello" * 100)
 
         folder = file_changes_json.get_folder_entry(folder_path)
         self.assertEqual(0, len(folder["changes"]))
