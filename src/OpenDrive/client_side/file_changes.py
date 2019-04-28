@@ -153,9 +153,9 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
                  exclude_regexes: List[str] = ()):
         super().__init__(regexes=include_regexes, ignore_regexes=exclude_regexes, case_sensitive=False)
         self.folder_path = abs_folder_path
-        self._single_ignore_paths: Dict[str, Tuple[datetime.datetime, bool]] = {}
+        self._single_ignore_paths: Dict[NormalizedPath, Tuple[datetime.datetime, bool]] = {}
         self._is_dir: bool = False
-        self._rel_path: str = ""
+        self._rel_path: NormalizedPath = normalize_path("")
         self._ignore = False
 
     def on_any_event(self, event):
@@ -169,7 +169,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         # Metadata
         self._is_dir = event.is_directory
         src_path = event.src_path
-        self._rel_path = os.path.relpath(src_path, self.folder_path)
+        self._rel_path = normalize_path(os.path.relpath(src_path, self.folder_path))
 
         # ignore
         self._ignore = False
@@ -190,52 +190,28 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def on_created(self, event):
         if self._ignore:
             return
-        try:
-            database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
-        except database.UniqueError:
-            pass  # Added file twice. See issue at :func:`on_any_event`
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, file_changes_json.CHANGE_CREATED,
+                                           file_changes_json.ACTION_PULL, is_directory=self._is_dir)
 
     def on_deleted(self, event):
         if self._ignore:
             return
-        database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_deleted=True,
-                               necessary_action=database.Change.ACTION_DELETE)
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, file_changes_json.CHANGE_DELETED,
+                                           file_changes_json.ACTION_DELETE, is_directory=self._is_dir)
 
     def on_modified(self, event):
         if self._ignore:
             return
-        try:
-            database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_modified=True,
-                                   necessary_action=database.Change.ACTION_PULL)
-        except database.UniqueError:
-            change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
-            change.is_modified = True
-            change.last_change_time_stamp = change.get_current_time()
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, file_changes_json.CHANGE_MODIFIED,
+                                           file_changes_json.ACTION_PULL, is_directory=self._is_dir)
 
     def on_moved(self, event):
         if self._ignore:
             return
-        possible_change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
-        action = database.Change.ACTION_MOVE
-        old_abs_path = event.src_path
-        current_rel_path = os.path.relpath(event.dest_path, self.folder_path)
-        try:
-            pull = possible_change.is_modified or possible_change.is_created
-            if pull:
-                action = database.Change.ACTION_PULL_DELETE
-        except AttributeError:
-            pass
-        try:
-            database.Change.create(self._folder_id, current_rel_path, is_folder=self._is_dir, is_moved=True,
-                                   necessary_action=action, old_abs_path=old_abs_path)
-        except database.UniqueError:
-            change = database.Change.get_possible_entry(self._folder_id, self._rel_path)
-            change.is_moved = True
-            change.old_abs_path = old_abs_path
-            change.current_rel_path = current_rel_path
-            change.last_change_time_stamp = change.get_current_time()
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, file_changes_json.CHANGE_MOVED,
+                                           file_changes_json.ACTION_MOVE, is_directory=self._is_dir)
 
-    def add_single_ignores(self, rel_ignore_paths: List[str]):
+    def add_single_ignores(self, rel_ignore_paths: List[NormalizedPath]):
         """Single ignores are listed, to be ignored once to be ignored when an event on them occurs.
         Tis is to make copies from the server possible. If changes to the ignored file/folder happens in a short
         time (0.5s) both changes are ignored. This is because a copy is tracked as create and then on modify."""

@@ -155,13 +155,17 @@ def _set_folder_attribute(abs_folder_path: NormalizedPath, key: str, value: Unio
 def _update_existing_change_entry(existing_entry: dict, rel_entry_path: NormalizedPath, change_type: ChangeType,
                                   action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None):
     existing_entry["last_change_time_stamp"] = str(datetime.datetime.now())
-    existing_entry["necessary_action"] = action[0]
     existing_entry["is_directory"] = is_directory
     if action == ACTION_MOVE:
         existing_entry["new_file_path"] = new_file_path
         existing_entry["old_file_path"] = rel_entry_path
     else:
         existing_entry["new_file_path"] = rel_entry_path
+
+    if action == ACTION_MOVE and existing_entry["necessary_action"] == ACTION_PULL[0]:
+        existing_entry["necessary_action"] = ACTION_PULL[0]
+    else:
+        existing_entry["necessary_action"] = action[0]
 
     if change_type == CHANGE_CREATED or change_type == CHANGE_DELETED:
         existing_entry["changes"] = [change_type[0]]
