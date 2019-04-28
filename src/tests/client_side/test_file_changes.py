@@ -285,22 +285,10 @@ class TestAPI(unittest.TestCase):
 
     def test_remove_folder(self):
         file_changes.start_observing()
-        file_changes.remove_folder_from_watching(self.abs_folder_path_1)
-        self.assertEqual(1, len(file_changes.watchers))
-
-    def test_add_permanent_ignores(self):
-        num_ignores = 100
-        ignores = [str(i) for i in range(num_ignores)]
-        file_changes.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
-        self.assertEqual(num_ignores, len(database.Ignore.get_all()))
-
-    def test_remove_permanent_ignores(self):
-        num_ignores = 3
-        ignores = [str(i) for i in range(num_ignores)]
-        file_changes.add_permanent_ignores(ignores, folder_id=self.folder_id_1)
-        self.assertEqual(num_ignores, len(database.Ignore.get_all()))
-        file_changes.remove_permanent_ignores(ignores, folder_id=self.folder_id_1)
-        self.assertEqual(0, len(database.Ignore.get_all()))
+        path, _, _ = h_get_dummy_folder_data()
+        file_changes.add_folder(path)
+        file_changes.remove_folder_from_watching(path)
+        self.assertEqual(0, len(file_changes.watchers))
 
 
 if __name__ == '__main__':
