@@ -51,3 +51,18 @@ class TestJson(unittest.TestCase):
         file_changes_json.set_include_regexes(path, new_include)
         folder = file_changes_json.get_folder_entry(path)
         self.assertEqual(new_include, folder["include_regexes"])
+
+    def test_add_change_entry(self):
+        file_changes_json.init_file()
+        path, include, exclude = h_get_dummy_folder_data()
+        file_changes_json.add_folder(path, include, exclude)
+
+        rel_file_path = client_paths.normalize_path("test.txt")
+        file_changes_json.add_change_entry(path, rel_file_path, file_changes_json.CHANGE_CREATED,
+                                           file_changes_json.ACTION_PULL)
+        file_changes_json.add_change_entry(path, rel_file_path, file_changes_json.CHANGE_MODIFIED,
+                                           file_changes_json.ACTION_PULL)
+        folder_entry = file_changes_json.get_folder_entry(path)
+        changes = folder_entry["changes"]
+        self.assertEqual(1, len(changes))
+        self.assertEqual(2, len(changes[0]["changes"]))

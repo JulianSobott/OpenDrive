@@ -190,7 +190,6 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def on_created(self, event):
         if self._ignore:
             return
-        file_changes_json.
         try:
             database.Change.create(self._folder_id, self._rel_path, is_folder=self._is_dir, is_created=True)
         except database.UniqueError:
