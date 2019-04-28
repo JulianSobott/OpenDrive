@@ -11,9 +11,9 @@ from tests.client_side.helper_client import h_get_dummy_folder_data
 from src.tests.od_logging import logger
 
 
-def h_create_dummy_folder(id_: int = 1) -> paths.NormalizedPath:
+def h_create_empty_dummy_folder(id_: int = 1) -> paths.NormalizedPath:
     path = os.path.join(paths.LOCAL_CLIENT_DATA, f"dummy_folder_{id_}")
-    os.makedirs(path, exist_ok=True)
+    h_create_empty(path)
     return paths.normalize_path(path)
 
 
@@ -252,17 +252,29 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(1, len(file_changes.watchers))
 
     def test_add_single_ignores(self):
-        folder_path = h_create_dummy_folder()
+        folder_path = h_create_empty_dummy_folder()
         file_changes.start_observing()
         file_changes.add_folder(folder_path)
         rel_path = paths.normalize_path("test.txt")
         file_changes.add_single_ignores(folder_path, [rel_path])
-        time.sleep(1)
         with open(os.path.join(folder_path, rel_path), "w+") as f:
             f.write("Hello"*100)
 
         folder = file_changes_json.get_folder_entry(folder_path)
         self.assertEqual(0, len(folder["changes"]))
+
+    def test_remove_single_ignores(self):
+        folder_path = h_create_empty_dummy_folder()
+        file_changes.start_observing()
+        file_changes.add_folder(folder_path)
+        rel_path = paths.normalize_path("test.txt")
+        file_changes.add_single_ignores(folder_path, [rel_path])
+        file_changes.remove_single_ignore(folder_path, rel_path)
+        with open(os.path.join(folder_path, rel_path), "w+") as f:
+            f.write("Hello" * 100)
+
+        folder = file_changes_json.get_folder_entry(folder_path)
+        self.assertEqual(1, len(folder["changes"]))
 
     def test_add_folder(self):
         file_changes_json.init_file()
