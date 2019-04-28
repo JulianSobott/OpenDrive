@@ -27,6 +27,7 @@ import datetime
 import json
 import os
 import time
+import typing
 from typing import List, Union, TypeVar
 
 from OpenDrive.client_side import paths as client_paths
@@ -45,8 +46,8 @@ ACTION_PULL = ("pull", 1 << 0)
 ACTION_MOVE = ("move", 1 << 0)
 ACTION_DELETE = ("delete", 1 << 0)
 
-ChangeType = TypeVar["ChangeType", CHANGE_CREATED, CHANGE_DELETED, CHANGE_MODIFIED, CHANGE_MOVED]
-ActionType = TypeVar["ActionType", ACTION_DELETE, ACTION_MOVE, ACTION_PULL]
+ChangeType = typing.NewType("ChangeType", tuple)
+ActionType = typing.NewType("ActionType", tuple)
 
 
 def init_file() -> None:

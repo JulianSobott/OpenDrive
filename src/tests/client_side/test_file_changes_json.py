@@ -3,7 +3,8 @@ import json
 
 from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import paths as client_paths
-from client_side.helper_client import h_get_dummy_folder_data
+
+from tests.client_side.helper_client import h_get_dummy_folder_data
 
 
 class TestJson(unittest.TestCase):
