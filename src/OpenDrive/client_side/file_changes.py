@@ -6,18 +6,19 @@
 public functions
 ----------------
 
-.. autofunction:: start
+.. autofunction:: start_observing
+.. autofunction:: stop_observing
+.. autofunction:: add_folder
+.. autofunction:: remove_folder_from_watching
+.. autofunction:: add_single_ignores
+.. autofunction:: remove_single_ignore
 
 private functions
 -----------------
 
-.. autofunction:: start_observing
-
-.. autofunction:: add_watcher
-
-.. autofunction:: start_observing
-
-.. autofunction:: stop_observing
+.. autofunction:: _add_watcher
+.. autofunction:: _remove_watcher
+.. autofunction:: _get_event_handler
 
 private classes
 ---------------
@@ -41,83 +42,15 @@ from OpenDrive.general.paths import normalize_path, NormalizedPath
 observer = watchdog_observers.Observer()
 watchers: Dict[NormalizedPath, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
 
-__all__ = ["start", "add_folder", "remove_folder_from_watching"]
+__all__ = ["start_observing", "add_folder", "remove_folder_from_watching", "add_single_ignores"]
 
 
-def start() -> None:
+def start_observing() -> None:
     """Start watching at all folders in a new thread. Calling this is enough and no further function calls inside this
     module are needed."""
     all_folders = file_changes_json.get_all_synced_folders()
     for folder in all_folders:
-        add_watcher(folder["folder_path"], folder["include_regexes"], folder["exclude_regexes"])
-    observer.start()
-
-
-def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> bool:
-    """If possible add folder to file and start watching. Returns True, if the folder was added."""
-    assert isinstance(include_regexes, list) or isinstance(include_regexes, tuple)
-    assert isinstance(exclude_regexes, list) or isinstance(exclude_regexes, tuple)
-    abs_folder_path = normalize_path(abs_folder_path)
-    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes)
-    if not added:
-        return False
-    add_watcher(abs_folder_path, include_regexes, exclude_regexes)
-
-
-def remove_folder_from_watching(abs_folder_path: str) -> None:
-    """Stops watching at the folder and removes it permanently from the json file"""
-    norm_folder_path = normalize_path(abs_folder_path)
-    _remove_watcher(norm_folder_path)
-    file_changes_json.remove_folder(norm_folder_path)
-
-
-def add_single_ignores(abs_folder_path: str, rel_paths: List[str]) -> None:
-    """Add folder and file names that shall be ignored, because they are pulled from the server."""
-    norm_folder_path = normalize_path(abs_folder_path)
-    assert norm_folder_path in watchers.keys(), f"No event_handler, watches at the specified folder: {norm_folder_path}"
-    event_handler, _ = watchers[norm_folder_path]
-    event_handler.add_single_ignores(rel_paths)
-
-
-def add_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_path: str = None) -> None:
-    assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
-    if folder_id is None:
-        folder_id = database.SyncFolder.from_path(abs_folder_path)
-
-    seq = [(folder_id, pattern, True) for pattern in ignores]
-    with database.DBConnection(paths.LOCAL_DB_PATH) as db:
-        sql = 'INSERT INTO "ignores" (' \
-              '"folder_id", "pattern", "sub_folders") ' \
-              'VALUES (?, ?, ?)'
-        db.cursor.executemany(sql, seq)
-
-
-def remove_permanent_ignores(ignores: List[str], folder_id: int = None, abs_folder_path: str = None) -> None:
-    assert abs_folder_path is not None or folder_id is not None, "One of both arguments must be not None."
-    if folder_id is None:
-        folder_id = database.SyncFolder.from_path(abs_folder_path)
-    with database.DBConnection(paths.LOCAL_DB_PATH) as db:
-        sql = f"DELETE FROM ignores WHERE folder_id = ? and pattern in ({','.join(['?'] * len(ignores))})"
-        db.delete(sql, (folder_id, *ignores))
-
-
-def _exist_folder(abs_folder_path: str) -> bool:
-    if not os.path.exists(abs_folder_path):
-        return False
-    return True
-
-
-def _add_folder_to_db(abs_folder_path: str) -> int:
-    folder_id = database.SyncFolder.create(abs_folder_path)
-    return folder_id
-
-
-def _add_ignores_to_db(ignore_patterns: List[str]) -> None:
-    pass
-
-
-def start_observing():
-    """Protects the `observer` from external access"""
+        _add_watcher(folder["folder_path"], folder["include_regexes"], folder["exclude_regexes"])
     observer.start()
 
 
@@ -129,7 +62,37 @@ def stop_observing():
     observer.__init__()
 
 
-def add_watcher(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()):
+def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> bool:
+    """If possible add folder to file and start watching. Returns True, if the folder was added."""
+    assert isinstance(include_regexes, list) or isinstance(include_regexes, tuple)
+    assert isinstance(exclude_regexes, list) or isinstance(exclude_regexes, tuple)
+    abs_folder_path = normalize_path(abs_folder_path)
+    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes)
+    if not added:
+        return False
+    _add_watcher(abs_folder_path, include_regexes, exclude_regexes)
+
+
+def remove_folder_from_watching(abs_folder_path: str) -> None:
+    """Stops watching at the folder and removes it permanently from the json file"""
+    norm_folder_path = normalize_path(abs_folder_path)
+    _remove_watcher(norm_folder_path)
+    file_changes_json.remove_folder(norm_folder_path)
+
+
+def add_single_ignores(abs_folder_path: str, rel_paths: List[NormalizedPath]) -> None:
+    """Add folder and file names that shall be ignored, because they are pulled from the server."""
+    event_handler = _get_event_handler(normalize_path(abs_folder_path))
+    event_handler.add_single_ignores(rel_paths)
+
+
+def remove_single_ignore(abs_folder_path: str, rel_paths: str) -> None:
+    """This must be called, when the file is finished with copying"""
+    event_handler = _get_event_handler(normalize_path(abs_folder_path))
+    event_handler.remove_single_ignores(normalize_path(rel_paths))
+
+
+def _add_watcher(abs_folder_path: NormalizedPath, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()):
     """Watcher, that handles changes to the specified folder."""
     event_handler = FileSystemEventHandler(abs_folder_path, include_regexes, exclude_regexes)
     watch = observer.schedule(event_handler, abs_folder_path, recursive=True)
@@ -141,6 +104,13 @@ def _remove_watcher(abs_folder_path: NormalizedPath):
     event_handler, watch = watchers.pop(abs_folder_path)
     observer.remove_handler_for_watch(event_handler, watch)
     observer.unschedule(watch)
+
+
+def _get_event_handler(abs_folder_path: NormalizedPath) -> 'FileSystemEventHandler':
+    norm_folder_path = normalize_path(abs_folder_path)
+    assert norm_folder_path in watchers.keys(), f"No event_handler, watches at the specified folder: {norm_folder_path}"
+    event_handler, _ = watchers[norm_folder_path]
+    return event_handler
 
 
 class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
@@ -165,7 +135,6 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         folder and inner files/folders are created (e.g. from python). Then these files/folders are handled twice.
         Once the manual and once the normal on create way. To solve this unique errors at insert are ignored in the DB.
         """
-        logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
         # Metadata
         self._is_dir = event.is_directory
         src_path = event.src_path
@@ -178,14 +147,16 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         if self._rel_path in self._single_ignore_paths.keys():
             ignore = self._single_ignore_paths[self._rel_path]
             if not ignore[1]:  # not changed
-                self._single_ignore_paths[self._rel_path] = (datetime.datetime.now(), False)
+                self._single_ignore_paths[self._rel_path] = (datetime.datetime.now(), True)
                 self._ignore = True
             else:
                 enter_time = self._single_ignore_paths[self._rel_path][0]
-                if datetime.datetime.now() - enter_time < datetime.timedelta(seconds=0.5):
+                if datetime.datetime.now() - enter_time < datetime.timedelta(seconds=0.1):
                     self._ignore = True
                 else:
                     self._single_ignore_paths.pop(self._rel_path)
+        if not self._ignore:
+            logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
 
     def on_created(self, event):
         if self._ignore:
@@ -213,6 +184,11 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
 
     def add_single_ignores(self, rel_ignore_paths: List[NormalizedPath]):
         """Single ignores are listed, to be ignored once to be ignored when an event on them occurs.
-        Tis is to make copies from the server possible. If changes to the ignored file/folder happens in a short
-        time (0.5s) both changes are ignored. This is because a copy is tracked as create and then on modify."""
+        This is to make copies from the server possible. This MUST be removed, after the file is finished creating."""
         self._single_ignore_paths.update({path: (datetime.datetime.now(), False) for path in rel_ignore_paths})
+
+    def remove_single_ignores(self, rel_ignore_path: NormalizedPath):
+        """This must be called, when the file is finished with copying"""
+        assert rel_ignore_path in self._single_ignore_paths.keys(), "Can't remove file from ignoring, that was never " \
+                                                                    f"added. {self.folder_path}/{rel_ignore_path}"
+        self._single_ignore_paths.pop(rel_ignore_path)

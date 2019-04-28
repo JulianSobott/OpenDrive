@@ -6,9 +6,15 @@ from thread_testing import wait_till_condition
 
 from OpenDrive.client_side import database, paths, file_changes, file_changes_json
 from OpenDrive.general.database import delete_db_file
-from tests.helper_all import h_clear_init_all_folders
+from tests.helper_all import h_clear_init_all_folders, h_create_empty
 from tests.client_side.helper_client import h_get_dummy_folder_data
 from src.tests.od_logging import logger
+
+
+def h_create_dummy_folder(id_: int = 1) -> paths.NormalizedPath:
+    path = os.path.join(paths.LOCAL_CLIENT_DATA, f"dummy_folder_{id_}")
+    os.makedirs(path, exist_ok=True)
+    return paths.normalize_path(path)
 
 
 class TestFileChange(unittest.TestCase):
@@ -41,7 +47,7 @@ class TestFileCreate(TestFileChange):
         ignore_patterns = []
         if ignore:
             ignore_patterns = [".*\\.txt"]
-        file_changes.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns)
+        file_changes._add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns)
         if is_folder:
             rel_file_path = "dummy"
             os.mkdir(os.path.join(self.abs_folder_path, rel_file_path))
@@ -78,7 +84,7 @@ class TestFileCreate(TestFileChange):
 
     def test_create_file_not_included(self):
         file_changes.start_observing()
-        file_changes.add_watcher(self.abs_folder_path, include_regexes=[".*\\.txt"], )
+        file_changes._add_watcher(self.abs_folder_path, include_regexes=[".*\\.txt"], )
         with open(os.path.join(self.abs_folder_path, "dummy.py"), "w+") as f:
             pass
         wait_till_condition(lambda: True is False, timeout=0.5)
@@ -87,7 +93,7 @@ class TestFileCreate(TestFileChange):
     def test_create_many(self):
         file_changes.start_observing()
         ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+"]
-        file_changes.add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=self.folder_id)
+        file_changes._add_watcher(self.abs_folder_path, exclude_regexes=ignore_patterns, folder_id=self.folder_id)
         # root: 10 files + 1 folder
         for i in range(10):
             rel_file_path = f"file_{i}.txt"
@@ -135,7 +141,7 @@ class TestEditFile(TestFileChange):
         with open(self.abs_file_path, "w"):
             pass
         file_changes.start_observing()
-        file_changes.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        file_changes._add_watcher(self.abs_folder_path, folder_id=self.folder_id)
 
     def test_edit_file(self):
         with open(self.abs_file_path, "w") as f:
@@ -179,7 +185,7 @@ class TestRemove(TestFileChange):
         with open(self.abs_file_path, "w"):
             pass
         file_changes.start_observing()
-        file_changes.add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        file_changes._add_watcher(self.abs_folder_path, folder_id=self.folder_id)
 
     def test_remove_file(self):
         os.remove(self.abs_file_path)
@@ -211,8 +217,8 @@ class TestMove(TestFileChange):
         with open(self.test_file_path, "w"):
             pass
         file_changes.start_observing()
-        file_changes.add_watcher(self.folder_1_path, folder_id=self.folder_1_id)
-        file_changes.add_watcher(self.folder_2_path, folder_id=self.folder_2_id)
+        file_changes._add_watcher(self.folder_1_path, folder_id=self.folder_1_id)
+        file_changes._add_watcher(self.folder_2_path, folder_id=self.folder_2_id)
 
     def test_move_same_folder(self):
         new_rel_path = "test2.txt"
@@ -231,46 +237,31 @@ class TestMove(TestFileChange):
 
 
 class TestAPI(unittest.TestCase):
-    abs_folder_path_1 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_1/")
-    abs_folder_path_2 = os.path.join(paths.PROJECT_PATH, "local/client_side/dummy_folder_2/")
 
     def setUp(self):
         file_changes_json.init_file()
-        try:
-            os.mkdir(self.abs_folder_path_1)
-        except FileExistsError:
-            shutil.rmtree(self.abs_folder_path_1, ignore_errors=True)
-            os.mkdir(self.abs_folder_path_1)
-        try:
-            os.mkdir(self.abs_folder_path_2)
-        except FileExistsError:
-            shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
-            os.mkdir(self.abs_folder_path_2)
-        file_changes.add_folder(self.abs_folder_path_1)
-        file_changes.add_folder(self.abs_folder_path_2)
 
     def tearDown(self):
         file_changes.stop_observing()
-        shutil.rmtree(self.abs_folder_path_1, ignore_errors=True)
-        shutil.rmtree(self.abs_folder_path_2, ignore_errors=True)
 
-    def test_start(self):
+    def test_start_observing(self):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
         file_changes.add_folder(path, include, exclude)
-        file_changes.start()
+        file_changes.start_observing()
         self.assertEqual(1, len(file_changes.watchers))
 
     def test_add_single_ignores(self):
-        rel_file_path = "test.txt"
-        abs_file_path = os.path.join(self.abs_folder_path_2, rel_file_path)
-        with open(abs_file_path, "w") as f:
-            f.write("Hello World" * 100)
-        file_changes.start()
-        file_changes.add_single_ignores(self.abs_folder_path_1, [rel_file_path])
-        shutil.copy(abs_file_path, self.abs_folder_path_1)
-        norm_path = paths.normalize_path(self.abs_folder_path_1)
-        folder = file_changes_json.get_folder_entry(norm_path)
+        folder_path = h_create_dummy_folder()
+        file_changes.start_observing()
+        file_changes.add_folder(folder_path)
+        rel_path = paths.normalize_path("test.txt")
+        file_changes.add_single_ignores(folder_path, [rel_path])
+        time.sleep(1)
+        with open(os.path.join(folder_path, rel_path), "w+") as f:
+            f.write("Hello"*100)
+
+        folder = file_changes_json.get_folder_entry(folder_path)
         self.assertEqual(0, len(folder["changes"]))
 
     def test_add_folder(self):
@@ -281,7 +272,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual([path], file_changes_json.get_all_synced_folders_paths())
 
     def test_remove_folder(self):
-        file_changes.start()
+        file_changes.start_observing()
         file_changes.remove_folder_from_watching(self.abs_folder_path_1)
         self.assertEqual(1, len(file_changes.watchers))
 

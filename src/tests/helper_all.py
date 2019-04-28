@@ -93,12 +93,15 @@ def h_clear_init_dummy_folders() -> Tuple[str, str]:
     dummy_client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "DUMMY_FOLDER")
     dummy_server_folder = os.path.join(server_paths.LOCAL_SERVER_DATA, "DUMMY_FOLDER")
 
-    shutil.rmtree(dummy_client_folder, ignore_errors=True)
-    shutil.rmtree(dummy_server_folder, ignore_errors=True)
-    os.makedirs(dummy_client_folder, exist_ok=True)
-    os.makedirs(dummy_server_folder, exist_ok=True)
+    h_create_empty(dummy_client_folder)
+    h_create_empty(dummy_server_folder)
 
     return dummy_client_folder, dummy_server_folder
+
+
+def h_create_empty(abs_path: str):
+    shutil.rmtree(abs_path, ignore_errors=True)
+    os.makedirs(abs_path, exist_ok=True)
 
 
 def _debug_server_routine(queue: Queue):
