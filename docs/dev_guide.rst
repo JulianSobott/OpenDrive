@@ -159,8 +159,28 @@ TODO next:
 
 - GUI define features
 - Implement Interface between backend, ui, gui
-- Synchronization
-    - Check current functionality of syncing
-    - ...
-    - Send change directly to server
+- Main program
+    - startup                      <---
+        - start watching           <---
+        - connect to server
+            - success:
+                - authenticate
+                - get changes from server
+                - sync everything
+    - main loop
+        - sync on changes at the client
+    - shutdown
+        - is finished syncing?
+        - close connection to server
+        - stop watching
+
+    - special cases
+        - new folder added at client
+            - mark everything as created?
+        - existing client folder is merged with existing server folder
+            - options:
+                - use latest
+                - use one side
+                - decide individual
+                - make copies of duplicates
 
