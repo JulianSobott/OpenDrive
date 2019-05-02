@@ -159,8 +159,8 @@ TODO next:
 
 - GUI define features
 - Implement Interface between backend, ui, gui
-- Add include exclude principal to FileWatcher
-- Rework storing changes
-    - define features
-    - implement features
+- Synchronization
+    - Check current functionality of syncing
+    - ...
+    - Send change directly to server
 
