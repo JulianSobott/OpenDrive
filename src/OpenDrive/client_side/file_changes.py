@@ -35,6 +35,7 @@ from typing import List, Dict, Tuple
 from watchdog import events as watchdog_events, observers as watchdog_observers
 from watchdog.observers.api import ObservedWatch
 import datetime
+import threading
 
 from OpenDrive.client_side.od_logging import logger
 from OpenDrive.client_side import paths, file_changes_json
@@ -49,6 +50,7 @@ watchers: Dict[NormalizedPath, Tuple['FileSystemEventHandler', ObservedWatch]] =
 def start_observing() -> None:
     """Start watching at all folders in a new thread. Calling this is enough and no further function calls inside this
     module are needed."""
+    file_changes_json.init_file()
     all_folders = file_changes_json.get_all_synced_folders()
     for folder in all_folders:
         _add_watcher(folder["folder_path"], folder["include_regexes"], folder["exclude_regexes"])
@@ -157,6 +159,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
                 else:
                     self._single_ignore_paths.pop(self._rel_path)
         if not self._ignore:
+            sync_waiter.sync()
             logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
 
     def on_created(self, event):
@@ -196,3 +199,17 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         assert rel_ignore_path in self._single_ignore_paths.keys(), "Can't remove file from ignoring, that was never " \
                                                                     f"added. {self.folder_path}/{rel_ignore_path}"
         self._single_ignore_paths.pop(rel_ignore_path)
+
+
+class SyncWaiter:
+    """Provides a waiter that sleeps until a synchronization happens. This waiter may be used in other modules,
+    that rely on be notified if a change happens."""
+
+    def __init__(self):
+        self.waiter = threading.Event()
+
+    def sync(self):
+        self.waiter.set()
+
+
+sync_waiter = SyncWaiter()

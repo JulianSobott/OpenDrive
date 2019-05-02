@@ -51,6 +51,8 @@ ActionType = typing.NewType("ActionType", tuple)
 
 
 def init_file() -> None:
+    if os.path.isfile(client_paths.LOCAL_CLIENT_DATA):
+        return
     os.makedirs(client_paths.LOCAL_CLIENT_DATA, exist_ok=True)
     with open(client_paths.LOCAL_JSON_PATH, "w+") as file:
         all_folders = []
