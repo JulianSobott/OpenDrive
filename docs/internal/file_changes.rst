@@ -57,12 +57,12 @@ Folder:
     exclude_regexes: List[str],
     changes: List[Change]
 Change:
-    new_file_path: str,
+    new_file_path: str,     # relative to folder_path
     last_change_time_stamp: int,
     changes: List[str], # move, delete, create, modify
     necessary_action: str, # pull, move, delete
     is directory: bool,
-    ~old_file_path: str # Only on move
+    ~old_file_path: str # Only on move in same folder, relative to folder_path
 
 
 The code, that is responsible for this task is located at `client_side/file_changes.py`.

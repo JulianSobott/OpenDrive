@@ -189,39 +189,16 @@ class TestFileChanges(unittest.TestCase):
                                                    file_changes_json.CHANGE_MOVED, new_file_path=new_rel_path)
         h_min_equal_changes(self, expected_change, self.abs_folder_path, allow_modified=False)
 
-
-class TestMove(TestFileChange):
-
-    def setUp(self):
-        super().setUp()
-        self.folder_1_path = os.path.join(self.abs_folder_path, "folder_1")
-        self.folder_1_id = database.SyncFolder.create(self.folder_1_path)
-        os.mkdir(self.folder_1_path)
-        self.folder_2_path = os.path.join(self.abs_folder_path, "folder_2")
-        self.folder_2_id = database.SyncFolder.create(self.folder_2_path)
-        os.mkdir(self.folder_2_path)
-        self.rel_test_file_path = "test_file.txt"
-        self.test_file_path = os.path.join(self.folder_1_path, self.rel_test_file_path)
-        with open(self.test_file_path, "w"):
-            pass
-        file_changes.start_observing()
-        file_changes._add_watcher(self.folder_1_path, folder_id=self.folder_1_id)
-        file_changes._add_watcher(self.folder_2_path, folder_id=self.folder_2_id)
-
-    def test_move_same_folder(self):
+    def test_twice_move(self):
         new_rel_path = "test2.txt"
-        shutil.move(self.test_file_path, os.path.join(self.folder_1_path, new_rel_path))
-        wait_till_condition(
-            lambda: database.Change.get_possible_entry(self.folder_1_id, new_rel_path) is not None,
-            interval=0.1, timeout=1)
-        change = database.Change.get_possible_entry(self.folder_1_id, new_rel_path)
-        self.assertIsInstance(change, database.Change)
-        expected_change = database.Change(1, self.folder_1_id, new_rel_path, is_folder=False,
-                                          last_change_time_stamp=change.last_change_time_stamp,
-                                          is_created=False, is_moved=True, is_deleted=False, is_modified=False,
-                                          necessary_action=database.Change.ACTION_MOVE,
-                                          old_abs_path=self.test_file_path)
-        self.assertEqual(expected_change, change)
+        new_abs_path = os.path.join(self.abs_folder_path, new_rel_path)
+        shutil.move(self.abs_file_path, new_abs_path)
+        new_rel_path = "test3.txt"
+        shutil.move(new_abs_path, os.path.join(self.abs_folder_path, new_rel_path))
+        time.sleep(0.5)
+        expected_change = h_create_expected_change(self.rel_file_path, file_changes_json.ACTION_MOVE,
+                                                   file_changes_json.CHANGE_MOVED, new_file_path=new_rel_path)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, allow_modified=False)
 
 
 class TestAPI(unittest.TestCase):

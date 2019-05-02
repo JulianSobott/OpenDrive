@@ -158,7 +158,10 @@ def _update_existing_change_entry(existing_entry: dict, rel_entry_path: Normaliz
     existing_entry["is_directory"] = is_directory
     if action == ACTION_MOVE:
         existing_entry["new_file_path"] = new_file_path
-        existing_entry["old_file_path"] = rel_entry_path
+        if "old_file_path" not in existing_entry.keys():
+            existing_entry["old_file_path"] = rel_entry_path
+        else:
+            pass    # keep old old_file_path, because this is the name at the remote
     else:
         existing_entry["new_file_path"] = rel_entry_path
 
