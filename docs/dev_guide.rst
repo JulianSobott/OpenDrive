@@ -161,11 +161,11 @@ TODO next:
 - Implement Interface between backend, ui, gui
 - Main program
     - startup                      <---
-        - start watching           <---
+        - start watching
         - connect to server
             - success:
                 - authenticate
-                - get changes from server
+                - get changes from server   <---
                 - sync everything
     - main loop
         - sync on changes at the client
