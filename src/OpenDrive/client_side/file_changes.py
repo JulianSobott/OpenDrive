@@ -28,6 +28,8 @@ private classes
     :show-inheritance:
 
 """
+__all__ = ["start_observing", "add_folder", "remove_folder_from_watching", "add_single_ignores"]
+
 import os
 from typing import List, Dict, Tuple
 from watchdog import events as watchdog_events, observers as watchdog_observers
@@ -39,10 +41,9 @@ from OpenDrive.client_side import paths, file_changes_json
 
 from OpenDrive.general.paths import normalize_path, NormalizedPath
 
+
 observer = watchdog_observers.Observer()
 watchers: Dict[NormalizedPath, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
-
-__all__ = ["start_observing", "add_folder", "remove_folder_from_watching", "add_single_ignores"]
 
 
 def start_observing() -> None:
