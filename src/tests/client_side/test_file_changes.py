@@ -17,6 +17,32 @@ def h_create_empty_dummy_folder(id_: int = 1) -> paths.NormalizedPath:
     return paths.normalize_path(path)
 
 
+def h_create_expected_change(rel_file_path: str, action: file_changes_json.ActionType,
+                             change: file_changes_json.ChangeType, is_folder: bool = False, extra_changes=()):
+    dummy_changes = []
+    file_changes_json._add_new_change_entry(dummy_changes, paths.normalize_path(rel_file_path), change, action,
+                                            is_folder)
+
+    expected_change = dummy_changes[0]
+    for change in extra_changes:
+        expected_change["changes"].append(change[0])
+    return expected_change
+
+
+def h_min_equal_changes(test_object: unittest.TestCase, expected_change, folder_path, expected_min_changes=1,
+                        allow_modified = True):
+    folder = file_changes_json.get_folder_entry(folder_path)
+    test_object.assertGreaterEqual(expected_min_changes, len(folder["changes"]))
+    if expected_min_changes == 0:
+        test_object.assertEqual(0, len(folder["changes"]))
+        return
+    change = folder["changes"][0]
+    expected_change["last_change_time_stamp"] = change["last_change_time_stamp"]
+    if allow_modified and "modified" in change["changes"]:
+        expected_change["changes"].append("modified")
+    test_object.assertEqual(expected_change, change)
+
+
 class TestFileChange(unittest.TestCase):
 
     @classmethod
@@ -49,21 +75,11 @@ class TestFileCreate(TestFileChange):
             with open(abs_file_path, "w") as f:
                 f.write("Hello" * 10)
         time.sleep(1)
-        folder = file_changes_json.get_folder_entry(self.abs_folder_path)
-        if ignore:
-            self.assertEqual(0, len(folder["changes"]))
-        else:
-            change = folder["changes"][0]
-            dummy_changes = []
-            file_changes_json._add_new_change_entry(dummy_changes, paths.normalize_path(rel_file_path),
-                                                    file_changes_json.CHANGE_CREATED,
-                                                    file_changes_json.ACTION_PULL, is_folder)
+        expected_change = h_create_expected_change(rel_file_path, file_changes_json.ACTION_PULL,
+                                                   file_changes_json.CHANGE_CREATED, is_folder)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, 0 if ignore else 1)
 
-            expected_change = dummy_changes[0]
-            if not is_folder:
-                expected_change["changes"].append(file_changes_json.CHANGE_MODIFIED[0])
-            expected_change["last_change_time_stamp"] = change["last_change_time_stamp"]
-            self.assertEqual(expected_change, change)
+        return
 
     def test_create_file(self):
         """no folder_id, no ignore_patterns"""
@@ -117,60 +133,64 @@ class TestFileCreate(TestFileChange):
         self.assertEqual(2, num_folders)
 
 
-class TestEditFile(TestFileChange):
+class TestEditFile(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        h_clear_init_all_folders()
 
     def setUp(self):
-        super().setUp()
+        file_changes_json.init_file()
+        self.abs_folder_path = h_create_empty_dummy_folder()
         self.rel_file_path = "test.txt"
         self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
         with open(self.abs_file_path, "w"):
             pass
         file_changes.start_observing()
-        file_changes._add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        file_changes.add_folder(self.abs_folder_path)
+
+    def tearDown(self):
+        file_changes.stop_observing()
+        shutil.rmtree(self.abs_folder_path, ignore_errors=True)
 
     def test_edit_file(self):
         with open(self.abs_file_path, "w") as f:
             f.write(100 * "Edited text")
-        found_possible = wait_till_condition(
-            lambda: database.Change.get_possible_entry(self.folder_id, self.rel_file_path) is not None,
-            interval=0.5, timeout=1)
-        change = database.Change.get_possible_entry(self.folder_id, self.rel_file_path)
-        self.assertIsInstance(change, database.Change)
-        is_folder = False
-        expected_change = database.Change(1, self.folder_id, self.rel_file_path, is_folder=is_folder,
-                                          last_change_time_stamp=change.last_change_time_stamp,
-                                          is_created=False, is_moved=False, is_deleted=False, is_modified=True,
-                                          necessary_action=database.Change.ACTION_PULL)
-        self.assertEqual(expected_change, change)
+        time.sleep(0.5)
+        expected_change = h_create_expected_change(self.rel_file_path, file_changes_json.ACTION_PULL,
+                                                   file_changes_json.CHANGE_MODIFIED)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path)
 
     def test_create_edit_file(self):
         rel_file_path = "test2.txt"
         with open(os.path.join(self.abs_folder_path, rel_file_path), "w") as f:
             f.write(100 * "Edited text")
-        wait_till_condition(lambda: False, timeout=0.5)  # Ensures, both data is in DB
-        wait_till_condition(
-            lambda: database.Change.get_possible_entry(self.folder_id, rel_file_path) is not None,
-            interval=0.5, timeout=1)
-        change = database.Change.get_possible_entry(self.folder_id, rel_file_path)
-        self.assertIsInstance(change, database.Change)
-        is_folder = False
-        expected_change = database.Change(1, self.folder_id, rel_file_path, is_folder=is_folder,
-                                          last_change_time_stamp=change.last_change_time_stamp,
-                                          is_created=True, is_moved=False, is_deleted=False, is_modified=True,
-                                          necessary_action=database.Change.ACTION_PULL)
-        self.assertEqual(expected_change, change)
+        time.sleep(0.5)
+        expected_change = h_create_expected_change(rel_file_path, file_changes_json.ACTION_PULL,
+                                                   file_changes_json.CHANGE_CREATED,
+                                                   extra_changes=[file_changes_json.CHANGE_MODIFIED])
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, allow_modified=False)
 
 
 class TestRemove(TestFileChange):
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        h_clear_init_all_folders()
+
     def setUp(self):
-        super().setUp()
+        file_changes_json.init_file()
+        self.abs_folder_path = h_create_empty_dummy_folder()
         self.rel_file_path = "test.txt"
         self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
         with open(self.abs_file_path, "w"):
             pass
         file_changes.start_observing()
-        file_changes._add_watcher(self.abs_folder_path, folder_id=self.folder_id)
+        file_changes.add_folder(self.abs_folder_path)
+
+    def tearDown(self):
+        file_changes.stop_observing()
+        shutil.rmtree(self.abs_folder_path, ignore_errors=True)
 
     def test_remove_file(self):
         os.remove(self.abs_file_path)
