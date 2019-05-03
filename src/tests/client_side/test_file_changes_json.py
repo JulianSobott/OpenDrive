@@ -9,6 +9,9 @@ from tests.client_side.helper_client import h_get_dummy_folder_data
 
 class TestJson(unittest.TestCase):
 
+    def setUp(self) -> None:
+        file_changes_json.init_file(empty=True)
+
     def test_init_file(self):
         file_changes_json.init_file()
         with open(client_paths.LOCAL_JSON_PATH, "r") as file:

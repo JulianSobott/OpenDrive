@@ -5,7 +5,7 @@ from OpenDrive import client_side
 from OpenDrive.server_side import database
 from OpenDrive.client_side import authentication
 from OpenDrive.general.database import delete_db_file
-from client_side import paths as client_paths
+from OpenDrive.client_side import paths as client_paths
 
 from tests.server_side.database import h_setup_server_database
 

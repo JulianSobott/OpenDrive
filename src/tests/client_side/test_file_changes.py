@@ -21,7 +21,7 @@ def h_create_expected_change(rel_file_path: str, action: file_changes_json.Actio
                              change: file_changes_json.ChangeType, is_folder: bool = False, extra_changes=(),
                              new_file_path: str = None):
     dummy_changes = []
-    file_changes_json._add_new_change_entry(dummy_changes, paths.normalize_path(rel_file_path), change, action,
+    file_changes_json.gen_json._add_new_change_entry(dummy_changes, paths.normalize_path(rel_file_path), change, action,
                                             is_folder)
 
     expected_change = dummy_changes[0]
