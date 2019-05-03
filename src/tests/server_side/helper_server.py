@@ -15,7 +15,7 @@ def h_deactivate_set_user_authenticated(func):
     """Deactivates the function, that is only available when a client is connected"""
     def wrapper(*args):
         copy_set_user_authenticated = authentication._set_user_authenticated
-        authentication._set_user_authenticated = lambda user_id: None
+        authentication._set_user_authenticated = lambda user_id, device_id: None
         ret = func(*args)
         authentication._set_user_authenticated = copy_set_user_authenticated
         return ret
