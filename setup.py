@@ -19,7 +19,9 @@ if __name__ == '__main__':
           url='https://github.com/JulianSobott/OpenDrive',
           author='Julian Sobott',
           author_email='julian.sobott@gmx.de',
-          packages=find_packages(),
+          #packages=find_packages("src", ["tests", "tests.*"]), # excludes tests
+          packages=find_packages("src"),
+          package_dir={'': 'src'},
           test_suite='setup.my_test_suite',
           include_package_data=True,
           keywords='synchronisation backup share cloud',
