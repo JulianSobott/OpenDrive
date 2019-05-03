@@ -17,11 +17,15 @@ private functions
 
 """
 import threading
+import time
 
 from OpenDrive.client_side import file_changes as c_file_changes
 from OpenDrive.client_side import net_start as c_net_start
 from OpenDrive.client_side import interface as c_interface
 from OpenDrive.client_side import synchronization as c_synchronization
+
+"""After an call to sync appears the program waits for this time, to prevent too frequent update rates."""
+MIN_UPDATE_PAUSE_TIME = 5
 
 
 def start():
@@ -40,6 +44,7 @@ def mainloop():
         print("Waiting...")
         c_file_changes.sync_waiter.waiter.wait()
         c_file_changes.sync_waiter.waiter.clear()
+        time.sleep(MIN_UPDATE_PAUSE_TIME)
         print("Synchronize")
         c_synchronization.full_synchronize()
 

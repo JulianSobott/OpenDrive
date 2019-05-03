@@ -20,6 +20,11 @@ private functions
 .. autofunction:: _execute_server_actions
 
 """
+import json
+import os
+
+from OpenDrive.net_interface import server
+from OpenDrive.client_side import paths as client_paths
 
 
 def full_synchronize() -> None:
@@ -32,7 +37,9 @@ def full_synchronize() -> None:
 
 
 def _get_server_changes() -> list:
-    pass
+    changes_file = server.get_changes(client_paths.LOCAL_CLIENT_DATA)
+    with open(changes_file, "r") as file:
+        return json.load(file)
 
 
 def _get_client_changes() -> list:
