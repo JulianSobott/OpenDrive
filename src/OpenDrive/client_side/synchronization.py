@@ -25,6 +25,7 @@ import os
 
 from OpenDrive.net_interface import server
 from OpenDrive.client_side import paths as client_paths
+from OpenDrive.client_side import file_changes_json as client_json
 
 
 def full_synchronize() -> None:
@@ -44,11 +45,15 @@ def _get_server_changes() -> list:
 
 
 def _get_client_changes() -> list:
-    pass
+    return client_json.get_all_data()
 
 
 def _merge_changes(server_changes: list, client_changes: list) -> tuple:
-    pass
+    needed_client_actions = []
+    needed_server_actions = []
+    conflicts = []
+
+    return needed_server_actions, needed_client_actions, conflicts
 
 
 def _execute_client_actions(client_actions) -> None:

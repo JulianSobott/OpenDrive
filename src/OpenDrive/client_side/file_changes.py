@@ -52,7 +52,7 @@ def start_observing() -> None:
     """Start watching at all folders in a new thread. Calling this is enough and no further function calls inside this
     module are needed."""
     file_changes_json.init_file()
-    all_folders = file_changes_json.get_all_synced_folders()
+    all_folders = file_changes_json.get_all_data()
     for folder in all_folders:
         _add_watcher(folder["folder_path"], folder["include_regexes"], folder["exclude_regexes"])
     observer.start()

@@ -71,7 +71,8 @@ def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
 
 
 @override_gen_functions
-def get_all_synced_folders() -> List:
+def get_all_data() -> List:
+    """A list of all synced folders and the changes data."""
     return _get_json_data()
 
 
