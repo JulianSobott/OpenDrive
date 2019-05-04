@@ -92,6 +92,13 @@ def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: Normali
             _set_json_data(data)
 
 
+def can_folder_be_added(abs_folder_path: NormalizedPath) -> bool:
+    """If new folder is not nested in any existing folder or would wrap around an existing folder, it can be added."""
+    all_synced_folders = get_all_synced_folders_paths()
+    return len([1 for existing_folder in all_synced_folders if abs_folder_path in existing_folder or existing_folder
+                in abs_folder_path]) == 0
+
+
 def _get_json_data() -> List:
     raise NotImplemented
 
@@ -122,6 +129,11 @@ def _update_existing_change_entry(existing_entry: dict, rel_entry_path: Normaliz
         existing_entry["changes"] = [change_type[0]]
     if change_type == CHANGE_MODIFIED or change_type == CHANGE_MODIFIED:
         existing_entry["changes"].append(change_type[0])
+
+
+def get_all_synced_folders_paths() -> List[NormalizedPath]:
+    data = _get_json_data()
+    return [folder_entry["folder_path"] for folder_entry in data]
 
 
 def _add_new_change_entry(changes: list, rel_entry_path: NormalizedPath, change_type: ChangeType,

@@ -52,6 +52,16 @@ def create_changes_file_for_new_device(user_id: int, device_id: int, empty: bool
     return gen_json.init_file(file_path, empty)
 
 
+def add_folder(rel_folder_path: NormalizedPath) -> bool:
+    if not gen_json.can_folder_be_added(rel_folder_path):
+        return False
+    data = _get_json_data()
+    new_folder_entry = {"folder_path": rel_folder_path, "changes": []}
+    data.append(new_folder_entry)
+    _set_json_data(data)
+    return True
+
+
 def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: ChangeType,
                      action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     return gen_json.add_change_entry(abs_folder_path, rel_entry_path, change_type, action, is_directory, new_file_path)

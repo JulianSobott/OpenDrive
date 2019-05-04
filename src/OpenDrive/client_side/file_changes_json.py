@@ -36,7 +36,7 @@ from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive.general import file_changes_json as gen_json
 
-__all__ = ["init_file", "add_folder", "remove_folder", "get_all_synced_folders_paths","get_folder_entry",
+__all__ = ["init_file", "add_folder", "remove_folder", "get_folder_entry",
            "set_include_regexes", "set_exclude_regexes"]
 
 
@@ -58,7 +58,7 @@ def init_file(empty: bool = False) -> None:
 
 
 def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) -> bool:
-    if not _can_folder_be_added(abs_folder_path):
+    if not gen_json.can_folder_be_added(abs_folder_path):
         return False
     data = _get_json_data()
     new_folder_entry = _create_folder_entry(abs_folder_path, include_regexes, exclude_regexes)
@@ -76,11 +76,6 @@ def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
             return
     if not non_exists_ok:
         raise KeyError(f"Folder {abs_folder_path} is not in json file!")
-
-
-def get_all_synced_folders_paths() -> List[NormalizedPath]:
-    data = _get_json_data()
-    return [folder_entry["folder_path"] for folder_entry in data]
 
 
 def get_all_synced_folders() -> List:
@@ -106,13 +101,6 @@ def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: Normali
 
 def get_folder_entry(abs_folder_path: NormalizedPath):
     return gen_json.get_folder_entry(abs_folder_path)
-
-
-def _can_folder_be_added(abs_folder_path: NormalizedPath) -> bool:
-    """If new folder is not nested in any existing folder or would wrap around an existing folder, it can be added."""
-    all_synced_folders = get_all_synced_folders_paths()
-    return len([1 for existing_folder in all_synced_folders if abs_folder_path in existing_folder or existing_folder
-                in abs_folder_path]) == 0
 
 
 def _get_json_data() -> List:

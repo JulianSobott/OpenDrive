@@ -7,7 +7,7 @@ import os
 
 from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
-from OpenDrive.server_side import file_changes_json as server_json
+from OpenDrive.server_side import server_json as server_json
 from OpenDrive.server_side.database import Token
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
     h_register_dummy_user_device, h_clear_init_server_folders, h_register_dummy_user
