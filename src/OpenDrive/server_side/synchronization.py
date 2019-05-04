@@ -26,6 +26,3 @@ def get_changes(dest_path: str) -> net.File:
     user_path = server_paths.get_users_root_folder(user.user_id)
     changes_path = os.path.join(user_path, f"changes_{user.device_id}.json")
     return net.File(changes_path, dest_path)
-
-
-

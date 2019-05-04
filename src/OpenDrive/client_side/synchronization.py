@@ -37,8 +37,9 @@ def full_synchronize() -> None:
 
 
 def _get_server_changes() -> list:
-    changes_file = server.get_changes(client_paths.LOCAL_CLIENT_DATA)
-    with open(changes_file, "r") as file:
+    dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "server_changes.json")
+    changes_file = server.get_changes(dest_path)
+    with open(changes_file.dst_path, "r") as file:
         return json.load(file)
 
 
