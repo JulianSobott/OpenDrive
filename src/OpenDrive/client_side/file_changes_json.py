@@ -40,23 +40,21 @@ __all__ = ["init_file", "add_folder", "remove_folder", "get_folder_entry",
            "set_include_regexes", "set_exclude_regexes"]
 
 
-CHANGE_MOVED = ("moved", 1<<0)
-CHANGE_CREATED = ("created", 1 << 0)
-CHANGE_MODIFIED = ("modified", 1 << 0)
-CHANGE_DELETED = ("deleted", 1 << 0)
-
-ACTION_PULL = ("pull", 1 << 0)
-ACTION_MOVE = ("move", 1 << 0)
-ACTION_DELETE = ("delete", 1 << 0)
-
-ChangeType = typing.NewType("ChangeType", tuple)
-ActionType = typing.NewType("ActionType", tuple)
+def override_gen_functions(func):
+    def wrapper(*args, **kwargs):
+        gen_json._set_json_data = _set_json_data
+        gen_json._get_json_data = _get_json_data
+        ret_value = func(*args, **kwargs)
+        return ret_value
+    return wrapper
 
 
+@override_gen_functions
 def init_file(empty: bool = False) -> None:
     return gen_json.init_file(client_paths.LOCAL_JSON_PATH, empty)
 
 
+@override_gen_functions
 def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) -> bool:
     if not gen_json.can_folder_be_added(abs_folder_path):
         return False
@@ -67,38 +65,39 @@ def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], excl
     return True
 
 
+@override_gen_functions
 def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
-    data = _get_json_data()
-    for idx, entry in enumerate(data):
-        if abs_folder_path == entry["folder_path"]:
-            data.pop(idx)
-            _set_json_data(data)
-            return
-    if not non_exists_ok:
-        raise KeyError(f"Folder {abs_folder_path} is not in json file!")
+    return gen_json.remove_folder(abs_folder_path, non_exists_ok)
 
 
+@override_gen_functions
 def get_all_synced_folders() -> List:
     return _get_json_data()
 
 
+@override_gen_functions
 def set_include_regexes(abs_folder_path: NormalizedPath, include_regexes: List[str]) -> None:
     _set_folder_attribute(abs_folder_path, "include_regexes", include_regexes)
 
 
+@override_gen_functions
 def set_exclude_regexes(abs_folder_path: NormalizedPath, exclude_regexes: List[str]) -> None:
     _set_folder_attribute(abs_folder_path, "exclude_regexes", exclude_regexes)
 
 
-def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: ChangeType,
-                     action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
+@override_gen_functions
+def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: gen_json.ChangeType,
+                     action: gen_json.ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) \
+        -> None:
     return gen_json.add_change_entry(abs_folder_path, rel_entry_path, change_type, action, is_directory, new_file_path)
 
 
+@override_gen_functions
 def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath) -> None:
     return gen_json.remove_change_entry(abs_folder_path, rel_entry_path)
 
 
+@override_gen_functions
 def get_folder_entry(abs_folder_path: NormalizedPath):
     return gen_json.get_folder_entry(abs_folder_path)
 
@@ -113,6 +112,7 @@ def _set_json_data(data: List):
         return json.dump(data, file)
 
 
+@override_gen_functions
 def _create_folder_entry(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) -> \
         dict:
     return {"folder_path": abs_folder_path,
@@ -122,6 +122,7 @@ def _create_folder_entry(abs_folder_path: NormalizedPath, include_regexes: List[
             }
 
 
+@override_gen_functions
 def _set_folder_attribute(abs_folder_path: NormalizedPath, key: str, value: Union[str, list, int, dict]) -> None:
     data = _get_json_data()
     for entry in data:
@@ -129,7 +130,3 @@ def _set_folder_attribute(abs_folder_path: NormalizedPath, key: str, value: Unio
             entry[key] = value
             break
     _set_json_data(data)
-
-
-gen_json._set_json_data = _set_json_data
-gen_json._get_json_data = _get_json_data

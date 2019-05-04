@@ -43,15 +43,28 @@ from OpenDrive.general.file_changes_json import ChangeType, ActionType
 from OpenDrive import net_interface
 
 
+def _override_gen_functions(func):
+    def wrapper(*args, **kwargs):
+        gen_json._set_json_data = _set_json_data
+        gen_json._get_json_data = _get_json_data
+        ret_value = func(*args, **kwargs)
+        return ret_value
+
+    return wrapper
+
+
+@_override_gen_functions
 def get_file_name(device_id: int):
     return f"changes_{device_id}.json"
 
 
+@_override_gen_functions
 def create_changes_file_for_new_device(user_id: int, device_id: int, empty: bool = False) -> None:
     file_path = _get_file_path(user_id, device_id)
     return gen_json.init_file(file_path, empty)
 
 
+@_override_gen_functions
 def add_folder(rel_folder_path: NormalizedPath) -> bool:
     if not gen_json.can_folder_be_added(rel_folder_path):
         return False
@@ -62,11 +75,18 @@ def add_folder(rel_folder_path: NormalizedPath) -> bool:
     return True
 
 
+@_override_gen_functions
+def remove_folder(rel_folder_path: NormalizedPath, non_exists_ok=True):
+    return gen_json.remove_folder(rel_folder_path, non_exists_ok)
+
+
+@_override_gen_functions
 def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: ChangeType,
                      action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     return gen_json.add_change_entry(abs_folder_path, rel_entry_path, change_type, action, is_directory, new_file_path)
 
 
+@_override_gen_functions
 def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath) -> None:
     return gen_json.remove_change_entry(abs_folder_path, rel_entry_path)
 
@@ -85,11 +105,8 @@ def _set_json_data(data: List):
         return json.dump(data, file)
 
 
+@_override_gen_functions
 def _get_file_path(user_id: int, device_id: int) -> str:
     user_path = server_paths.get_users_root_folder(user_id)
     file_path = os.path.join(user_path, get_file_name(device_id))
     return file_path
-
-
-gen_json._set_json_data = _set_json_data
-gen_json._get_json_data = _get_json_data

@@ -82,6 +82,17 @@ def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: Normalized
     _set_json_data(data)
 
 
+def remove_folder(folder_path: NormalizedPath, non_exists_ok=True):
+    data = _get_json_data()
+    for idx, entry in enumerate(data):
+        if folder_path == entry["folder_path"]:
+            data.pop(idx)
+            _set_json_data(data)
+            return
+    if not non_exists_ok:
+        raise KeyError(f"Folder {folder_path} is not in json file!")
+
+
 def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath) -> None:
     data = _get_json_data()
     folder = get_folder_entry(abs_folder_path, data)
