@@ -7,6 +7,7 @@ public functions
 -----------------
 
 .. autofunction:: register_user_device
+.. autofunction:: register_user
 
 .. autofunction:: login_manual_user_device
 
@@ -85,7 +86,7 @@ def login_auto(token: Token, mac_address: str) -> bool:
         return False
     if token != device.token:
         return False
-    _set_user_authenticated(-1, device.device_id)     # TODO: FIXME: get user id
+    _set_user_authenticated(device.user_id, device.device_id)
     return True
 
 
