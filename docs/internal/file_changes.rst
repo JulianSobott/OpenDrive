@@ -50,14 +50,14 @@ What folders are watched and the changes are stored in one single json file.
 **Json structure: changes.json**
 
 File:
-    List[Folder]
+    Dict[folder_path: Folder]
 Folder:
-    folder_path: str,
+    server_folder_path: str
     include_regexes: List[str],
     exclude_regexes: List[str],
-    changes: List[Change]
+    changes: Dict[actual_file_path: Change]
 Change:
-    new_file_path: str,     # relative to folder_path
+    new_file_path: str,     # relative to folder_path (actual_file_path)
     last_change_time_stamp: int,
     changes: List[str], # move, delete, create, modify
     necessary_action: str, # pull, move, delete

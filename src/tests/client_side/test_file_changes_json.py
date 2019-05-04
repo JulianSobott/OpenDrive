@@ -21,9 +21,11 @@ class TestJson(unittest.TestCase):
 
     def test_add_folder(self):
         path, include, exclude = h_get_dummy_folder_data()
-        file_changes_json.add_folder(path, include, exclude)
+        server_path = file_changes_json.NormalizedPath("folder_at_server")
+        file_changes_json.add_folder(path, include, exclude, server_path)
         data = file_changes_json._get_json_data()
-        expected = {path: {"include_regexes": include, "exclude_regexes": exclude, "changes": {}}}
+        expected = {path: {"server_folder_path": server_path, "include_regexes": include, "exclude_regexes": exclude,
+                           "changes": {}}}
         self.assertEqual(expected, data)
 
     def test_add_folder_existing(self):

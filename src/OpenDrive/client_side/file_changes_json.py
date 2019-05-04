@@ -30,7 +30,7 @@ import json
 import os
 import time
 import typing
-from typing import List, Union, TypeVar
+from typing import List, Union, Optional
 
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
@@ -56,11 +56,12 @@ def init_file(empty: bool = False) -> None:
 
 
 @override_gen_functions
-def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) -> bool:
+def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str],
+               server_folder_path: Optional[NormalizedPath] = None) -> bool:
     if not gen_json.can_folder_be_added(abs_folder_path):
         return False
     data = _get_json_data()
-    new_folder_entry = _create_folder_entry(abs_folder_path, include_regexes, exclude_regexes)
+    new_folder_entry = _create_folder_entry(server_folder_path, include_regexes, exclude_regexes)
     data[abs_folder_path] = new_folder_entry
     _set_json_data(data)
     return True
@@ -115,9 +116,10 @@ def _set_json_data(data: dict):
 
 
 @override_gen_functions
-def _create_folder_entry(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) -> \
-        dict:
-    return {"include_regexes": include_regexes,
+def _create_folder_entry(server_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) \
+        -> dict:
+    return {"server_folder_path": server_folder_path,
+            "include_regexes": include_regexes,
             "exclude_regexes": exclude_regexes,
             "changes": {},
             }
