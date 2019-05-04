@@ -1,5 +1,5 @@
 import unittest
-import unittest.mock
+from unittest.mock import patch
 import json
 
 from OpenDrive.server_side import file_changes_json as server_json
@@ -21,6 +21,10 @@ def h_mock_get_json():
         return json.load(f)
 
 
+get_json_module = "OpenDrive.server_side.file_changes_json._get_json_data"
+set_json_module = "OpenDrive.server_side.file_changes_json._set_json_data"
+
+
 class TestJson(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -33,15 +37,14 @@ class TestJson(unittest.TestCase):
             data = json.load(file)
             self.assertEqual([], data)
 
+    @patch(get_json_module, h_mock_get_json)
+    @patch(set_json_module, h_mock_set_json)
     def test_add_folder(self):
         path = server_paths.NormalizedPath("folder_1")
-
-        with unittest.mock.patch("OpenDrive.server_side.file_changes_json._get_json_data", h_mock_get_json),\
-                unittest.mock.patch("OpenDrive.server_side.file_changes_json._set_json_data", h_mock_set_json):
-            server_json.add_folder(path)
-            data = server_json._get_json_data()
-            expected = [{"folder_path": path, "changes": []}]
-            self.assertEqual(expected, data)
+        server_json.add_folder(path)
+        data = server_json._get_json_data()
+        expected = [{"folder_path": path, "changes": []}]
+        self.assertEqual(expected, data)
 
     def test_add_folder_existing(self):
         server_json.init_file()
