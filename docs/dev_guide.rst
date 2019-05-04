@@ -165,7 +165,7 @@ TODO next:
         - connect to server
             - success:
                 - authenticate
-                - get changes from server   <---
+                - get changes from server   <--- 2.
                 - sync everything
     - main loop
         - sync on changes at the client
@@ -183,4 +183,7 @@ TODO next:
                 - use one side
                 - decide individual
                 - make copies of duplicates
+
+- Store changes at server   <--- 1.
+    -
 

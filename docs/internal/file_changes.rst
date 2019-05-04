@@ -98,58 +98,17 @@ now it only tracks, when a file is renamed and stays inside the same folder. If 
 folder, it is recognized as `delete` at the old path and `create` at the new path. The disadvantage is, that files, that
 probably already exist are deleted and then pulled again. To solve this enhancement is a possible enhancement.
 
-Tests
----------
+At Server:
+---------------
 
-**setup**:
-    - delete DB
-    - create DB
-    - Create a dummy folder
-    - Add dummy folder to DB
+Every user has its own root folder. Every root folder has one changes file for every device, that is associated with
+this user. Every time a synchronization between a device and the server happens, these changes are written to all
+other changes files. Only when these devices are synchronized with the folder. All changes file store the
+server-folders which are synchronized.
 
-**teardown**:
-    - remove folder with all files
-
-1. Test create file
-
-    - Start watcher at dummy folder
-    - Create file at folder
-    - (Wait till file added)
-    - Is file in DB -> success
-
-2. Test edit file
-
-    - Create file at folder
-    - Start watcher at folder
-    - edit file
-    - Edited file in DB -> success
-
-3. Test move file
-
-    - TODO: dest, src?
-    - Changed DB entry
-
-4. Test remove
-
-    - Create file
-    - Start watcher
-    - Remove file
-    - Entry changed in DB
-
-5. Test handled_change
-
-    - Start watcher
-    - Create file
-    - call handled(?)?
-    - No entry in DB -> success
-
-6. Test create multiple nested files
-
-    - Start watcher
-    - Create many files in different folders
-    - All entries in DB
-
-... Same for remove, move, edit
+The client must store the names/paths of the server folders. Which client folder is synced to which server folder. If
+a server folders name is updated, this must be first translated to the client, and it must update all references.
+Folder renames must also be stored in the changes file. TODO: how to store (root)-folder renames, delete??
 
 
 Code doc

@@ -20,6 +20,7 @@ private functions
 .. autofunction:: _set_user_authenticated
 
 """
+import os
 import pynetworking as net
 from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
@@ -27,6 +28,7 @@ from typing import Optional, Tuple, Union
 from OpenDrive.server_side.database import User, Device, Token
 from OpenDrive.server_side.od_logging import logger
 from OpenDrive.server_side import folders
+from OpenDrive.server_side import file_changes_json as server_json
 
 
 def register_user_device(username: str, password: str, mac_address: str, email: Optional[str] = None) -> \
@@ -36,15 +38,29 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     assert len(username) > 3, "Username must be at least 4 characters long!"
     assert len(password) > 4, "Password must be at least 5 characters long!"
 
+    ret = register_user(username, password, email)
+    if isinstance(ret, str):
+        return ret
+    else:
+        user_id = ret
+    token, device_id = _add_update_device(user_id, mac_address)
+    _set_user_authenticated(user_id, device_id)
+    return token
+
+
+def register_user(username: str, password: str, email: Optional[str] = None) -> Union[str, int]:
+    """Registers a new user. On success the user_id  is returned. On any failure a string with the error message
+    is returned. No device is added or registered. So the needs ti login or choose the other register method."""
+    assert len(username) > 3, "Username must be at least 4 characters long!"
+    assert len(password) > 4, "Password must be at least 5 characters long!"
+
     possible_user = User.get_by_username(username)
     if possible_user is not None:
         return "Username is already taken"
     hashed_password = pwd_context.hash(password)
     user_id = User.create(username, hashed_password, email)
-    token, device_id = _add_update_device(user_id, mac_address)
-    _set_user_authenticated(user_id, device_id)
     folders.create_folder_for_new_user(User.from_id(user_id))
-    return token
+    return user_id
 
 
 def login_manual_user_device(username: str, password: str, mac_address: str) -> Union[str, Token]:
@@ -91,6 +107,8 @@ def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
             return possible_device.token, possible_device.device_id
     device_id = Device.create(user_id, mac_address, Token(), Token.get_next_expired())
     device_token = Device.from_id(device_id).token
+    assert folders.get_users_root_folder(user_id).exists()
+    server_json.create_changes_file_for_new_device(user_id, device_id, empty=True)
     return device_token, device_id
 
 

@@ -23,6 +23,7 @@ public classes
 public functions
 ----------------
 
+.. autofunction:: create_changes_file_for_new_device
 .. autofunction:: get_file_name
 
 private functions
@@ -46,7 +47,7 @@ def get_file_name(device_id: int):
     return f"changes_{device_id}.json"
 
 
-def init_file(user_id: int, device_id: int, empty: bool = False) -> None:
+def create_changes_file_for_new_device(user_id: int, device_id: int, empty: bool = False) -> None:
     file_path = _get_file_path(user_id, device_id)
     return gen_json.init_file(file_path, empty)
 

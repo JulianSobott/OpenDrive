@@ -37,6 +37,18 @@ def h_register_dummy_user_device() -> Tuple[database.User, database.Device, data
     return user, device, token
 
 
+@h_deactivate_set_user_authenticated
+def h_register_dummy_user() -> database.User:
+    h_setup_server_database()
+
+    username = "Anne"
+    password = "2hj:_sAdf"
+    email = None
+    user_id = authentication.register_user(username, password, email)
+    user = database.User(user_id, username, password, email)
+    return user
+
+
 def h_clear_init_server_folders():
     """
     server: OpenDrive/local/server_side/ROOT/

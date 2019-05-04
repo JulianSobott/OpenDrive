@@ -7,12 +7,12 @@ import os
 
 from OpenDrive.server_side import database, paths, authentication
 from OpenDrive.general.database import delete_db_file
+from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side.database import Token
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
-    h_register_dummy_user_device, h_clear_init_server_folders
+    h_register_dummy_user_device, h_clear_init_server_folders, h_register_dummy_user
 from tests.server_side.database import h_setup_server_database
 from tests.od_logging import logger
-from tests.server_side import test_folders
 
 
 class TestRegistration(unittest.TestCase):
@@ -26,12 +26,14 @@ class TestRegistration(unittest.TestCase):
 
     @h_deactivate_set_user_authenticated
     def test_add_update_device_new(self):
-        user_id = 1
+        user = h_register_dummy_user()
         mac = str(uuid.getnode())
-        authentication._add_update_device(user_id, mac)
+        authentication._add_update_device(user.user_id, mac)
         all_devices = database.Device.get_all()
         self.assertEqual(1, len(all_devices))
         self.assertEqual(mac, all_devices[0].mac_address)
+        json_path = server_json._get_file_path(user.user_id, 1)
+        self.assertTrue(os.path.isfile(json_path))
 
     @h_deactivate_set_user_authenticated
     def test_add_update_device_expires(self):
@@ -55,6 +57,8 @@ class TestRegistration(unittest.TestCase):
         self.assertEqual(1, len(all_users))
         user = all_users[0]
         self.assertEqual(user, database.User(1, username, user.password, email))
+        json_path = server_json._get_file_path(1, 1)
+        self.assertTrue(os.path.isfile(json_path))
 
     @h_deactivate_set_user_authenticated
     def test_register_user_device_existing(self):
