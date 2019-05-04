@@ -51,21 +51,19 @@ def init_file(file_path: str, empty: bool = False) -> None:
     if os.path.isfile(file_path):
         if empty:
             with open(file_path, "w+") as file:
-                all_folders = []
+                all_folders = {}
                 json.dump(all_folders, file)
     folder_path = os.path.split(file_path)[0]
     os.makedirs(folder_path, exist_ok=True)
     with open(file_path, "w+") as file:
-        all_folders = []
+        all_folders = {}
         json.dump(all_folders, file)
 
 
-def get_folder_entry(abs_folder_path: NormalizedPath, data: list = None) -> dict:
+def get_folder_entry(abs_folder_path: NormalizedPath, data: dict = None) -> dict:
     if data is None:
         data = _get_json_data()
-    for entry in data:
-        if abs_folder_path == entry["folder_path"]:
-            return entry
+    return data[abs_folder_path]
 
 
 def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: ChangeType,
@@ -73,34 +71,33 @@ def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: Normalized
     data = _get_json_data()
     folder = get_folder_entry(abs_folder_path, data)
     changes = folder["changes"]
-    for entry in changes:
-        if entry["new_file_path"] == rel_entry_path:
-            _update_existing_change_entry(entry, rel_entry_path, change_type, action, is_directory, new_file_path)
-            _set_json_data(data)
-            return
-    _add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
+    if rel_entry_path in changes.keys():
+        _update_existing_change_entry(changes[rel_entry_path], rel_entry_path, change_type, action, is_directory,
+                                      new_file_path)
+        if changes[rel_entry_path]["new_file_path"] != rel_entry_path:
+            actual_path = changes[rel_entry_path]["new_file_path"]
+            changes[actual_path] = changes.pop(rel_entry_path)     # update rel_path key
+    else:
+        _add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
     _set_json_data(data)
 
 
 def remove_folder(folder_path: NormalizedPath, non_exists_ok=True):
     data = _get_json_data()
-    for idx, entry in enumerate(data):
-        if folder_path == entry["folder_path"]:
-            data.pop(idx)
-            _set_json_data(data)
-            return
-    if not non_exists_ok:
-        raise KeyError(f"Folder {folder_path} is not in json file!")
+    try:
+        data.pop(folder_path)
+        _set_json_data(data)
+    except KeyError:
+        if not non_exists_ok:
+            raise KeyError(f"Folder {folder_path} is not in json file!")
 
 
 def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath) -> None:
     data = _get_json_data()
     folder = get_folder_entry(abs_folder_path, data)
-    changes: list = folder["changes"]
-    for idx, entry in enumerate(changes):
-        if entry["new_file_path"] == rel_entry_path:
-            changes.pop(idx)
-            _set_json_data(data)
+    changes: dict = folder["changes"]
+    changes.pop(rel_entry_path)
+    _set_json_data(data)
 
 
 def can_folder_be_added(abs_folder_path: NormalizedPath) -> bool:
@@ -110,11 +107,11 @@ def can_folder_be_added(abs_folder_path: NormalizedPath) -> bool:
                 in abs_folder_path]) == 0
 
 
-def _get_json_data() -> List:
+def _get_json_data() -> dict:
     raise NotImplemented
 
 
-def _set_json_data(data: List):
+def _set_json_data(data: dict):
     raise NotImplemented
 
 
@@ -144,10 +141,10 @@ def _update_existing_change_entry(existing_entry: dict, rel_entry_path: Normaliz
 
 def get_all_synced_folders_paths() -> List[NormalizedPath]:
     data = _get_json_data()
-    return [folder_entry["folder_path"] for folder_entry in data]
+    return [folder_path for folder_path in data.keys()]
 
 
-def _add_new_change_entry(changes: list, rel_entry_path: NormalizedPath, change_type: ChangeType,
+def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, change_type: ChangeType,
                           action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     entry = {}
     if action == ACTION_MOVE:
@@ -159,4 +156,4 @@ def _add_new_change_entry(changes: list, rel_entry_path: NormalizedPath, change_
     entry["changes"] = [change_type[0]]
     entry["necessary_action"] = action[0]
     entry["is_directory"] = is_directory
-    changes.append(entry)
+    changes[entry["new_file_path"]] = entry

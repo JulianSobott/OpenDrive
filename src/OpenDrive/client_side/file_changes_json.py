@@ -46,6 +46,7 @@ def override_gen_functions(func):
         gen_json._get_json_data = _get_json_data
         ret_value = func(*args, **kwargs)
         return ret_value
+
     return wrapper
 
 
@@ -60,7 +61,7 @@ def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], excl
         return False
     data = _get_json_data()
     new_folder_entry = _create_folder_entry(abs_folder_path, include_regexes, exclude_regexes)
-    data.append(new_folder_entry)
+    data[abs_folder_path] = new_folder_entry
     _set_json_data(data)
     return True
 
@@ -71,7 +72,7 @@ def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
 
 
 @override_gen_functions
-def get_all_data() -> List:
+def get_all_data() -> dict:
     """A list of all synced folders and the changes data."""
     return _get_json_data()
 
@@ -103,12 +104,12 @@ def get_folder_entry(abs_folder_path: NormalizedPath):
     return gen_json.get_folder_entry(abs_folder_path)
 
 
-def _get_json_data() -> List:
+def _get_json_data() -> dict:
     with open(client_paths.LOCAL_JSON_PATH, "r") as file:
         return json.load(file)
 
 
-def _set_json_data(data: List):
+def _set_json_data(data: dict):
     with open(client_paths.LOCAL_JSON_PATH, "w") as file:
         return json.dump(data, file)
 
@@ -116,18 +117,15 @@ def _set_json_data(data: List):
 @override_gen_functions
 def _create_folder_entry(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str]) -> \
         dict:
-    return {"folder_path": abs_folder_path,
-            "include_regexes": include_regexes,
+    return {"include_regexes": include_regexes,
             "exclude_regexes": exclude_regexes,
-            "changes": [],
+            "changes": {},
             }
 
 
 @override_gen_functions
 def _set_folder_attribute(abs_folder_path: NormalizedPath, key: str, value: Union[str, list, int, dict]) -> None:
     data = _get_json_data()
-    for entry in data:
-        if abs_folder_path == entry["folder_path"]:
-            entry[key] = value
-            break
+    entry = data[abs_folder_path]
+    entry[key] = value
     _set_json_data(data)

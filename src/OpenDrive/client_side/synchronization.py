@@ -37,18 +37,18 @@ def full_synchronize() -> None:
     _execute_client_actions(client_actions)
 
 
-def _get_server_changes() -> list:
+def _get_server_changes() -> dict:
     dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "server_changes.json")
     changes_file = server.get_changes(dest_path)
     with open(changes_file.dst_path, "r") as file:
         return json.load(file)
 
 
-def _get_client_changes() -> list:
+def _get_client_changes() -> dict:
     return client_json.get_all_data()
 
 
-def _merge_changes(server_changes: list, client_changes: list) -> tuple:
+def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
     needed_client_actions = []
     needed_server_actions = []
     conflicts = []

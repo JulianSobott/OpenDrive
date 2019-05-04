@@ -69,8 +69,8 @@ def add_folder(rel_folder_path: NormalizedPath) -> bool:
     if not gen_json.can_folder_be_added(rel_folder_path):
         return False
     data = _get_json_data()
-    new_folder_entry = {"folder_path": rel_folder_path, "changes": []}
-    data.append(new_folder_entry)
+    new_folder_entry = {"changes": {}}
+    data[rel_folder_path] = new_folder_entry
     _set_json_data(data)
     return True
 
@@ -91,14 +91,14 @@ def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: Normali
     return gen_json.remove_change_entry(abs_folder_path, rel_entry_path)
 
 
-def _get_json_data() -> List:
+def _get_json_data() -> dict:
     user: net_interface.ClientCommunicator = net.ClientManager().get()
     file_path = _get_file_path(user.user_id, user.device_id)
     with open(file_path, "r") as file:
         return json.load(file)
 
 
-def _set_json_data(data: List):
+def _set_json_data(data: dict):
     user: net_interface.ClientCommunicator = net.ClientManager().get()
     file_path = _get_file_path(user.user_id, user.device_id)
     with open(file_path, "w") as file:

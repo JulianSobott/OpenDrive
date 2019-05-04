@@ -33,6 +33,7 @@ def h_mock_set_get_json(func):
 
     return wrapper
 
+
 get_json_module = "OpenDrive.server_side.file_changes_json._get_json_data"
 set_json_module = "OpenDrive.server_side.file_changes_json._set_json_data"
 
@@ -47,14 +48,14 @@ class TestJson(unittest.TestCase):
         file_path = server_json._get_file_path(1, 1)
         with open(file_path, "r") as file:
             data = json.load(file)
-            self.assertEqual([], data)
+            self.assertEqual({}, data)
 
     @h_mock_set_get_json
     def test_add_folder(self):
         path = server_paths.NormalizedPath("folder_1")
         server_json.add_folder(path)
         data = server_json._get_json_data()
-        expected = [{"folder_path": path, "changes": []}]
+        expected = {path : {"changes": {}}}
         self.assertEqual(expected, data)
 
     @h_mock_set_get_json
@@ -71,7 +72,7 @@ class TestJson(unittest.TestCase):
         server_json.add_folder(path)
         server_json.remove_folder(path)
         data = server_json._get_json_data()
-        self.assertEqual([], data)
+        self.assertEqual({}, data)
 
     @h_mock_set_get_json
     def test_remove_folder_not_existing(self):
@@ -90,4 +91,4 @@ class TestJson(unittest.TestCase):
         folder_entry = gen_json.get_folder_entry(path)
         changes = folder_entry["changes"]
         self.assertEqual(1, len(changes))
-        self.assertEqual(2, len(changes[0]["changes"]))
+        self.assertEqual(2, len(changes[rel_file_path]["changes"]))
