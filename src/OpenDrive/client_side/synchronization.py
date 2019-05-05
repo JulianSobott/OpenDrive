@@ -22,6 +22,7 @@ private functions
 """
 import json
 import os
+from typing import Optional
 
 from OpenDrive.net_interface import server
 from OpenDrive.client_side import paths as client_paths
@@ -49,6 +50,60 @@ def _get_client_changes() -> dict:
 
 
 def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
+    """TODO: pop items from the changes dicts, till both dicts are empty. All actions are instead distributed to the
+    proper lists/dicts?"""
+    needed_client_actions = []
+    needed_server_actions = []
+    conflicts = []
+
+    while len(client_changes.keys()) > 0:
+        folder_path, client_folder = client_changes.popitem()
+        server_path = client_folder["server_folder_path"]
+        server_folder = server_changes.pop(server_path)
+        server_folder_changes = server_folder["changes"]
+        client_folder_changes = client_folder["changes"]
+        server_actions, client_actions, new_conflicts = _merge_folder_changes(server_folder_changes,
+                                                                              client_folder_changes)
+        needed_server_actions.append(server_actions)
+        needed_client_actions.append(client_actions)
+        conflicts.append(new_conflicts)
+
+    return needed_server_actions, needed_client_actions, conflicts
+
+
+def _merge_folder_changes(server_changes: dict, client_changes: dict) -> tuple:
+    needed_client_actions = []
+    needed_server_actions = []
+    conflicts = []
+
+    while len(client_changes.keys()) > 0:
+        client_path, client_file = client_changes.popitem()
+        if client_path in server_changes.keys():
+            server_file = server_changes.pop(client_path)
+        else:
+            server_file = None
+
+        server_actions, client_actions, new_conflicts = _merge_file_changes(client_file, server_file)
+        needed_server_actions.append(server_actions)
+        needed_client_actions.append(client_actions)
+        conflicts.append(new_conflicts)
+
+    while len(server_changes.keys()) > 0:
+        server_path, server_file = server_changes.popitem()
+        if server_path in client_changes.keys():
+            client_file = client_changes.pop(server_path)
+        else:
+            client_file = None
+
+        server_actions, client_actions, new_conflicts = _merge_file_changes(client_file, server_file)
+        needed_server_actions.append(server_actions)
+        needed_client_actions.append(client_actions)
+        conflicts.append(new_conflicts)
+
+    return needed_server_actions, needed_client_actions, conflicts
+
+
+def _merge_file_changes(server_file: Optional[dict], client_file: Optional[dict]):
     needed_client_actions = []
     needed_server_actions = []
     conflicts = []
