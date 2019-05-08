@@ -59,16 +59,28 @@ def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
     conflicts = []
 
     while len(client_changes.keys()) > 0:
-        folder_path, client_folder = client_changes.popitem()
-        server_path = client_folder["server_folder_path"]
-        server_folder = server_changes.pop(server_path)
-        server_folder_changes = server_folder["changes"]
-        client_folder_changes = client_folder["changes"]
-        server_actions, client_actions, new_conflicts = _merge_folder_changes(server_folder_changes,
-                                                                              client_folder_changes)
-        needed_server_actions.append(server_actions)
-        needed_client_actions.append(client_actions)
-        conflicts.append(new_conflicts)
+        c_folder_path, client_folder = client_changes.popitem()
+        s_folder_path = client_folder["server_folder_path"]
+        for c_file_path, c_file in client_folder["changes"].items():
+            if c_file_path in server_changes[s_folder_path].keys():
+                conflicts.append({"folders": [c_folder_path, s_folder_path],
+                                  "rel_file_path": c_file_path,
+                                  "client_file": c_file,
+                                  "server_file": server_changes[s_folder_path][c_file_path]})
+            else:
+                src_path = client_paths.normalize_path(os.path.join(c_folder_path, c_file_path))
+                dest_path = client_paths.normalize_path(os.path.join(s_folder_path, c_file_path))
+                if gen_json.ACTION_PULL[0] == c_file["necessary_action"]:
+                    needed_server_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
+                elif gen_json.ACTION_MOVE[0] == c_file["necessary_action"]:
+                    old_path = client_paths.normalize_path(os.path.join(s_folder_path, c_file["old_file_path"]))
+                    if gen_json.CHANGE_MODIFIED in c_file["changes"] or gen_json.CHANGE_CREATED[0] in c_file["changes"]:
+                        needed_server_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
+                        needed_server_actions.append(_create_action(gen_json.ACTION_DELETE, old_path))
+                    else:
+                        needed_server_actions.append(_create_action(gen_json.ACTION_MOVE, old_path, dest_path))
+                elif gen_json.ACTION_DELETE[0] == c_file["necessary_action"]:
+                    needed_server_actions.append(_create_action(gen_json.ACTION_DELETE, src_path))
 
     return needed_server_actions, needed_client_actions, conflicts
 
@@ -122,7 +134,7 @@ def _execute_server_actions(server_actions) -> None:
 
 
 def _create_action(action_type: gen_json.ActionType, src_path: gen_json.NormalizedPath,
-                   dest_path: Optional[gen_json.NormalizedPath]) -> SyncAction:
+                   dest_path: Optional[gen_json.NormalizedPath] = None) -> SyncAction:
     sync_action = {"action_type": action_type[0],
                    "src_path": src_path}
     if dest_path:

@@ -31,7 +31,7 @@ def h_create_dummy_client_change_file():
     return dummy_changes.popitem()
 
 
-def h_create_folder_entry(folder_path: gen_paths.NormalizedPath, changes: list, client_side=False):
+def h_create_folder_entry(folder_path: gen_paths.NormalizedPath, changes: dict, client_side=False):
     if client_side:
         return {folder_path: {"changes": changes, "server_folder_path": folder_path}}
     else:
@@ -47,7 +47,7 @@ def h_create_change(rel_entry_path: gen_json.NormalizedPath, change_type: gen_js
                     new_file_path: gen_json.NormalizedPath = None):
     changes = {}
     gen_json._add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
-    return changes[rel_entry_path]
+    return h_create_changes([changes[rel_entry_path]])
 
 
 def h_create_action(action: gen_json.ActionType, src_path: gen_paths.NormalizedPath,
@@ -77,13 +77,14 @@ class TestSynchronization(unittest.TestCase):
 
     def test_merge_changes_create_client(self):
         client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
-                                                  h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                  gen_json.CHANGE_CREATED,
-                                                                  gen_json.ACTION_PULL), client_side=True)}
+                                                  {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
+                                                                     gen_json.CHANGE_CREATED,
+                                                                     gen_json.ACTION_PULL)}, client_side=True)}
 
-        server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), [])
+        server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), {})
 
-        expected_server = [h_create_action(gen_json.ACTION_PULL, gen_paths.NormalizedPath("folder_1/test1.txt"))]
+        expected_server = [h_create_action(gen_json.ACTION_PULL, gen_paths.NormalizedPath("folder_1/test1.txt"),
+                                           gen_paths.NormalizedPath("folder_1/test1.txt"))]
         expected_client = []
         expected_conflicts = []
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
