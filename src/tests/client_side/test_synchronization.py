@@ -108,3 +108,17 @@ class TestSynchronization(unittest.TestCase):
         expected_client = []
         expected_conflicts = []
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
+
+    def test_merge_changes_delete_client(self):
+        client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
+                                                  {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
+                                                                     gen_json.CHANGE_DELETED,
+                                                                     gen_json.ACTION_DELETE)},
+                                                  client_side=True)}
+
+        server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), {})
+
+        expected_server = [h_create_action(gen_json.ACTION_DELETE, gen_paths.NormalizedPath("folder_1/test1.txt"))]
+        expected_client = []
+        expected_conflicts = []
+        self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
