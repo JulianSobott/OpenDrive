@@ -1,4 +1,5 @@
 import unittest
+from typing import Optional
 
 from OpenDrive.client_side import synchronization as c_sync
 from OpenDrive.general import file_changes_json as gen_json
@@ -30,8 +31,28 @@ def h_create_dummy_client_change_file():
     return dummy_changes.popitem()
 
 
-def h_create_dummy_client_change_file():
-    pass
+def h_create_folder_entry(folder_path: gen_paths.NormalizedPath, changes: list, client_side=False):
+    if client_side:
+        return {folder_path: {"changes": changes, "server_folder_path": folder_path}}
+    else:
+        return {folder_path: {"changes": changes}}
+
+
+def h_create_changes(changes: list) -> dict:
+    return {change["new_file_path"]: change for change in changes}
+
+
+def h_create_change(rel_entry_path: gen_json.NormalizedPath, change_type: gen_json.ChangeType,
+                    action: gen_json.ActionType, is_directory: bool = False,
+                    new_file_path: gen_json.NormalizedPath = None):
+    changes = {}
+    gen_json._add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
+    return changes[rel_entry_path]
+
+
+def h_create_action(action: gen_json.ActionType, src_path: gen_paths.NormalizedPath,
+                    dest_path: Optional[gen_paths.NormalizedPath] = None) -> c_sync.SyncAction:
+    return c_sync._create_action(action, src_path, dest_path)
 
 
 class TestSynchronization(unittest.TestCase):
@@ -42,17 +63,27 @@ class TestSynchronization(unittest.TestCase):
     def tearDown(self) -> None:
         h_stop_server_process(self._server_process)
 
+    def h_check_merge(self, server_changes, client_changes, expected_server, expected_client, expected_conflicts):
+        server_actions, client_actions, conflicts = c_sync._merge_changes(server_changes, client_changes)
+        self.assertEqual(expected_server, server_actions)
+        self.assertEqual(expected_client, client_actions)
+        self.assertEqual(expected_conflicts, conflicts)
+
     @h_client_routine()
     def test_get_server_changes(self):
         h_register_dummy_user_device_client()
         changes = c_sync._get_server_changes()
         self.assertEqual([], changes)
 
-    def test_merge_file_changes_only_client(self):
-        server_file = None
-        client_path, client_file = h_create_dummy_client_change_file()
-        needed_server_actions, needed_client_actions, conflicts = c_sync._merge_file_changes(server_file, client_file)
-        # expected_server = c_sync._create_action(gen_json.ACTION_PULL,
-        #                                         client_path,
-        #                                         )
-        # self.assertEqual(, needed_server_actions)
+    def test_merge_changes_create_client(self):
+        client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
+                                                  h_create_change(gen_paths.NormalizedPath("test1.txt"),
+                                                                  gen_json.CHANGE_CREATED,
+                                                                  gen_json.ACTION_PULL), client_side=True)}
+
+        server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), [])
+
+        expected_server = [h_create_action(gen_json.ACTION_PULL, gen_paths.NormalizedPath("folder_1/test1.txt"))]
+        expected_client = []
+        expected_conflicts = []
+        self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
