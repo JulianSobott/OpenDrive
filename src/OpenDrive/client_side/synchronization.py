@@ -22,12 +22,14 @@ private functions
 """
 import json
 import os
-from typing import Optional
+from typing import Optional, NewType
 
 from OpenDrive.net_interface import server
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import file_changes_json as client_json
+from OpenDrive.general import file_changes_json as gen_json
 
+SyncAction = NewType("SyncAction", dict)
 
 def full_synchronize() -> None:
     """Starts a sync process, where changes from server and client are merged."""
@@ -117,3 +119,12 @@ def _execute_client_actions(client_actions) -> None:
 
 def _execute_server_actions(server_actions) -> None:
     pass
+
+
+def _create_action(action_type: gen_json.ActionType, src_path: gen_json.NormalizedPath,
+                   dest_path: Optional[gen_json.NormalizedPath]) -> SyncAction:
+    sync_action = {"action_type": action_type[0],
+                   "src_path": src_path}
+    if dest_path:
+        sync_action["dest_path"] = dest_path
+    return SyncAction(sync_action)

@@ -84,3 +84,47 @@ Must haves:
 - Allow device to sync with inner folder
 - Prevent device to sync with inner folder of already synced outer folder (Redundant, can lead to problems)
 
+
+Merging
+**********
+
+The client has both changes.json files, from the client and the server. These files now have to be merged and must
+result in some kind of list with all actions that needs to be executed at both sides. Also conflicts should be
+tracked and returned.
+
+
+Actions:
+^^^^^^^^^^
+
+- action type (pull, move, delete)
+    - pull:
+        - src_path  # remote, abs
+        - dest_path # local, relative to parent_folder
+    - move:
+        - src_path  # current
+        - dest_path # new
+    - delete:
+        - src_path  # current
+
+- src_path
+- dest_path (pull, move)
+
+
+Scenarios:
+***********
+
+- file created at one side
+    - pull file at other
+    - Check:
+        - new file path in other -> conflict
+- file modified
+    - pull file at other
+    - maybe backup existing
+    - Check:
+        - new file path in other -> conflict
+- file moved
+    - Move file at other if exist
+    - pull to new dest
+    - Check:
+        - old/new file path in other -> conflict
+

@@ -50,6 +50,9 @@ class TestSynchronization(unittest.TestCase):
 
     def test_merge_file_changes_only_client(self):
         server_file = None
-        _, client_file = h_create_dummy_client_change_file()
+        client_path, client_file = h_create_dummy_client_change_file()
         needed_server_actions, needed_client_actions, conflicts = c_sync._merge_file_changes(server_file, client_file)
-
+        # expected_server = c_sync._create_action(gen_json.ACTION_PULL,
+        #                                         client_path,
+        #                                         )
+        # self.assertEqual(, needed_server_actions)
