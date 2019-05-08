@@ -31,6 +31,7 @@ from OpenDrive.general import file_changes_json as gen_json
 
 SyncAction = NewType("SyncAction", dict)
 
+
 def full_synchronize() -> None:
     """Starts a sync process, where changes from server and client are merged."""
     server_changes = _get_server_changes()
@@ -61,68 +62,47 @@ def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
     while len(client_changes.keys()) > 0:
         c_folder_path, client_folder = client_changes.popitem()
         s_folder_path = client_folder["server_folder_path"]
-        for c_file_path, c_file in client_folder["changes"].items():
-            if c_file_path in server_changes[s_folder_path].keys():
-                conflicts.append({"folders": [c_folder_path, s_folder_path],
-                                  "rel_file_path": c_file_path,
-                                  "client_file": c_file,
-                                  "server_file": server_changes[s_folder_path][c_file_path]})
-            else:
-                src_path = client_paths.normalize_path(os.path.join(c_folder_path, c_file_path))
-                dest_path = client_paths.normalize_path(os.path.join(s_folder_path, c_file_path))
-                if gen_json.ACTION_PULL[0] == c_file["necessary_action"]:
-                    needed_server_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
-                elif gen_json.ACTION_MOVE[0] == c_file["necessary_action"]:
-                    old_path = client_paths.normalize_path(os.path.join(s_folder_path, c_file["old_file_path"]))
-                    if gen_json.CHANGE_MODIFIED in c_file["changes"] or gen_json.CHANGE_CREATED[0] in c_file["changes"]:
-                        needed_server_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
-                        needed_server_actions.append(_create_action(gen_json.ACTION_DELETE, old_path))
-                    else:
-                        needed_server_actions.append(_create_action(gen_json.ACTION_MOVE, old_path, dest_path))
-                elif gen_json.ACTION_DELETE[0] == c_file["necessary_action"]:
-                    needed_server_actions.append(_create_action(gen_json.ACTION_DELETE, src_path))
+        server_folder = server_changes[s_folder_path]
+        server_actions, new_conflicts = _calculate_remote_actions(client_folder, server_folder, c_folder_path,
+                                                                  s_folder_path)
+        needed_server_actions += server_actions
+        conflicts += new_conflicts
+        client_actions, new_conflicts = _calculate_remote_actions(server_folder, client_folder, s_folder_path,
+                                                                  c_folder_path)
+        needed_client_actions += client_actions
+        conflicts += new_conflicts
 
     return needed_server_actions, needed_client_actions, conflicts
 
 
-def _merge_folder_changes(server_changes: dict, client_changes: dict) -> tuple:
-    needed_client_actions = []
-    needed_server_actions = []
+def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_folder_path: client_paths.NormalizedPath,
+                              remote_folder_path: client_paths.NormalizedPath):
+    needed_remote_actions = []
     conflicts = []
 
-    while len(client_changes.keys()) > 0:
-        client_path, client_file = client_changes.popitem()
-        if client_path in server_changes.keys():
-            server_file = server_changes.pop(client_path)
+    for l_file_path, l_file in local_folder["changes"].items():
+        if l_file_path in remote_folder["changes"].keys():
+            conflicts.append({"folders": [local_folder_path, remote_folder_path],
+                              "rel_file_path": l_file_path,
+                              "local_file": l_file,
+                              "remote_file": remote_folder[l_file_path]})
+            remote_folder.pop(l_file_path)
         else:
-            server_file = None
+            src_path = client_paths.normalize_path(os.path.join(local_folder_path, l_file_path))
+            dest_path = client_paths.normalize_path(os.path.join(remote_folder_path, l_file_path))
+            if gen_json.ACTION_PULL[0] == l_file["necessary_action"]:
+                needed_remote_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
+            elif gen_json.ACTION_MOVE[0] == l_file["necessary_action"]:
+                old_path = client_paths.normalize_path(os.path.join(remote_folder_path, l_file["old_file_path"]))
+                if gen_json.CHANGE_MODIFIED in l_file["changes"] or gen_json.CHANGE_CREATED[0] in l_file["changes"]:
+                    needed_remote_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
+                    needed_remote_actions.append(_create_action(gen_json.ACTION_DELETE, old_path))
+                else:
+                    needed_remote_actions.append(_create_action(gen_json.ACTION_MOVE, old_path, dest_path))
+            elif gen_json.ACTION_DELETE[0] == l_file["necessary_action"]:
+                needed_remote_actions.append(_create_action(gen_json.ACTION_DELETE, src_path))
 
-        server_actions, client_actions, new_conflicts = _merge_file_changes(client_file, server_file)
-        needed_server_actions.append(server_actions)
-        needed_client_actions.append(client_actions)
-        conflicts.append(new_conflicts)
-
-    while len(server_changes.keys()) > 0:
-        server_path, server_file = server_changes.popitem()
-        if server_path in client_changes.keys():
-            client_file = client_changes.pop(server_path)
-        else:
-            client_file = None
-
-        server_actions, client_actions, new_conflicts = _merge_file_changes(client_file, server_file)
-        needed_server_actions.append(server_actions)
-        needed_client_actions.append(client_actions)
-        conflicts.append(new_conflicts)
-
-    return needed_server_actions, needed_client_actions, conflicts
-
-
-def _merge_file_changes(server_file: Optional[dict], client_file: Optional[dict]):
-    needed_client_actions = []
-    needed_server_actions = []
-    conflicts = []
-
-    return needed_server_actions, needed_client_actions, conflicts
+    return needed_remote_actions, conflicts
 
 
 def _execute_client_actions(client_actions) -> None:
