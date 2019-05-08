@@ -47,7 +47,10 @@ def h_create_change(rel_entry_path: gen_json.NormalizedPath, change_type: gen_js
                     new_file_path: gen_json.NormalizedPath = None):
     changes = {}
     gen_json._add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
-    return h_create_changes([changes[rel_entry_path]])
+    if new_file_path:
+        return h_create_changes([changes[new_file_path]])
+    else:
+        return h_create_changes([changes[rel_entry_path]])
 
 
 def h_create_action(action: gen_json.ActionType, src_path: gen_paths.NormalizedPath,
@@ -85,6 +88,23 @@ class TestSynchronization(unittest.TestCase):
 
         expected_server = [h_create_action(gen_json.ACTION_PULL, gen_paths.NormalizedPath("folder_1/test1.txt"),
                                            gen_paths.NormalizedPath("folder_1/test1.txt"))]
+        expected_client = []
+        expected_conflicts = []
+        self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
+
+    def test_merge_changes_move_client(self):
+        client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
+                                                  {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
+                                                                     gen_json.CHANGE_MOVED,
+                                                                     gen_json.ACTION_MOVE,
+                                                                     new_file_path=gen_paths.NormalizedPath(
+                                                                         "test2.txt"))},
+                                                  client_side=True)}
+
+        server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), {})
+
+        expected_server = [h_create_action(gen_json.ACTION_MOVE, gen_paths.NormalizedPath("folder_1/test1.txt"),
+                                           gen_paths.NormalizedPath("folder_1/test2.txt"))]
         expected_client = []
         expected_conflicts = []
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
