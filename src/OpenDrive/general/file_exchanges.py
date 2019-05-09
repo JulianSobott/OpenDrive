@@ -19,7 +19,7 @@ def get_file(abs_file_src_path: str, abs_file_dest_path: str) -> net.File:
     if os.path.isfile(abs_file_src_path):
         return net.File(abs_file_src_path, abs_file_dest_path)
     else:
-        raise FileNotFoundError
+        raise FileNotFoundError(abs_file_src_path)
 
 
 class Action:

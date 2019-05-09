@@ -1,9 +1,13 @@
+import shutil
 import unittest
 from typing import Optional
+import os
 
 from OpenDrive.client_side import synchronization as c_sync
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import paths as gen_paths
+from OpenDrive.server_side import paths as server_paths
+from OpenDrive.client_side import paths as client_paths
 
 from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, h_client_routine
 from tests.client_side.helper_client import h_register_dummy_user_device_client
@@ -192,4 +196,29 @@ class TestMerging(unittest.TestCase):
                                "local_file": l_file_change["test1.txt"],
                                "remote_file": l_file_change["test1.txt"]}]
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
+
+
+class TestExecution(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.server_folder = os.path.join(server_paths.FOLDERS_ROOT, 'user_1/folder1')
+        self._server_process = h_start_server_process()
+
+    def tearDown(self) -> None:
+        h_stop_server_process(self._server_process)
+        shutil.rmtree(self.server_folder)
+
+    @h_client_routine()
+    def test_execute_client_actions_pull(self):
+        h_register_dummy_user_device_client()
+        os.makedirs(self.server_folder, exist_ok=True)
+        self.server_file_path = os.path.join(self.server_folder, 'test.txt')
+        with open(self.server_file_path, "w") as f:
+            f.write("Hello" * 10)
+
+        client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "test.txt")
+        client_actions = [h_create_action(gen_json.ACTION_PULL, gen_paths.NormalizedPath("folder1/test.txt"),
+                                          gen_paths.normalize_path(client_dest_path))]
+        c_sync._execute_client_actions(client_actions)
+        self.assertTrue(os.path.isfile(client_dest_path))
 

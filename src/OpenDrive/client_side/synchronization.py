@@ -22,12 +22,13 @@ private functions
 """
 import json
 import os
-from typing import Optional, NewType
+from typing import Optional, NewType, List
 
 from OpenDrive.net_interface import server
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import file_changes_json as client_json
 from OpenDrive.general import file_changes_json as gen_json
+from OpenDrive.general import synchronization as gen_sync
 
 SyncAction = NewType("SyncAction", dict)
 
@@ -53,8 +54,8 @@ def _get_client_changes() -> dict:
 
 
 def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
-    """TODO: pop items from the changes dicts, till both dicts are empty. All actions are instead distributed to the
-    proper lists/dicts?"""
+    """pop items from the changes dicts, till both dicts are empty. All actions are instead distributed to the
+    proper lists"""
     needed_client_actions = []
     needed_server_actions = []
     conflicts = []
@@ -105,8 +106,16 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
     return needed_remote_actions, conflicts
 
 
-def _execute_client_actions(client_actions) -> None:
-    pass
+def _execute_client_actions(client_actions: List[SyncAction]) -> None:
+    for action in client_actions:
+        if action["action_type"] == gen_json.ACTION_DELETE[0]:
+            gen_sync.delete_file(action["src_path"])
+        elif action["action_type"] == gen_json.ACTION_MOVE[0]:
+            gen_sync.move_file(action["src_path"], action["dest_path"])
+        elif action["action_type"] == gen_json.ACTION_PULL[0]:
+            server.get_file(action["src_path"], action["dest_path"])
+        else:
+            raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
 
 def _execute_server_actions(server_actions) -> None:
