@@ -248,3 +248,39 @@ class TestExecution(unittest.TestCase):
         client_actions = [h_create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(client_src_path))]
         c_sync._execute_client_actions(client_actions)
         self.assertFalse(os.path.isfile(client_src_path))
+
+    @h_client_routine()
+    def test_execute_server_actions_pull(self):
+        self.server_folder = h_setup_execution_env()
+
+        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "test2.txt")
+        with open(client_src_path, "w") as f:
+            f.write("Lorem ipsum " * 10)
+
+        server_dest_path = "folder1/test2.txt"
+        client_actions = [h_create_action(gen_json.ACTION_PULL, gen_paths.normalize_path(client_src_path),
+                                          gen_paths.normalize_path(server_dest_path))]
+        c_sync._execute_server_actions(client_actions)
+        expected_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", server_dest_path)
+        self.assertTrue(os.path.isfile(expected_path))
+
+    @h_client_routine()
+    def test_execute_server_actions_move(self):
+        self.server_folder = h_setup_execution_env()
+        server_src_path = os.path.join("folder1", "test.txt")
+
+        server_dest_path = os.path.join("folder1", "new_test.txt")
+        server_actions = [h_create_action(gen_json.ACTION_MOVE, gen_paths.normalize_path(server_src_path),
+                                          gen_paths.normalize_path(server_dest_path))]
+        c_sync._execute_server_actions(server_actions)
+        expected_path = os.path.join(self.server_folder, "new_test.txt")
+        self.assertTrue(os.path.isfile(expected_path))
+
+    @h_client_routine()
+    def test_execute_server_actions_delete(self):
+        self.server_folder = h_setup_execution_env()
+        server_src_path = os.path.join("folder1", "test.txt")
+
+        client_actions = [h_create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(server_src_path))]
+        c_sync._execute_server_actions(client_actions)
+        self.assertFalse(os.path.isfile(server_src_path))

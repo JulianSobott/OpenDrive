@@ -119,7 +119,15 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
 
 
 def _execute_server_actions(server_actions) -> None:
-    pass
+    for action in server_actions:
+        if action["action_type"] == gen_json.ACTION_DELETE[0]:
+            server.remove_file(action["src_path"])
+        elif action["action_type"] == gen_json.ACTION_MOVE[0]:
+            server.move_file(action["src_path"], action["dest_path"])
+        elif action["action_type"] == gen_json.ACTION_PULL[0]:
+            server.pull_file(action["src_path"], action["dest_path"])
+        else:
+            raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
 
 def _create_action(action_type: gen_json.ActionType, src_path: gen_json.NormalizedPath,
