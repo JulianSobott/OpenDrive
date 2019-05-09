@@ -28,7 +28,8 @@ from OpenDrive.net_interface import server
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import file_changes_json as client_json
 from OpenDrive.general import file_changes_json as gen_json
-from OpenDrive.general import synchronization as gen_sync
+from OpenDrive.general import file_exchanges as gen_file_exchanges
+from OpenDrive.client_side.od_logging import logger
 
 SyncAction = NewType("SyncAction", dict)
 
@@ -40,6 +41,7 @@ def full_synchronize() -> None:
     server_actions, client_actions, conflicts = _merge_changes(server_changes, client_changes)
     _execute_server_actions(server_actions)
     _execute_client_actions(client_actions)
+    logger.error(f"Unhandled conflicts: {conflicts}")
 
 
 def _get_server_changes() -> dict:
@@ -109,9 +111,9 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
 def _execute_client_actions(client_actions: List[SyncAction]) -> None:
     for action in client_actions:
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            gen_sync.delete_file(action["src_path"])
+            gen_file_exchanges.remove_file(action["src_path"])
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            gen_sync.move_file(action["src_path"], action["dest_path"])
+            gen_file_exchanges.move_file(action["src_path"], action["dest_path"])
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             server.get_file(action["src_path"], action["dest_path"])
         else:
