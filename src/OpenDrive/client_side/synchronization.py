@@ -85,8 +85,8 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
             conflicts.append({"folders": [local_folder_path, remote_folder_path],
                               "rel_file_path": l_file_path,
                               "local_file": l_file,
-                              "remote_file": remote_folder[l_file_path]})
-            remote_folder.pop(l_file_path)
+                              "remote_file": remote_folder["changes"][l_file_path]})
+            remote_folder["changes"].pop(l_file_path)
         else:
             src_path = client_paths.normalize_path(os.path.join(local_folder_path, l_file_path))
             dest_path = client_paths.normalize_path(os.path.join(remote_folder_path, l_file_path))
