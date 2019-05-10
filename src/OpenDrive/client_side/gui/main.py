@@ -27,6 +27,8 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
 
+from OpenDrive.client_side.gui import login_manual
+
 
 class BtnSwitch(Button):
 
