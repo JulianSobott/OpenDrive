@@ -1,87 +1,16 @@
 #:kivy 1.0.9
-<FlatButton@ButtonBehavior+Label>:
-    font_size: 16
+#:include login_manual_screen.kv
 
-<ScreenLoginManual>:
-    name: "screen_login_manual"
-    orientation: "vertical"
+ScreenManager:
 
-    canvas.before:
-        Color:
-            rgba: (1,1,1, 1)
-        Rectangle:
-            size: self.size
-            pos: self.pos
+    Screen:
+        Button:
+            text: "to screen 1"
+            on_press: app.root.current = "screen_login_manual"
 
-    BoxLayout:
-        orientation: "vertical"
-
-        Label:
-            text: "Login"
-            font_size: 32
-            color: 0.2,0.2,0.2,1
-            size_hint_y: None
-
-        BoxLayout:
-            orientation: "vertical"
-            padding: root.width / 5, root.height / 2 - 50
-            height: 100
-            size_hint_y: None
-            spacing: 20
-
-            BoxLayout:
-                orientation: "horizontal"
-                size_hint_y: None
-                height: 30
-
-                Label:
-                    text: "Username: "
-                    color: 0.2,0.2,0.2,1
-
-                TextInput:
-                    hint_text: "Max Mustermann"
-                    multiline: False
-
-            BoxLayout:
-                orientation: "horizontal"
-                size_hint_y: None
-                height: 30
-
-                Label:
-                    text: "Password: "
-                    color: 0.2,0.2,0.2,1
-
-                TextInput:
-                    hint_text: "************"
-                    multiline: False
-                    password:True
-
-            BoxLayout:
-                orientation: "horizontal"
-                size_hint_y: None
-                height: 30
-
-                Button:
-                    text: "Create new account"
-                    background_color: (.06,.45,.45, 1)
-                    size_hint_y: None
-                    height: 30
-
-                Button:
-                    text: "Login"
-                    background_color: (.06,.45,.45, 1)
-                    size_hint_y: None
-                    height: 30
+    ScreenLoginManual:
 
 
 
-
-<ScreenExplorer>:
-    name: "screen_explorer"
-
-    Button:
-        text: "Explorer"
-    Button:
-        text: "Explorer"
 
 

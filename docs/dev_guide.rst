@@ -158,14 +158,12 @@ TODO next:
 ==========
 
 - GUI define features
-- Implement Interface between backend, ui, gui
 - Main program
     - startup                      <---
         - start watching
         - connect to server
             - success:
                 - authenticate
-                - get changes from server   <--- 2.
                 - sync everything
     - main loop
         - sync on changes at the client
@@ -184,6 +182,10 @@ TODO next:
                 - decide individual
                 - make copies of duplicates
 
-- Store changes at server   <--- 1.
-    -
+
+- synchronization
+    - send server actions to server
+    - execute server actions
+    - distribute actions to other changes files
+
 
