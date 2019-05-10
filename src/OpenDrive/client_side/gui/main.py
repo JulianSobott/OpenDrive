@@ -30,22 +30,32 @@ from kivy.lang import Builder
 from OpenDrive.client_side.gui import login_manual
 
 
-class BtnSwitch(Button):
+class MetaSingletonApp(type):
 
-    def on_press(self):
-        app.root.current = "screen_login_manual"
+    _instance = None
+
+    def __call__(cls, *args, **kwargs) -> 'OpenDriveApp':
+        if cls._instance is None:
+            cls._instance = super(MetaSingletonApp, cls).__call__(*args, **kwargs)
+        return cls._instance
 
 
 class OpenDriveApp(App):
     pass
 
 
-app = OpenDriveApp()
+def set_screen(screen_name: str):
+        app.root.current = screen_name
 
 
 def main():
     app.run()
 
+
+app = OpenDriveApp()
+login_manual.window.app = app
+print(id(app))
+print(id(MetaSingletonApp))
 
 if __name__ == '__main__':
     main()
