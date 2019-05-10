@@ -28,12 +28,21 @@ from kivy.uix.widget import Widget
 from kivy.lang import Builder
 
 
+class BtnSwitch(Button):
+
+    def on_press(self):
+        app.root.current = "screen_login_manual"
+
+
 class OpenDriveApp(App):
     pass
 
 
+app = OpenDriveApp()
+
+
 def main():
-    OpenDriveApp().run()
+    app.run()
 
 
 if __name__ == '__main__':
