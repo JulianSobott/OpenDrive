@@ -15,7 +15,7 @@ class ScreenLoginManual(Screen):
         username = self.tf_username.text
         password = self.tf_password.text
         status = interface.login_manual(username, password)
-        if status.was_successful() or True:
+        if status.was_successful():
             logger.debug("Successfully logged in")
             screens.screen_manager.set_screen(screens.EXPLORER)
         else:
