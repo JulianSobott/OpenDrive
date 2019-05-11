@@ -5,8 +5,8 @@ __all__ = ["ScreenManager", "screen_manager", "LOGIN_MANUAL", "EXPLORER"]
 
 ScreenName = NewType("ScreenName", str)
 
-LOGIN_MANUAL = ScreenName("login_manual_screen")
-EXPLORER = ScreenName("explorer")
+LOGIN_MANUAL = ScreenName("screen_login_manual")
+EXPLORER = ScreenName("screen_explorer")
 
 
 class ScreenManager:
