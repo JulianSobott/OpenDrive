@@ -1,23 +1,29 @@
 #:kivy 1.0.9
 
-<ScreenLoginManual@Screen>:
+<ScreenLoginManual>:
     name: 'screen_login_manual'
+    tf_username: tf_username
+    tf_password: tf_password
 
     BoxLayout:
         orientation: "vertical"
+
 
         Label:
             text: "Username"
 
         TextInput:
+            id: tf_username
 
         Label:
             text: "Password"
 
         TextInput:
+            id: tf_password
 
-        BtnLogin:
+        Button:
             text: "Login"
+            on_release: root.btn_release_login()
 
         Button:
             text: "Register"
