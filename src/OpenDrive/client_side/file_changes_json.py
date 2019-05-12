@@ -112,7 +112,7 @@ def _get_json_data() -> dict:
 
 def _set_json_data(data: dict):
     with open(client_paths.LOCAL_JSON_PATH, "w") as file:
-        return json.dump(data, file)
+        return json.dump(data, file, indent=4)
 
 
 @override_gen_functions

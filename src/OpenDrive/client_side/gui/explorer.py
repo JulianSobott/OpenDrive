@@ -1,10 +1,18 @@
-from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.screenmanager import Screen
 
-from OpenDrive.client_side.gui import screens
+from OpenDrive.client_side import file_changes_json as changes
+from OpenDrive.client_side.od_logging import logger
 
 
-class BtnBack(Button):
+class ScreenExplorer(Screen):
 
-    def on_release(self):
-        screens.screen_manager.set_screen(screens.LOGIN_MANUAL)
-
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        box_folders_container = BoxLayout(orientation="vertical")
+        self.add_widget(box_folders_container)
+        self.folders = changes.get_all_data()
+        for path, folder in self.folders.items():
+            lbl_folder = Label(text=path)
+            box_folders_container.add_widget(lbl_folder)
