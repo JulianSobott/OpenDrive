@@ -18,7 +18,7 @@ public functions
 .. autofunction:: add_ignore_patterns_to_folder
 .. autofunction:: add_sync_folder
 .. autofunction:: get_all_remote_folders
-.. autofunction:: get_all_sync_folder_pairs
+.. autofunction:: get_sync_data
 .. autofunction:: login_auto
 .. autofunction:: login_manual
 .. autofunction:: logout
@@ -31,9 +31,8 @@ public functions
 """
 from typing import List
 
-from OpenDrive.general.device_data import get_mac
-from OpenDrive.net_interface import server
 from OpenDrive.client_side import authentication
+from OpenDrive.client_side import file_changes_json
 
 
 class Status:
@@ -101,8 +100,11 @@ def get_all_remote_folders(access_level=None) -> list:    # TODO: specify type h
     pass
 
 
-def get_all_sync_folder_pairs() -> list:  # TODO: specify type hint
-    pass
+def get_sync_data() -> dict:
+    """Returns a dict with all data specified in the changes.json file.
+    All synced folders, include/exclude regular expressions.
+    File changes."""
+    return file_changes_json.get_all_data()
 
 
 def share_folder(username: str, remote_name: str, permissions) -> Status:  # TODO: specify type hint permissions

@@ -3,7 +3,7 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 
-from OpenDrive.client_side import file_changes_json as changes
+from OpenDrive.client_side import interface
 from OpenDrive.client_side.od_logging import logger
 
 
@@ -13,7 +13,7 @@ class ScreenExplorer(Screen):
         super().__init__(**kwargs)
         self.box_folders_container = BoxLayout(orientation="vertical")
         self.add_widget(self.box_folders_container)
-        self.folders = changes.get_all_data()
+        self.folders = interface.get_sync_data()
         for path, folder in self.folders.items():
             self._add_folder(path, folder)
 
