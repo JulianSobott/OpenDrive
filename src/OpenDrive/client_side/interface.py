@@ -33,6 +33,8 @@ from typing import List
 
 from OpenDrive.client_side import authentication
 from OpenDrive.client_side import file_changes_json
+from OpenDrive.client_side import file_changes
+from OpenDrive.general.paths import NormalizedPath
 
 
 class Status:
@@ -81,16 +83,17 @@ def logout() -> Status:
     return authentication.logout()
 
 
-def add_sync_folder(abs_local_path: str, remote_name: str) -> Status:
+def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str) -> Status:
     pass
 
 
-def remove_synchronization(abs_local_path: str) -> Status:
+def remove_synchronization(abs_local_path: NormalizedPath) -> Status:
     """Stops the local folder from synchronizing with the remote folder. The remote folder is not deleted."""
-    pass
+    file_changes.remove_folder_from_watching(abs_local_path)
+    return Status.success("Successfully removed folder from synchronization")
 
 
-def remove_remote_folder(remote_name) -> Status:
+def remove_remote_folder(remote_name: NormalizedPath) -> Status:
     """Removes the remote folder, if it is not synchronized with any devices."""
     pass
 
@@ -111,7 +114,7 @@ def share_folder(username: str, remote_name: str, permissions) -> Status:  # TOD
     pass
 
 
-def add_ignore_patterns_to_folder(patterns:List[str], abs_local_path) -> Status:
+def add_ignore_patterns_to_folder(patterns:List[str], abs_local_path: NormalizedPath) -> Status:
     pass
 
 

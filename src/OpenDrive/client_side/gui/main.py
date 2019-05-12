@@ -21,9 +21,11 @@ private functions
 ------------------
 
 """
+import os
 from kivy.app import App
 
 from OpenDrive.client_side.gui import screens
+from OpenDrive.client_side import paths as client_paths
 
 # DO NOT DELETE UNUSED IMPORTS!
 # They are needed inside the OpenDriveApp
@@ -36,6 +38,7 @@ class OpenDriveApp(App):
 
 
 def main():
+    os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
     app.run()
 
 

@@ -2,8 +2,10 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
+from functools import partial
 
 from OpenDrive.client_side import interface
+from OpenDrive.general import paths as gen_paths
 from OpenDrive.client_side.od_logging import logger
 
 
@@ -14,6 +16,7 @@ class ScreenExplorer(Screen):
         self.box_folders_container = BoxLayout(orientation="vertical")
         self.add_widget(self.box_folders_container)
         self.folders = interface.get_sync_data()
+        self.folder_containers = {}
         for path, folder in self.folders.items():
             self._add_folder(path, folder)
 
@@ -24,7 +27,7 @@ class ScreenExplorer(Screen):
         lbl_local_path = Label(text=path)
         box_folder.add_widget(lbl_local_path)
 
-        lbl_server_path = Label(text=folder["server_folder_path"])
+        lbl_server_path = Label(text=str(folder["server_folder_path"]))
         box_folder.add_widget(lbl_server_path)
 
         lbl_status = Label(text="Ok")
@@ -36,7 +39,12 @@ class ScreenExplorer(Screen):
         btn_edit = Button(text="edit")
         box_folder.add_widget(btn_edit)
 
-        btn_delete = Button(text="delete")
+        btn_delete = Button(text="delete", on_release=partial(self.btn_release_remove_sync_folder, path))
         box_folder.add_widget(btn_delete)
 
         self.box_folders_container.add_widget(box_folder)
+        self.folder_containers[path] = box_folder
+
+    def btn_release_remove_sync_folder(self, folder_path: gen_paths.NormalizedPath, button):
+        interface.remove_synchronization(folder_path)
+        self.box_folders_container.clear_widgets([self.folder_containers[folder_path]])
