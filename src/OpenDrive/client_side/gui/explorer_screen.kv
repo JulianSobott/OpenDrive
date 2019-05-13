@@ -4,3 +4,49 @@
     name: 'screen_explorer'
 
 
+<BtnAddSynchronization@Button>
+    text: "Add synchronization"
+    on_release: self._explorer.btn_release_add_synchronization(self)
+
+
+<PopupConfigFolder@Popup>
+    title: "Config folder"
+    auto_dismiss: False
+
+    tf_local_path: tf_local_path
+    tf_server_path: tf_server_path
+
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            text: "local path"
+
+        TextInput:
+            id: tf_local_path
+
+        Label:
+            text: "server path"
+
+        TextInput:
+            id: tf_server_path
+
+        Label:
+            text: "include"
+
+        TextInput:
+            id: tf_includes
+
+        Label:
+            text: "exclude"
+
+        TextInput:
+            id: tf_excludes
+
+        Button:
+            text: "Add"
+
+        Button:
+            text: "Cancel"
+            on_release: root.dismiss()
+
