@@ -26,3 +26,12 @@ Process
             - Show explorer
 - Is offline:
     - Show lite explorer (No server specific data)
+
+Config synchronization
+-----------------------
+
+- local path
+- server path
+- excludes
+- includes
+

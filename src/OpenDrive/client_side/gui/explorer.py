@@ -1,6 +1,8 @@
+from kivy.properties import ObjectProperty
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from functools import partial
 
@@ -13,12 +15,14 @@ class ScreenExplorer(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.folders = interface.get_sync_data()
+
         self.box_folders_container = BoxLayout(orientation="vertical")
         self.add_widget(self.box_folders_container)
-        self.folders = interface.get_sync_data()
         self.folder_containers = {}
         for path, folder in self.folders.items():
             self._add_folder(path, folder)
+        self.box_folders_container.add_widget(BtnAddSynchronization(self))
 
     def _add_folder(self, path: str, folder: dict):
         """local_path, server_path, status, expand, edit, delete"""
@@ -48,3 +52,27 @@ class ScreenExplorer(Screen):
     def btn_release_remove_sync_folder(self, folder_path: gen_paths.NormalizedPath, button):
         interface.remove_synchronization(folder_path)
         self.box_folders_container.clear_widgets([self.folder_containers[folder_path]])
+
+    def btn_release_add_synchronization(self, button):
+        popup = PopupConfigFolder(self)
+        popup.open()
+
+
+class BtnAddSynchronization(Button):
+
+    def __init__(self, explorer_screen, **kwargs):
+        super().__init__(**kwargs)
+        self._explorer: ScreenExplorer = explorer_screen
+
+
+class PopupConfigFolder(Popup):
+
+    tf_client_path = ObjectProperty(None)
+    tf_server_path = ObjectProperty(None)
+
+    def __init__(self, explorer, **kwargs):
+        super().__init__(**kwargs)
+        self._explorer = explorer
+
+    def on_release(self):
+        client_path = self.tf_client_path
