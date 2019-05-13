@@ -97,11 +97,7 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
                 needed_remote_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
             elif gen_json.ACTION_MOVE[0] == l_file["necessary_action"]:
                 old_path = client_paths.normalize_path(os.path.join(remote_folder_path, l_file["old_file_path"]))
-                if gen_json.CHANGE_MODIFIED in l_file["changes"] or gen_json.CHANGE_CREATED[0] in l_file["changes"]:
-                    needed_remote_actions.append(_create_action(gen_json.ACTION_PULL, src_path, dest_path))
-                    needed_remote_actions.append(_create_action(gen_json.ACTION_DELETE, old_path))
-                else:
-                    needed_remote_actions.append(_create_action(gen_json.ACTION_MOVE, old_path, dest_path))
+                needed_remote_actions.append(_create_action(gen_json.ACTION_MOVE, old_path, dest_path))
             elif gen_json.ACTION_DELETE[0] == l_file["necessary_action"]:
                 needed_remote_actions.append(_create_action(gen_json.ACTION_DELETE, src_path))
 

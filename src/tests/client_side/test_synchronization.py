@@ -16,22 +16,20 @@ from tests.client_side.helper_client import h_register_dummy_user_device_client
 def h_create_dummy_server_change_file():
     dummy_changes = {}
     rel_entry_path = gen_paths.NormalizedPath("test_1.txt")
-    change_type = gen_json.CHANGE_CREATED
     action_type = gen_json.ACTION_PULL
     is_dir = False
     new_file_path = None
-    gen_json._add_new_change_entry(dummy_changes, rel_entry_path, change_type, action_type, is_dir, new_file_path)
+    gen_json._add_new_change_entry(dummy_changes, rel_entry_path, action_type, is_dir, new_file_path)
     return dummy_changes.popitem()
 
 
 def h_create_dummy_client_change_file():
     dummy_changes = {}
     rel_entry_path = gen_paths.NormalizedPath("test_1.txt")
-    change_type = gen_json.CHANGE_CREATED
     action_type = gen_json.ACTION_PULL
     is_dir = False
     new_file_path = None
-    gen_json._add_new_change_entry(dummy_changes, rel_entry_path, change_type, action_type, is_dir, new_file_path)
+    gen_json._add_new_change_entry(dummy_changes, rel_entry_path, action_type, is_dir, new_file_path)
     return dummy_changes.popitem()
 
 
@@ -46,11 +44,10 @@ def h_create_changes(changes: list) -> dict:
     return {change["new_file_path"]: change for change in changes}
 
 
-def h_create_change(rel_entry_path: gen_json.NormalizedPath, change_type: gen_json.ChangeType,
-                    action: gen_json.ActionType, is_directory: bool = False,
+def h_create_change(rel_entry_path: gen_json.NormalizedPath, action: gen_json.ActionType, is_directory: bool = False,
                     new_file_path: gen_json.NormalizedPath = None):
     changes = {}
-    gen_json._add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
+    gen_json._add_new_change_entry(changes, rel_entry_path, action, is_directory, new_file_path)
     if new_file_path:
         return h_create_changes([changes[new_file_path]])
     else:
@@ -88,7 +85,6 @@ class TestMerging(unittest.TestCase):
     def test_merge_changes_create_client(self):
         client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_CREATED,
                                                                      gen_json.ACTION_PULL)}, client_side=True)}
 
         server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), {})
@@ -102,7 +98,6 @@ class TestMerging(unittest.TestCase):
     def test_merge_changes_move_client(self):
         client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_MOVED,
                                                                      gen_json.ACTION_MOVE,
                                                                      new_file_path=gen_paths.NormalizedPath(
                                                                          "test2.txt"))},
@@ -119,7 +114,6 @@ class TestMerging(unittest.TestCase):
     def test_merge_changes_delete_client(self):
         client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_DELETED,
                                                                      gen_json.ACTION_DELETE)},
                                                   client_side=True)}
 
@@ -133,7 +127,6 @@ class TestMerging(unittest.TestCase):
     def test_merge_changes_create_server(self):
         server_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_CREATED,
                                                                      gen_json.ACTION_PULL)}, client_side=False)}
 
         client_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), {}, client_side=True)
@@ -147,7 +140,6 @@ class TestMerging(unittest.TestCase):
     def test_merge_changes_move_server(self):
         server_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_MOVED,
                                                                      gen_json.ACTION_MOVE,
                                                                      new_file_path=gen_paths.NormalizedPath(
                                                                          "test2.txt"))},
@@ -164,7 +156,6 @@ class TestMerging(unittest.TestCase):
     def test_merge_changes_delete_server(self):
         server_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_DELETED,
                                                                      gen_json.ACTION_DELETE)},
                                                   client_side=True)}
 
@@ -177,16 +168,13 @@ class TestMerging(unittest.TestCase):
 
     def test_merge_changes_conflicts(self):
         l_file_change = h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                              gen_json.CHANGE_CREATED,
                                               gen_json.ACTION_PULL)
         server_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_CREATED,
                                                                      gen_json.ACTION_PULL)}, client_side=False)}
 
         client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                                                     gen_json.CHANGE_CREATED,
                                                                      gen_json.ACTION_PULL)}, client_side=True)}
 
         expected_server = []
