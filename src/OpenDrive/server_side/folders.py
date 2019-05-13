@@ -19,12 +19,10 @@ private functions
 
 """
 import os
-import shutil
 from pathlib import Path
 
 from OpenDrive.server_side import database
 from OpenDrive.server_side import paths
-from OpenDrive.server_side.od_logging import logger
 from OpenDrive.server_side.database import User
 
 
@@ -52,4 +50,3 @@ def create_folder_for_new_user(user: User) -> None:
 def get_users_root_folder(user_id: int) -> Path:
     user_path = f"user_{user_id}"
     return Path(paths.FOLDERS_ROOT, user_path)
-

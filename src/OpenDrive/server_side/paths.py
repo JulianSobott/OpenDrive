@@ -7,7 +7,6 @@ public constants
 -----------------
 
 """
-import os
 import pynetworking as net
 
 from OpenDrive.general.paths import *

@@ -16,7 +16,6 @@ private functions
 
 
 """
-import threading
 import time
 
 from OpenDrive.client_side import file_changes as c_file_changes

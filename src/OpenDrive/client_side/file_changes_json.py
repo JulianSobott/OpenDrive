@@ -25,11 +25,7 @@ private functions
 .. autofunction:: _create_folder_entry
 
 """
-import datetime
 import json
-import os
-import time
-import typing
 from typing import List, Union, Optional
 
 from OpenDrive.client_side import paths as client_paths

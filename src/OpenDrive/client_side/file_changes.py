@@ -96,7 +96,8 @@ def remove_single_ignore(abs_folder_path: str, rel_paths: str) -> None:
     event_handler.remove_single_ignores(normalize_path(rel_paths))
 
 
-def _add_watcher(abs_folder_path: NormalizedPath, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()):
+def _add_watcher(abs_folder_path: NormalizedPath, include_regexes: List[str] = (".*",),
+                 exclude_regexes: List[str] = ()):
     """Watcher, that handles changes to the specified folder."""
     event_handler = FileSystemEventHandler(abs_folder_path, include_regexes, exclude_regexes)
     watch = observer.schedule(event_handler, abs_folder_path, recursive=True)

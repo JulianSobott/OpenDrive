@@ -18,11 +18,8 @@ private functions
 import os
 import pynetworking as net
 
-from OpenDrive.server_side import folders
-from OpenDrive.server_side.database import User
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive import net_interface
-from OpenDrive.general.file_exchanges import Action
 from OpenDrive.server_side import paths as server_paths
 
 

@@ -21,7 +21,6 @@ private functions
 .. autofunction:: _set_user_authenticated
 
 """
-import os
 import pynetworking as net
 from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union

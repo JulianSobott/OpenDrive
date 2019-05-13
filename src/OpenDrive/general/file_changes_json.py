@@ -24,11 +24,9 @@ private functions
 import datetime
 import json
 import os
-import time
 import typing
-from typing import List, Union, TypeVar
+from typing import List
 
-from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
 
 __all__ = ["init_file", "get_folder_entry", "add_change_entry", "remove_change_entry"]

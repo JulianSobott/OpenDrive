@@ -33,7 +33,6 @@ private functions
 """
 import json
 import os
-from typing import List
 import pynetworking as net
 
 from OpenDrive.server_side import paths as server_paths

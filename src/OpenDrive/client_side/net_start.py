@@ -13,4 +13,3 @@ def close_connection():
 
 if __name__ == '__main__':
     connect()
-

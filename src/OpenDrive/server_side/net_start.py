@@ -1,5 +1,4 @@
 import pynetworking as net
-import time
 
 from OpenDrive import net_interface
 from OpenDrive.server_side.od_logging import logger
