@@ -166,29 +166,28 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def on_created(self, event):
         if self._ignore:
             return
-        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.CHANGE_CREATED,
-                                           gen_json.ACTION_PULL, is_directory=self._is_dir)
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.ACTION_PULL,
+                                           is_directory=self._is_dir)
 
     def on_deleted(self, event):
         if self._ignore:
             return
-        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.CHANGE_DELETED,
-                                           gen_json.ACTION_DELETE, is_directory=self._is_dir)
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.ACTION_DELETE,
+                                           is_directory=self._is_dir)
 
     def on_modified(self, event):
         if self._ignore:
             return
-        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.CHANGE_MODIFIED,
-                                           gen_json.ACTION_PULL, is_directory=self._is_dir)
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.ACTION_PULL,
+                                           is_directory=self._is_dir)
 
     def on_moved(self, event):
         if self._ignore:
             return
         old_file_path = self._rel_path
         new_file_path = paths.normalize_path(os.path.relpath(event.dest_path, self.folder_path))
-        file_changes_json.add_change_entry(self.folder_path, old_file_path, gen_json.CHANGE_MOVED,
-                                           gen_json.ACTION_MOVE, is_directory=self._is_dir,
-                                           new_file_path=new_file_path)
+        file_changes_json.add_change_entry(self.folder_path, old_file_path, gen_json.ACTION_MOVE,
+                                           is_directory=self._is_dir, new_file_path=new_file_path)
 
     def add_single_ignores(self, rel_ignore_paths: List[NormalizedPath]):
         """Single ignores are listed, to be ignored once to be ignored when an event on them occurs.

@@ -34,17 +34,11 @@ from OpenDrive.general.paths import NormalizedPath
 __all__ = ["init_file", "get_folder_entry", "add_change_entry", "remove_change_entry"]
 
 
-CHANGE_MOVED = ("moved", 1<<0)
-CHANGE_CREATED = ("created", 1 << 0)
-CHANGE_MODIFIED = ("modified", 1 << 0)
-CHANGE_DELETED = ("deleted", 1 << 0)
+ActionType = typing.NewType("ActionType", typing.Tuple[str, int])
 
-ACTION_PULL = ("pull", 1 << 0)
-ACTION_MOVE = ("move", 1 << 0)
-ACTION_DELETE = ("delete", 1 << 0)
-
-ChangeType = typing.NewType("ChangeType", tuple)
-ActionType = typing.NewType("ActionType", tuple)
+ACTION_PULL = ActionType(("pull", 1 << 0))
+ACTION_MOVE = ActionType(("move", 1 << 1))
+ACTION_DELETE = ActionType(("delete", 1 << 2))
 
 
 def init_file(file_path: str, empty: bool = False) -> None:
@@ -66,19 +60,17 @@ def get_folder_entry(abs_folder_path: NormalizedPath, data: dict = None) -> dict
     return data[abs_folder_path]
 
 
-def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: ChangeType,
-                     action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
+def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, action: ActionType,
+                     is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
+    """rel_entry_path: key value in changes dict. create, delete -> current_path // move -> old_path"""
     data = _get_json_data()
     folder = get_folder_entry(abs_folder_path, data)
     changes = folder["changes"]
     if rel_entry_path in changes.keys():
-        _update_existing_change_entry(changes[rel_entry_path], rel_entry_path, change_type, action, is_directory,
+        _update_existing_change_entry(changes, changes[rel_entry_path], rel_entry_path, action, is_directory,
                                       new_file_path)
-        if changes[rel_entry_path]["new_file_path"] != rel_entry_path:
-            actual_path = changes[rel_entry_path]["new_file_path"]
-            changes[actual_path] = changes.pop(rel_entry_path)     # update rel_path key
     else:
-        _add_new_change_entry(changes, rel_entry_path, change_type, action, is_directory, new_file_path)
+        _add_new_change_entry(changes, rel_entry_path, action, is_directory, new_file_path)
     _set_json_data(data)
 
 
@@ -115,28 +107,30 @@ def _set_json_data(data: dict):
     raise NotImplemented
 
 
-def _update_existing_change_entry(existing_entry: dict, rel_entry_path: NormalizedPath, change_type: ChangeType,
+def _update_existing_change_entry(changes: dict, existing_entry: dict, rel_entry_path: NormalizedPath,
                                   action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None):
     existing_entry["last_change_time_stamp"] = str(datetime.datetime.now())
     existing_entry["is_directory"] = is_directory
     if action == ACTION_MOVE:
-        existing_entry["new_file_path"] = new_file_path
-        if "old_file_path" not in existing_entry.keys():
-            existing_entry["old_file_path"] = rel_entry_path
+        if existing_entry["necessary_action"] == ACTION_PULL[0]:
+            _add_new_change_entry(changes, new_file_path, ACTION_PULL, is_directory)
+            changes.pop(rel_entry_path)
+            _add_new_change_entry(changes, rel_entry_path, ACTION_DELETE, is_directory)
         else:
-            pass    # keep old old_file_path, because this is the name at the remote
-    else:
-        existing_entry["new_file_path"] = rel_entry_path
-
-    if action == ACTION_MOVE and existing_entry["necessary_action"] == ACTION_PULL[0]:
-        existing_entry["necessary_action"] = ACTION_PULL[0]
-    else:
-        existing_entry["necessary_action"] = action[0]
-
-    if change_type == CHANGE_CREATED or change_type == CHANGE_DELETED:
-        existing_entry["changes"] = [change_type[0]]
-    if change_type == CHANGE_MODIFIED or change_type == CHANGE_MODIFIED:
-        existing_entry["changes"].append(change_type[0])
+            existing_entry["new_file_path"] = new_file_path
+            if "old_file_path" not in existing_entry.keys():
+                existing_entry["old_file_path"] = rel_entry_path
+            else:
+                pass    # keep old old_file_path, because this is the name at the remote
+            changes[new_file_path] = changes.pop(rel_entry_path)  # update rel_path key
+    else:   # pull, delete
+        if existing_entry["necessary_action"] == ACTION_MOVE[0]:
+            changes.pop(rel_entry_path)
+            _add_new_change_entry(changes, rel_entry_path, ACTION_PULL, is_directory)
+            _add_new_change_entry(changes, existing_entry["old_file_path"], ACTION_DELETE, is_directory)
+        else:
+            existing_entry["new_file_path"] = rel_entry_path
+            existing_entry["necessary_action"] = action[0]
 
 
 def get_all_synced_folders_paths() -> List[NormalizedPath]:
@@ -144,8 +138,8 @@ def get_all_synced_folders_paths() -> List[NormalizedPath]:
     return [folder_path for folder_path in data.keys()]
 
 
-def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, change_type: ChangeType,
-                          action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
+def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action: ActionType,
+                          is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     entry = {}
     if action == ACTION_MOVE:
         entry["new_file_path"] = new_file_path
@@ -153,7 +147,6 @@ def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, change_
     else:
         entry["new_file_path"] = rel_entry_path
     entry["last_change_time_stamp"] = str(datetime.datetime.now())
-    entry["changes"] = [change_type[0]]
     entry["necessary_action"] = action[0]
     entry["is_directory"] = is_directory
     changes[entry["new_file_path"]] = entry

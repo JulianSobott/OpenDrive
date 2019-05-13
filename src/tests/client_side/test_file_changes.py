@@ -40,9 +40,10 @@ def h_min_equal_changes(test_object: unittest.TestCase, expected_change, folder_
     change = folder["changes"][expected_change["new_file_path"]]
     expected_change["last_change_time_stamp"] = change["last_change_time_stamp"]
     test_object.assertEqual(expected_change, change)
-    second_change = folder["changes"][second_expected_change["new_file_path"]]
-    expected_change["last_change_time_stamp"] = second_change["last_change_time_stamp"]
-    test_object.assertEqual(expected_change, change)
+    if second_expected_change:
+        second_change = folder["changes"][second_expected_change["new_file_path"]]
+        expected_change["last_change_time_stamp"] = second_change["last_change_time_stamp"]
+        test_object.assertEqual(expected_change, change)
 
 
 class TestFileChange(unittest.TestCase):

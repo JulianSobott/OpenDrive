@@ -39,7 +39,6 @@ import pynetworking as net
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general.paths import NormalizedPath
-from OpenDrive.general.file_changes_json import ChangeType, ActionType
 from OpenDrive import net_interface
 
 
@@ -81,9 +80,9 @@ def remove_folder(rel_folder_path: NormalizedPath, non_exists_ok=True):
 
 
 @_override_gen_functions
-def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: ChangeType,
-                     action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
-    return gen_json.add_change_entry(abs_folder_path, rel_entry_path, change_type, action, is_directory, new_file_path)
+def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, action: gen_json.ActionType,
+                     is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
+    return gen_json.add_change_entry(abs_folder_path, rel_entry_path, action, is_directory, new_file_path)
 
 
 @_override_gen_functions

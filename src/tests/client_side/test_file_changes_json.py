@@ -65,11 +65,7 @@ class TestJson(unittest.TestCase):
         file_changes_json.add_folder(path, include, exclude)
 
         rel_file_path = client_paths.normalize_path("test.txt")
-        file_changes_json.add_change_entry(path, rel_file_path, gen_json.CHANGE_CREATED,
-                                           gen_json.ACTION_PULL)
-        file_changes_json.add_change_entry(path, rel_file_path, gen_json.CHANGE_MODIFIED,
-                                           gen_json.ACTION_PULL)
+        file_changes_json.add_change_entry(path, rel_file_path, gen_json.ACTION_PULL)
         folder_entry = file_changes_json.get_folder_entry(path)
         changes = folder_entry["changes"]
         self.assertEqual(1, len(changes))
-        self.assertEqual(2, len(changes[rel_file_path]["changes"]))

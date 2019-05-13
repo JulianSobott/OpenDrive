@@ -89,10 +89,10 @@ def set_exclude_regexes(abs_folder_path: NormalizedPath, exclude_regexes: List[s
 
 
 @override_gen_functions
-def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath, change_type: gen_json.ChangeType,
+def add_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: NormalizedPath,
                      action: gen_json.ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None) \
         -> None:
-    return gen_json.add_change_entry(abs_folder_path, rel_entry_path, change_type, action, is_directory, new_file_path)
+    return gen_json.add_change_entry(abs_folder_path, rel_entry_path, action, is_directory, new_file_path)
 
 
 @override_gen_functions
