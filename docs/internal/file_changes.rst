@@ -40,8 +40,7 @@ Details
 What data to store:
     - new_file_path
     - last_change_time_stamp
-    - changes (Create, Move, Modify, Delete)
-    - necessary_action (Pull, move, delete)
+    - necessary_action (pull, move, delete)
     - is directory
     - old_file_path (Only on move)
 
@@ -59,7 +58,6 @@ Folder:
 Change:
     new_file_path: str,     # relative to folder_path (actual_file_path)
     last_change_time_stamp: int,
-    changes: List[str], # move, delete, create, modify
     necessary_action: str, # pull, move, delete
     is directory: bool,
     ~old_file_path: str # Only on move in same folder, relative to folder_path

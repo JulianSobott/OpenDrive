@@ -184,6 +184,7 @@ TODO next:
 
 
 - synchronization
+    - Remove: changes, use instead only actions
     - send server actions to server
     - execute server actions
     - distribute actions to other changes files
