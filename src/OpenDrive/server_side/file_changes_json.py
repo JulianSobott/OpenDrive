@@ -12,14 +12,6 @@ e.g. d1 creates a file. this file is uploaded to the server. in the changes file
 created new file.
 
 
-
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
-
-
 public functions
 ----------------
 
@@ -33,10 +25,13 @@ private functions
 """
 import json
 import os
+from typing import List
+
 import pynetworking as net
 
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.general import file_changes_json as gen_json
+from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive import net_interface
 
@@ -108,3 +103,17 @@ def _get_file_path(user_id: int, device_id: int) -> str:
     user_path = server_paths.get_users_root_folder(user_id)
     file_path = os.path.join(user_path, get_file_name(device_id))
     return file_path
+
+
+@_override_gen_functions
+def _has_folder(folder_path: NormalizedPath) -> bool:
+    data = _get_json_data()
+    return folder_path in data.keys()
+
+
+def distribute_action(action: SyncAction, devices_ids: List[int]) -> None:
+    for device_id in devices_ids:
+        _get_file_path = lambda user_id, _: _get_file_path(user_id, device_id)
+        if _has_folder(action["server_folder_path"]):
+            add_change_entry(action["server_folder_path"], action["rel_entry_path"], action["action_type"],
+                             action["is_directory"], action["new_path"])

@@ -96,6 +96,8 @@ tracked and returned.
 Actions:
 ^^^^^^^^^^
 
+- server_folder_path    # key in changes
+- abs_client_path   # when pull
 - action type (pull, move, delete)
     - pull:
         - src_path  # remote, abs

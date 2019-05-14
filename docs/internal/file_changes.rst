@@ -48,6 +48,8 @@ What folders are watched and the changes are stored in one single json file.
 
 **Json structure: changes.json**
 
+*Client:*
+
 File:
     Dict[folder_path: Folder]
 Folder:
@@ -62,6 +64,19 @@ Change:
     is directory: bool,
     ~old_file_path: str # Only on move in same folder, relative to folder_path
 
+
+*Server:*
+
+File:
+    Dict[folder_path: Folder]
+Folder:
+    changes: Dict[actual_file_path: Change]
+Change:
+    new_file_path: str,     # relative to folder_path (actual_file_path)
+    last_change_time_stamp: int,
+    necessary_action: str, # pull, move, delete
+    is directory: bool,
+    ~old_file_path: str # Only on move in same folder, relative to folder_path
 
 The code, that is responsible for this task is located at `client_side/file_changes.py`.
 

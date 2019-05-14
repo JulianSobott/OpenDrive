@@ -16,7 +16,7 @@ public classes
 """
 import datetime
 import secrets
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from OpenDrive.general.database import TableEntry, DBConnection
 from OpenDrive.server_side import paths
@@ -113,6 +113,11 @@ class Device(TableEntry):
             return None
         device: Device = entries[0]
         return device
+
+    @classmethod
+    def get_by_user_id(cls, user_id: int) -> List['Device']:
+        entries = cls.from_columns("user_id = ?", (user_id,))
+        return entries
 
     def __repr__(self):
         return f"Device({self._id}, {self._user_id}, {self._mac_address}, {self._token}, {self._token_expires})"

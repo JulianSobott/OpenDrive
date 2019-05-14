@@ -23,6 +23,8 @@ from OpenDrive import net_interface
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.server_side import file_exchanges
+from OpenDrive.server_side import file_changes_json as server_json
+from OpenDrive.server_side import database as db
 from OpenDrive.general.file_exchanges import SyncAction
 
 
@@ -34,6 +36,10 @@ def get_changes(dest_path: str) -> net.File:
 
 
 def execute_actions(actions: List[SyncAction]) -> None:
+    user: net_interface.ClientCommunicator = net.ClientManager().get()
+    devices = db.Device.get_by_user_id(user.user_id)
+    device_ids = [device.device_id for device in devices]
+
     for action in actions:
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
             file_exchanges.remove_file(action["src_path"])
@@ -43,3 +49,5 @@ def execute_actions(actions: List[SyncAction]) -> None:
             file_exchanges.pull_file(action["src_path"], action["dest_path"])
         else:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
+
+        server_json.distribute_action(action, device_ids)

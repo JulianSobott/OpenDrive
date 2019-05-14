@@ -135,7 +135,7 @@ class TableEntry(object):
         return cls(*ret[0])
 
     @classmethod
-    def from_columns(cls, where_clause: str, args: tuple) -> List['TableEntry']:
+    def from_columns(cls, where_clause: str, args: tuple) -> List:
         """Returns a list with initialized objects from the inherited class of :class:`TableEntry`.
         The `where_clause` must be a sqlite like parameterized WHERE clause without the WHERE. e.g. "name = ?".
         The args must be a tuple with all values for the parameterized string."""
