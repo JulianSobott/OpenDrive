@@ -3,6 +3,7 @@ import unittest
 from typing import Optional
 import os
 
+import general.file_exchanges
 from OpenDrive.client_side import synchronization as c_sync
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import paths as gen_paths
@@ -55,7 +56,7 @@ def h_create_change(rel_entry_path: gen_json.NormalizedPath, action: gen_json.Ac
 
 
 def h_create_action(action: gen_json.ActionType, src_path: gen_paths.NormalizedPath,
-                    dest_path: Optional[gen_paths.NormalizedPath] = None) -> c_sync.SyncAction:
+                    dest_path: Optional[gen_paths.NormalizedPath] = None) -> general.file_exchanges.SyncAction:
     return c_sync._create_action(action, src_path, dest_path)
 
 
@@ -246,9 +247,9 @@ class TestExecution(unittest.TestCase):
             f.write("Lorem ipsum " * 10)
 
         server_dest_path = "folder1/test2.txt"
-        client_actions = [h_create_action(gen_json.ACTION_PULL, gen_paths.normalize_path(client_src_path),
+        server_actions = [h_create_action(gen_json.ACTION_PULL, gen_paths.normalize_path(client_src_path),
                                           gen_paths.normalize_path(server_dest_path))]
-        c_sync._execute_server_actions(client_actions)
+        c_sync._execute_server_actions(server_actions)
         expected_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", server_dest_path)
         self.assertTrue(os.path.isfile(expected_path))
 
@@ -269,6 +270,6 @@ class TestExecution(unittest.TestCase):
         self.server_folder = h_setup_execution_env()
         server_src_path = os.path.join("folder1", "test.txt")
 
-        client_actions = [h_create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(server_src_path))]
-        c_sync._execute_server_actions(client_actions)
+        server_actions = [h_create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(server_src_path))]
+        c_sync._execute_server_actions(server_actions)
         self.assertFalse(os.path.isfile(server_src_path))

@@ -11,6 +11,7 @@ private functions
 """
 import os
 import shutil
+from typing import NewType
 
 import pynetworking as net
 
@@ -52,3 +53,6 @@ def remove_file(abs_src_path: str, implicit=True):
     except FileNotFoundError as e:
         if not implicit:
             raise e
+
+
+SyncAction = NewType("SyncAction", dict)

@@ -22,7 +22,7 @@ private functions
 """
 import json
 import os
-from typing import Optional, NewType, List
+from typing import Optional, List
 
 from OpenDrive.net_interface import server
 from OpenDrive.client_side import paths as client_paths
@@ -30,8 +30,7 @@ from OpenDrive.client_side import file_changes_json as client_json
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive.client_side.od_logging import logger
-
-SyncAction = NewType("SyncAction", dict)
+from OpenDrive.general.file_exchanges import SyncAction
 
 
 def full_synchronize() -> None:
@@ -116,16 +115,8 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
 
-def _execute_server_actions(server_actions) -> None:
-    for action in server_actions:
-        if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            server.remove_file(action["src_path"])
-        elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            server.move_file(action["src_path"], action["dest_path"])
-        elif action["action_type"] == gen_json.ACTION_PULL[0]:
-            server.pull_file(action["src_path"], action["dest_path"])
-        else:
-            raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
+def _execute_server_actions(server_actions: List[SyncAction]) -> None:
+    server.execute_actions(server_actions)
 
 
 def _create_action(action_type: gen_json.ActionType, src_path: gen_json.NormalizedPath,
