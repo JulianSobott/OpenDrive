@@ -115,7 +115,6 @@ def _update_existing_change_entry(changes: dict, existing_entry: dict, rel_entry
             changes.pop(rel_entry_path)
             _add_new_change_entry(changes, rel_entry_path, ACTION_DELETE, is_directory)
         else:
-            existing_entry["new_file_path"] = new_file_path
             if "old_file_path" not in existing_entry.keys():
                 existing_entry["old_file_path"] = rel_entry_path
             else:
@@ -127,7 +126,6 @@ def _update_existing_change_entry(changes: dict, existing_entry: dict, rel_entry
             _add_new_change_entry(changes, rel_entry_path, ACTION_PULL, is_directory)
             _add_new_change_entry(changes, existing_entry["old_file_path"], ACTION_DELETE, is_directory)
         else:
-            existing_entry["new_file_path"] = rel_entry_path
             existing_entry["necessary_action"] = action[0]
 
 
@@ -140,11 +138,11 @@ def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action:
                           is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     entry = {}
     if action == ACTION_MOVE:
-        entry["new_file_path"] = new_file_path
+        current_path = new_file_path
         entry["old_file_path"] = rel_entry_path
     else:
-        entry["new_file_path"] = rel_entry_path
+        current_path = rel_entry_path
     entry["last_change_time_stamp"] = str(datetime.datetime.now())
     entry["necessary_action"] = action[0]
     entry["is_directory"] = is_directory
-    changes[entry["new_file_path"]] = entry
+    changes[current_path] = entry
