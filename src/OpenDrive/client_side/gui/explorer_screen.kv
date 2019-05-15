@@ -13,7 +13,7 @@
     title: "Config folder"
     auto_dismiss: False
 
-    tf_local_path: tf_local_path
+    tf_client_path: tf_client_path
     tf_server_path: tf_server_path
 
     BoxLayout:
@@ -23,7 +23,11 @@
             text: "local path"
 
         TextInput:
-            id: tf_local_path
+            id: tf_client_path
+
+        Button:
+            text: "browse"
+            on_release: root.browse_client_path()
 
         Label:
             text: "server path"

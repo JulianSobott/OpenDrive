@@ -8,7 +8,9 @@ from functools import partial
 
 from OpenDrive.client_side import interface
 from OpenDrive.general import paths as gen_paths
+from OpenDrive.client_side.gui.desktop_file_dialogs import Desktop_FolderDialog
 from OpenDrive.client_side.od_logging import logger
+
 
 
 class ScreenExplorer(Screen):
@@ -74,5 +76,16 @@ class PopupConfigFolder(Popup):
         super().__init__(**kwargs)
         self._explorer = explorer
 
-    def on_release(self):
-        client_path = self.tf_client_path
+    def browse_client_path(self):
+        Desktop_FolderDialog(
+            title="Select Folder",
+            initial_directory="",
+            on_accept=lambda folder_path: self.set_client_path(folder_path),
+            on_cancel=lambda: -1,
+        ).show()
+
+    def set_client_path(self, path: str):
+        self.tf_client_path.text = path
+
+    def browse_server_path(self):
+        pass
