@@ -10,7 +10,8 @@ from OpenDrive.general import paths as gen_paths
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.client_side import paths as client_paths
 
-from tests.helper_all import h_create_empty, h_start_server_process, h_stop_server_process, h_client_routine
+from tests.helper_all import h_create_empty, h_start_server_process, h_stop_server_process, h_client_routine, \
+    h_clear_init_all_folders
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 
 
@@ -186,9 +187,6 @@ def h_setup_execution_env():
     server_folder = os.path.join(server_paths.FOLDERS_ROOT, 'user_1/folder1')
     h_register_dummy_user_device_client()
     h_create_empty(server_folder)
-    server_file_path = os.path.join(server_folder, 'test.txt')
-    with open(server_file_path, "w") as f:
-        f.write("Hello" * 10)
 
     client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1")
     h_create_empty(client_folder)
@@ -198,6 +196,7 @@ def h_setup_execution_env():
 class TestExecution(unittest.TestCase):
 
     def setUp(self) -> None:
+        h_clear_init_all_folders()
         self._server_process = h_start_server_process()
 
     def tearDown(self) -> None:
@@ -210,6 +209,9 @@ class TestExecution(unittest.TestCase):
     @h_client_routine()
     def test_execute_client_actions_pull(self):
         self.server_folder = h_setup_execution_env()
+        server_file_path = os.path.join(self.server_folder, 'test.txt')
+        with open(server_file_path, "w") as f:
+            f.write("Hello" * 10)
 
         client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
                                                 gen_paths.normalize_path("test.txt"),
@@ -248,17 +250,20 @@ class TestExecution(unittest.TestCase):
     @h_client_routine()
     def test_execute_server_actions_pull(self):
         self.server_folder = h_setup_execution_env()
-
-        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "test2.txt")
+        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
         with open(client_src_path, "w") as f:
             f.write("Lorem ipsum " * 10)
 
-        server_dest_path = "folder1/test2.txt"
-        server_actions = [h_create_action(gen_json.ACTION_PULL, gen_paths.normalize_path(client_src_path),
-                                          gen_paths.normalize_path(server_dest_path))]
+        server_actions = [c_sync._create_action(gen_paths.normalize_path("folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_PULL,
+                                                remote_abs_path=client_src_path)
+                          ]
         c_sync._execute_server_actions(server_actions)
-        expected_path = os.path.join(server_paths.FOLDERS_ROOT, "user_1", server_dest_path)
-        self.assertTrue(os.path.isfile(expected_path))
+        server_dest_path = os.path.join(self.server_folder, "test.txt")
+        self.assertTrue(os.path.isfile(server_dest_path))
+
+        self.server_folder = h_setup_execution_env()
 
     @h_client_routine()
     def test_execute_server_actions_move(self):

@@ -114,6 +114,12 @@ def _has_folder(folder_path: NormalizedPath) -> bool:
 def distribute_action(action: SyncAction, devices_ids: List[int]) -> None:
     for device_id in devices_ids:
         _get_file_path = lambda user_id, _: _get_file_path(user_id, device_id)
-        if _has_folder(action["server_folder_path"]):
-            add_change_entry(action["server_folder_path"], action["rel_entry_path"], action["action_type"],
-                             action["is_directory"], action["new_path"])
+        if _has_folder(action["local_folder_path"]):
+            if action["rel_old_file_path"] is None:
+                rel_file_path = action["rel_file_path"]
+                new_file_path = None
+            else:
+                rel_file_path = action["rel_old_file_path"]
+                new_file_path = action["rel_file_path"]
+            add_change_entry(action["local_folder_path"], rel_file_path, action["action_type"],
+                             action["is_directory"], new_file_path)

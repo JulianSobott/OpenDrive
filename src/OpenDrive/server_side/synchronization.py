@@ -39,14 +39,18 @@ def execute_actions(actions: List[SyncAction]) -> None:
     user: net_interface.ClientCommunicator = net.ClientManager().get()
     devices = db.Device.get_by_user_id(user.user_id)
     device_ids = [device.device_id for device in devices]
+    device_ids.remove(user.device_id)
 
     for action in actions:
+        dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            file_exchanges.remove_file(action["src_path"])
+            file_exchanges.remove_file(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            file_exchanges.move_file(action["src_path"], action["dest_path"])
+            src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
+            file_exchanges.move_file(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
-            file_exchanges.pull_file(action["src_path"], action["dest_path"])
+            src_path = action["remote_abs_path"]
+            file_exchanges.pull_file(src_path, dest_path)
         else:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
