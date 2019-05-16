@@ -31,7 +31,7 @@ private classes
 __all__ = ["start_observing", "add_folder", "remove_folder_from_watching", "add_single_ignores"]
 
 import os
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from watchdog import events as watchdog_events, observers as watchdog_observers
 from watchdog.observers.api import ObservedWatch
 import datetime
@@ -66,12 +66,13 @@ def stop_observing():
     observer.__init__()
 
 
-def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",), exclude_regexes: List[str] = ()) -> bool:
+def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",),
+               exclude_regexes: List[str] = (), remote_name: Optional[str] = None) -> bool:
     """If possible add folder to file and start watching. Returns True, if the folder was added."""
     assert isinstance(include_regexes, list) or isinstance(include_regexes, tuple)
     assert isinstance(exclude_regexes, list) or isinstance(exclude_regexes, tuple)
     abs_folder_path = normalize_path(abs_folder_path)
-    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes)
+    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes, remote_name)
     if not added:
         return False
     _add_watcher(abs_folder_path, include_regexes, exclude_regexes)

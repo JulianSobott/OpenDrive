@@ -87,7 +87,7 @@ def logout() -> Status:
 def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str, include_regexes: List[str] = (".*",),
                     exclude_regexes: List[str] = ()) -> Status:
     """Adds a synchronization between a local folder and a server folder."""
-    success = file_changes.add_folder(abs_local_path, include_regexes, exclude_regexes)
+    success = file_changes.add_folder(abs_local_path, include_regexes, exclude_regexes, remote_name)
     if not success:
         return Status.fail("Folder can not be added locally. It is nested in an existing folder or wraps "
                            "around an existing folder")

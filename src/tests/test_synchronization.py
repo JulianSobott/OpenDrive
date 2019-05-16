@@ -14,14 +14,13 @@ from OpenDrive.client_side import paths as client_paths
 from OpenDrive.server_side import paths as server_paths
 
 from tests.client_side.helper_client import h_register_dummy_user_device_client
-from tests.helper_all import h_client_routine, h_stop_server_process, h_start_server_process, h_create_empty
+from tests.helper_all import h_client_routine, h_stop_server_process, h_start_server_process, h_create_empty, \
+    h_clear_init_all_folders
 
 
 class TestSynchronization(unittest.TestCase):
 
     def setUp(self) -> None:
-        file_changes_json.init_file(empty=True)
-        file_changes.start_observing()
         self._server_process = h_start_server_process()
 
     def tearDown(self) -> None:
@@ -30,6 +29,8 @@ class TestSynchronization(unittest.TestCase):
     @h_client_routine()
     def test_create_pull(self):
         # =============== SETUP ===================================
+        file_changes_json.init_file(empty=True)
+        file_changes.start_observing()
         user = h_register_dummy_user_device_client()
         abs_local_path = client_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1")
         h_create_empty(abs_local_path)
