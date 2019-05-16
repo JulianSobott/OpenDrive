@@ -29,9 +29,13 @@ from OpenDrive import net_interface
 
 
 def add_folder(folder_name: str):
-    """Creates a new folder at the users path and creates a new entry at the DB."""
+    """If the folder does not exist, creates a new folder at the users path and creates a new entry at the DB. Else
+    do nothing"""
     user: net_interface.ClientCommunicator = net.ClientManager().get()
-    _add_folder_to_user(user.user_id, folder_name)
+    if database.Folder.get_by_user_and_name(user.user_id, folder_name) is None:
+        _add_folder_to_user(user.user_id, folder_name)
+    else:
+        pass
 
 
 def _add_folder_to_user(user_id: int, folder_name: str):
