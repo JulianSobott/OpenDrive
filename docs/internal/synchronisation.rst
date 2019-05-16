@@ -96,20 +96,10 @@ tracked and returned.
 Actions:
 ^^^^^^^^^^
 
-- server_folder_path    # key in changes
-- abs_client_path   # when pull
-- action type (pull, move, delete)
-    - pull:
-        - src_path  # remote, abs
-        - dest_path # local, relative to parent_folder
-    - move:
-        - src_path  # current
-        - dest_path # new
-    - delete:
-        - src_path  # current
-
-- src_path
-- dest_path (pull, move)
+- server_folder_path    # key in changes    | pull, move, delete
+- rel_server_path                           | pull, move, delete
+- abs_client_path                           | pull
+- old_server_path                           |       move
 
 
 Scenarios:
@@ -129,4 +119,45 @@ Scenarios:
     - pull to new dest
     - Check:
         - old/new file path in other -> conflict
+
+
+Changes and Actions
+^^^^^^^^^^^^^^^^^^^^^^
+
+At the server and client are the files with all changes. Clients and servers are different in some aspects. Each
+device has its own changes file at the server. At synchronization the client gets the changes file for its specific
+device. If there are no changes in the changes file None is returned and no merging is needed. The changes of both
+files are merged. Both files have the same structure.
+
+**Changes**
+
+File:
+    Dict[folder_path: NormalizedPath, Folder]
+    # folder_path: - abs_path at client
+    #              - rel path at server (to users root)
+Folder:
+    changes: Dict[file_path: NormalizedPath, Change]
+    # file_path: relative to folder. path, where the file is **currently located** at the server/device
+Change:
+    action: ActionType
+    time_stamp: str
+    is_directory: bool
+    {old_file_path: NormalizedPath} # only on move. Key at other side for Change
+ActionType:
+    str[pull, move, delete]
+
+These information are necessary for merging. The Actions that are the result of merging must have the following
+attributes:
+
+remote: Side where the actions are NOT executed
+local: Side where the actions are executed
+
+**Actions**
+
+- local_folder_path    # key. To create abs_path of file
+- rel_file_path         # key at pull, delete. destination
+- necessary_action
+- is_directory
+- {old_file_path}   # key at move. source at move
+- {remote_abs_path} # source at pull. Not distributed in the other changes files. Makes things easier
 
