@@ -136,13 +136,13 @@ def get_all_synced_folders_paths() -> List[NormalizedPath]:
 
 def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action: ActionType,
                           is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
-    entry = {}
+    entry = {"action": action[0],
+             "time_stamp": str(datetime.datetime.now()),
+             "is_directory": is_directory,
+             "rel_old_file_path": None}
     if action == ACTION_MOVE:
         current_path = new_file_path
-        entry["old_file_path"] = rel_entry_path
+        entry["rel_old_file_path"] = rel_entry_path
     else:
         current_path = rel_entry_path
-    entry["last_change_time_stamp"] = str(datetime.datetime.now())
-    entry["necessary_action"] = action[0]
-    entry["is_directory"] = is_directory
     changes[current_path] = entry

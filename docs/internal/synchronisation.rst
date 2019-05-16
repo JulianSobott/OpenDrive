@@ -142,7 +142,7 @@ Change:
     action: ActionType
     time_stamp: str
     is_directory: bool
-    {old_file_path: NormalizedPath} # only on move. Key at other side for Change
+    {rel_old_file_path: NormalizedPath} # only on move. Key at other side for Change
 ActionType:
     str[pull, move, delete]
 
