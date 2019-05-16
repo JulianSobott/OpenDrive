@@ -20,21 +20,29 @@ private functions
 """
 import os
 from pathlib import Path
+import pynetworking as net
 
 from OpenDrive.server_side import database
 from OpenDrive.server_side import paths
 from OpenDrive.server_side.database import User
+from OpenDrive import net_interface
 
 
-def add_folder(user: User, folder_name: str):
+def add_folder(folder_name: str):
     """Creates a new folder at the users path and creates a new entry at the DB."""
-    _create_physical_folder(user, folder_name)
-    database.Folder.create(user.user_id, folder_name)
+    user: net_interface.ClientCommunicator = net.ClientManager().get()
+    _add_folder_to_user(user.user_id, folder_name)
 
 
-def _create_physical_folder(user: User, folder_name: str):
+def _add_folder_to_user(user_id: int, folder_name: str):
+    """Creates a new folder at the users path and creates a new entry at the DB."""
+    _create_physical_folder(user_id, folder_name)
+    database.Folder.create(user_id, folder_name)
+
+
+def _create_physical_folder(user_id: int, folder_name: str):
     """Creates a new folder at the harddrive."""
-    users_root = get_users_root_folder(user.user_id)
+    users_root = get_users_root_folder(user_id)
     new_folder_path = users_root.joinpath(folder_name)
     new_folder_path.mkdir()
 

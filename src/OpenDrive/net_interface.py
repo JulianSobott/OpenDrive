@@ -7,6 +7,7 @@ class ServerFunctions(net.ServerFunctions):
         logout
     from OpenDrive.server_side.file_exchanges import get_file
     from OpenDrive.server_side.synchronization import get_changes, execute_actions
+    from OpenDrive.server_side.folders import add_folder
 
 
 class ClientFunctions(net.ClientFunctions):
