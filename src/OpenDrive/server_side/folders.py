@@ -25,6 +25,7 @@ import pynetworking as net
 from OpenDrive.server_side import database
 from OpenDrive.server_side import paths
 from OpenDrive.server_side.database import User
+from OpenDrive.server_side import file_changes_json
 from OpenDrive import net_interface
 
 
@@ -42,6 +43,7 @@ def _add_folder_to_user(user_id: int, folder_name: str):
     """Creates a new folder at the users path and creates a new entry at the DB."""
     _create_physical_folder(user_id, folder_name)
     database.Folder.create(user_id, folder_name)
+    file_changes_json.add_folder(folder_name)
 
 
 def _create_physical_folder(user_id: int, folder_name: str):
