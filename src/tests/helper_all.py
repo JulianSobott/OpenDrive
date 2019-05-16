@@ -49,13 +49,14 @@ def h_stop_server_process(process: Process):
     process.join()
 
 
-def h_client_routine(clear_server_db: bool = False, clear_client_db: bool = False):
+def h_client_routine(clear_server_db: bool = False, clear_client_db: bool = False, clear_folders: bool = True):
     from tests.client_side.helper_client import h_delete_recreate_client_db
     from tests.server_side.helper_server import h_delete_recreate_server_db
 
     def decorator(func):
         def wrapper(*args, **kwargs):
-            h_clear_init_all_folders()
+            if clear_folders:
+                h_clear_init_all_folders()
             if clear_server_db:
                 h_delete_recreate_server_db()
             if clear_client_db:

@@ -23,23 +23,21 @@ class TestSynchronization(unittest.TestCase):
     def setUp(self) -> None:
         self._server_process = h_start_server_process()
 
+        file_changes_json.init_file(empty=True)
+        file_changes.start_observing()
+        self.user = h_register_dummy_user_device_client()
+        self.folder1_abs_local_path = client_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1")
+        h_create_empty(self.folder1_abs_local_path)
+        interface.add_sync_folder(self.folder1_abs_local_path, "folder1")
+
     def tearDown(self) -> None:
         h_stop_server_process(self._server_process)
 
     @h_client_routine()
     def test_create_pull(self):
-        # =============== SETUP ===================================
-        file_changes_json.init_file(empty=True)
-        file_changes.start_observing()
-        user = h_register_dummy_user_device_client()
-        abs_local_path = client_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1")
-        h_create_empty(abs_local_path)
-        interface.add_sync_folder(abs_local_path, "folder1")
-
-        # ================= END SETUP ==============================
-        file_path = os.path.join(abs_local_path, "dummy.txt")
+        file_path = os.path.join(self.folder1_abs_local_path, "dummy.txt")
         with open(file_path, "w") as f:
             f.write("Hello World")
         time.sleep(2)
-        expected_path = os.path.join(server_paths.get_users_root_folder(user.user_id), "folder1/dummy.txt")
+        expected_path = os.path.join(server_paths.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
