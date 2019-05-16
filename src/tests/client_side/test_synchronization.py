@@ -92,17 +92,20 @@ class TestMerging(unittest.TestCase):
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
 
     def test_merge_changes_move_client(self):
-        client_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
-                                                  {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
+        client_changes = {**h_create_folder_entry(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                  {**h_create_change(gen_paths.NormalizedPath("test.txt"),
                                                                      gen_json.ACTION_MOVE,
-                                                                     new_file_path=gen_paths.NormalizedPath(
-                                                                         "test2.txt"))},
-                                                  client_side=True)}
+                                                                     new_file_path=gen_paths.normalize_path(
+                                                                         "new_test.txt"))},
+                                                  gen_paths.normalize_path("folder1"))}
 
-        server_changes = h_create_folder_entry(gen_paths.NormalizedPath("folder_1"), {})
+        server_changes = h_create_folder_entry(gen_paths.normalize_path("folder1"), {})
 
-        expected_server = [h_create_action(gen_json.ACTION_MOVE, gen_paths.NormalizedPath("folder_1/test1.txt"),
-                                           gen_paths.NormalizedPath("folder_1/test2.txt"))]
+        expected_server = [c_sync._create_action(gen_paths.normalize_path("folder1"),
+                                                 gen_paths.normalize_path("new_test.txt"),
+                                                 gen_json.ACTION_MOVE,
+                                                 rel_old_file_path=gen_paths.normalize_path("test.txt"))
+                           ]
         expected_client = []
         expected_conflicts = []
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
@@ -164,7 +167,7 @@ class TestMerging(unittest.TestCase):
 
     def test_merge_changes_conflicts(self):
         l_file_change = h_create_change(gen_paths.NormalizedPath("test1.txt"),
-                                              gen_json.ACTION_PULL)
+                                        gen_json.ACTION_PULL)
         server_changes = {**h_create_folder_entry(gen_paths.NormalizedPath("folder_1"),
                                                   {**h_create_change(gen_paths.NormalizedPath("test1.txt"),
                                                                      gen_json.ACTION_PULL)}, client_side=False)}
@@ -224,7 +227,7 @@ class TestExecution(unittest.TestCase):
     def test_execute_client_actions_move(self):
         client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
         with open(client_src_path, "w") as f:
-            f.write("Lorem ipsum "*10)
+            f.write("Lorem ipsum " * 10)
         client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/new_test.txt")
         client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
                                                 gen_paths.normalize_path("new_test.txt"),

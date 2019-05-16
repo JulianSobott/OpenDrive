@@ -92,7 +92,10 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
                               "remote_file": remote_folder["changes"][l_file_path]})
             remote_folder["changes"].pop(l_file_path)
         else:
-            remote_abs_path = client_paths.normalize_path(local_folder_path, l_file_path)
+            if l_file["action"] == gen_json.ACTION_PULL[0]:
+                remote_abs_path = client_paths.normalize_path(local_folder_path, l_file_path)
+            else:
+                remote_abs_path = None
             action = _create_action(remote_folder_path, l_file_path, gen_json.ActionType((l_file["action"], 0)),
                                     l_file["is_directory"],
                                     l_file["rel_old_file_path"], remote_abs_path)
