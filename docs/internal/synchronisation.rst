@@ -156,8 +156,8 @@ local: Side where the actions are executed
 
 - local_folder_path    # key. To create abs_path of file
 - rel_file_path         # key at pull, delete. destination
-- necessary_action
+- action_type
 - is_directory
-- {old_file_path}   # key at move. source at move
+- {rel_old_file_path}   # key at move. source at move
 - {remote_abs_path} # source at pull. Not distributed in the other changes files. Makes things easier
 

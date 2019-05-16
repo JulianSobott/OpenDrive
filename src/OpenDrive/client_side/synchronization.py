@@ -31,6 +31,7 @@ from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive.client_side.od_logging import logger
 from OpenDrive.general.file_exchanges import SyncAction
+from OpenDrive.general.paths import NormalizedPath
 
 
 def full_synchronize() -> None:
@@ -56,7 +57,8 @@ def _get_client_changes() -> dict:
 
 def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
     """pop items from the changes dicts, till both dicts are empty. All actions are instead distributed to the
-    proper lists"""
+    proper lists.
+    """
     needed_client_actions = []
     needed_server_actions = []
     conflicts = []
@@ -105,12 +107,15 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
 
 def _execute_client_actions(client_actions: List[SyncAction]) -> None:
     for action in client_actions:
+        dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            gen_file_exchanges.remove_file(action["src_path"])
+            gen_file_exchanges.remove_file(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            gen_file_exchanges.move_file(action["src_path"], action["dest_path"])
+            src_path = os.path.join(action["local_folder_path"], action["rel_old_path"])
+            gen_file_exchanges.move_file(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
-            server.get_file(action["src_path"], action["dest_path"])
+            src_path = action["remote_abs_path"]
+            server.get_file(src_path, dest_path)
         else:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
@@ -119,10 +124,15 @@ def _execute_server_actions(server_actions: List[SyncAction]) -> None:
     server.execute_actions(server_actions)
 
 
-def _create_action(action_type: gen_json.ActionType, src_path: gen_json.NormalizedPath,
-                   dest_path: Optional[gen_json.NormalizedPath] = None) -> SyncAction:
-    sync_action = {"action_type": action_type[0],
-                   "src_path": src_path}
-    if dest_path:
-        sync_action["dest_path"] = dest_path
+def _create_action(local_folder_path: NormalizedPath, rel_file_path: NormalizedPath, action_type: gen_json.ActionType,
+                   is_directory: bool = False, rel_old_file_path: NormalizedPath = None,
+                   remote_abs_path: str = None) -> SyncAction:
+
+    sync_action = {"local_folder_path": local_folder_path,      # folder key. To create abs_path of file
+                   "rel_file_path": rel_file_path,              # changes key at pull, delete. destination
+                   "action_type": action_type[0],               # pull, move, delete
+                   "is_directory": is_directory,                # bool
+                   "rel_old_file_path": rel_old_file_path,      # optional. changes key at move. source at move
+                   "remote_abs_path": remote_abs_path           # source at pull.
+                   }
     return SyncAction(sync_action)

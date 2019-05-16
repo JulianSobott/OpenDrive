@@ -10,7 +10,7 @@ from OpenDrive.general import paths as gen_paths
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.client_side import paths as client_paths
 
-from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, h_client_routine
+from tests.helper_all import h_create_empty, h_start_server_process, h_stop_server_process, h_client_routine
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 
 
@@ -53,11 +53,6 @@ def h_create_change(rel_entry_path: gen_json.NormalizedPath, action: gen_json.Ac
         return h_create_changes([changes[new_file_path]])
     else:
         return h_create_changes([changes[rel_entry_path]])
-
-
-def h_create_action(action: gen_json.ActionType, src_path: gen_paths.NormalizedPath,
-                    dest_path: Optional[gen_paths.NormalizedPath] = None) -> general.file_exchanges.SyncAction:
-    return c_sync._create_action(action, src_path, dest_path)
 
 
 class TestSynchronization(unittest.TestCase):
@@ -190,10 +185,13 @@ class TestMerging(unittest.TestCase):
 def h_setup_execution_env():
     server_folder = os.path.join(server_paths.FOLDERS_ROOT, 'user_1/folder1')
     h_register_dummy_user_device_client()
-    os.makedirs(server_folder, exist_ok=True)
+    h_create_empty(server_folder)
     server_file_path = os.path.join(server_folder, 'test.txt')
     with open(server_file_path, "w") as f:
         f.write("Hello" * 10)
+
+    client_folder = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1")
+    h_create_empty(client_folder)
     return server_folder
 
 
@@ -213,10 +211,13 @@ class TestExecution(unittest.TestCase):
     def test_execute_client_actions_pull(self):
         self.server_folder = h_setup_execution_env()
 
-        client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "test.txt")
-        client_actions = [h_create_action(gen_json.ACTION_PULL, gen_paths.NormalizedPath("folder1/test.txt"),
-                                          gen_paths.normalize_path(client_dest_path))]
+        client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_PULL,
+                                                remote_abs_path=gen_paths.NormalizedPath("folder1/test.txt"))
+                          ]
         c_sync._execute_client_actions(client_actions)
+        client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
         self.assertTrue(os.path.isfile(client_dest_path))
 
     def test_execute_client_actions_move(self):
@@ -270,6 +271,6 @@ class TestExecution(unittest.TestCase):
         self.server_folder = h_setup_execution_env()
         server_src_path = os.path.join("folder1", "test.txt")
 
-        server_actions = [h_create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(server_src_path))]
+        server_actions = [c_sync._create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(server_src_path))]
         c_sync._execute_server_actions(server_actions)
         self.assertFalse(os.path.isfile(server_src_path))
