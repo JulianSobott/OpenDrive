@@ -221,21 +221,27 @@ class TestExecution(unittest.TestCase):
         self.assertTrue(os.path.isfile(client_dest_path))
 
     def test_execute_client_actions_move(self):
-        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "test.txt")
+        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
         with open(client_src_path, "w") as f:
             f.write("Lorem ipsum "*10)
-        client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "new_test.txt")
-        client_actions = [h_create_action(gen_json.ACTION_MOVE, gen_paths.normalize_path(client_src_path),
-                                          gen_paths.normalize_path(client_dest_path))]
+        client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/new_test.txt")
+        client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                gen_paths.normalize_path("new_test.txt"),
+                                                gen_json.ACTION_MOVE,
+                                                rel_old_file_path=gen_paths.normalize_path("test.txt"))
+                          ]
         c_sync._execute_client_actions(client_actions)
         self.assertTrue(os.path.isfile(client_dest_path))
 
     def test_execute_client_actions_delete(self):
-        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "test.txt")
+        client_src_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
         with open(client_src_path, "w") as f:
             f.write("Lorem ipsum " * 10)
 
-        client_actions = [h_create_action(gen_json.ACTION_DELETE, gen_paths.normalize_path(client_src_path))]
+        client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_DELETE)
+                          ]
         c_sync._execute_client_actions(client_actions)
         self.assertFalse(os.path.isfile(client_src_path))
 

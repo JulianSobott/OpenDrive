@@ -111,7 +111,7 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
             gen_file_exchanges.remove_file(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            src_path = os.path.join(action["local_folder_path"], action["rel_old_path"])
+            src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
             gen_file_exchanges.move_file(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
