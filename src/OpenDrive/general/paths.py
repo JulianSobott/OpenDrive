@@ -19,7 +19,7 @@ CODE_PATH = os.path.join(PROJECT_PATH, "src/OpenDrive/")
 LOCAL_DATA = os.path.join(PROJECT_PATH, "local/")
 
 
-def normalize_path(path: str) -> NormalizedPath:
-    normalized_os_path = os.path.normpath(path)
+def normalize_path(path: str, *paths: str) -> NormalizedPath:
+    full_path = os.path.join(path, *paths)
+    normalized_os_path = os.path.normpath(full_path)
     return NormalizedPath(normalized_os_path.replace("\\", "/"))
-
