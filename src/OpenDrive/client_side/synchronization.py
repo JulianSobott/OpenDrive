@@ -41,7 +41,8 @@ def full_synchronize() -> None:
     server_actions, client_actions, conflicts = _merge_changes(server_changes, client_changes)
     _execute_server_actions(server_actions)
     _execute_client_actions(client_actions)
-    logger.error(f"Unhandled conflicts: {conflicts}")
+    if len(conflicts) > 0:
+        logger.error(f"Unhandled conflicts: {conflicts}")
 
 
 def _get_server_changes() -> dict:

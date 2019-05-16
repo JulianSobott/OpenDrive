@@ -107,26 +107,26 @@ def _set_json_data(data: dict):
 
 def _update_existing_change_entry(changes: dict, existing_entry: dict, rel_entry_path: NormalizedPath,
                                   action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None):
-    existing_entry["last_change_time_stamp"] = str(datetime.datetime.now())
+    existing_entry["time_stamp"] = str(datetime.datetime.now())
     existing_entry["is_directory"] = is_directory
     if action == ACTION_MOVE:
-        if existing_entry["necessary_action"] == ACTION_PULL[0]:
+        if existing_entry["action"] == ACTION_PULL[0]:
             _add_new_change_entry(changes, new_file_path, ACTION_PULL, is_directory)
             changes.pop(rel_entry_path)
             _add_new_change_entry(changes, rel_entry_path, ACTION_DELETE, is_directory)
         else:
-            if "old_file_path" not in existing_entry.keys():
-                existing_entry["old_file_path"] = rel_entry_path
+            if existing_entry["rel_old_file_path"] is None:
+                existing_entry["rel_old_file_path"] = rel_entry_path
             else:
                 pass    # keep old old_file_path, because this is the name at the remote
             changes[new_file_path] = changes.pop(rel_entry_path)  # update rel_path key
     else:   # pull, delete
-        if existing_entry["necessary_action"] == ACTION_MOVE[0]:
+        if existing_entry["action"] == ACTION_MOVE[0]:
             changes.pop(rel_entry_path)
             _add_new_change_entry(changes, rel_entry_path, ACTION_PULL, is_directory)
-            _add_new_change_entry(changes, existing_entry["old_file_path"], ACTION_DELETE, is_directory)
+            _add_new_change_entry(changes, existing_entry["rel_old_file_path"], ACTION_DELETE, is_directory)
         else:
-            existing_entry["necessary_action"] = action[0]
+            existing_entry["action"] = action[0]
 
 
 def get_all_synced_folders_paths() -> List[NormalizedPath]:

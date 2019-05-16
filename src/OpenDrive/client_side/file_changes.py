@@ -76,6 +76,7 @@ def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",),
     if not added:
         return False
     _add_watcher(abs_folder_path, include_regexes, exclude_regexes)
+    return True
 
 
 def remove_folder_from_watching(abs_folder_path: str) -> None:

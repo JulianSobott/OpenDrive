@@ -58,12 +58,12 @@ def create_changes_file_for_new_device(user_id: int, device_id: int, empty: bool
 
 
 @_override_gen_functions
-def add_folder(rel_folder_path: NormalizedPath) -> bool:
-    if not gen_json.can_folder_be_added(rel_folder_path):
+def add_folder(folder_name: str) -> bool:
+    if not gen_json.can_folder_be_added(server_paths.NormalizedPath(folder_name)):
         return False
     data = _get_json_data()
     new_folder_entry = {"changes": {}}
-    data[rel_folder_path] = new_folder_entry
+    data[folder_name] = new_folder_entry
     _set_json_data(data)
     return True
 
