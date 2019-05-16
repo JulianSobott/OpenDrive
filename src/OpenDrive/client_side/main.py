@@ -58,6 +58,7 @@ def mainloop():
 def shutdown():
     is_on_event.clear()
     c_file_changes.sync_waiter.waiter.set()
+    c_file_changes.stop_observing()
     c_net_start.close_connection()
 
 

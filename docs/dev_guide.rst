@@ -159,21 +159,19 @@ TODO next:
 
 - GUI define features
 - Main program
-    - startup                      <---
+    - startup
         - start watching
         - connect to server
             - success:
                 - authenticate
                 - sync everything
     - main loop
-        - sync on changes at the client
+        - sync on changes at the server     <----
     - shutdown
         - is finished syncing?
-        - close connection to server
-        - stop watching
 
     - special cases
-        - new folder added at client
+        - new folder added at client        <----
             - mark everything as created?
         - existing client folder is merged with existing server folder
             - options:
@@ -184,6 +182,6 @@ TODO next:
 
 
 - synchronization
-    - distribute actions to other changes files
+    - test: distribute actions to other changes files   <----
 
 
