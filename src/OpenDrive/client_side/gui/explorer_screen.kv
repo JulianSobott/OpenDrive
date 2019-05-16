@@ -35,6 +35,10 @@
         TextInput:
             id: tf_server_path
 
+        Button:
+            text: "browse"
+            on_release: root.browse_server_path()
+
         Label:
             text: "include"
 
@@ -53,4 +57,26 @@
         Button:
             text: "Cancel"
             on_release: root.dismiss()
+
+<FoldersView>:
+    viewclass: 'SelectableLabel'
+    text_selected: ''
+    name_selected: ''
+
+    SelectableRecycleBoxLayout:
+        id: culture_sub_view_layout
+        orientation: 'vertical'
+        default_size: None, dp(32)
+        default_size_hint: .6, None
+        size_hint: 1, .9
+        multiselect: False
+        touch_multiselect: False
+
+<SelectableLabel>:
+    canvas.before:
+        Color:
+            rgba: (.05, 0.5, .9, .8) if self.selected else (.5, .5, .5, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
