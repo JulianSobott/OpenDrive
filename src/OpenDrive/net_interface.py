@@ -13,6 +13,7 @@ class ServerFunctions(net.ServerFunctions):
 class ClientFunctions(net.ClientFunctions):
     """All client functions, that can be called by the server"""
     from OpenDrive.general.file_exchanges import get_file
+    from OpenDrive.client_side.synchronization import trigger_server_synchronization
 
 
 class ServerCommunicator(net.ServerCommunicator):

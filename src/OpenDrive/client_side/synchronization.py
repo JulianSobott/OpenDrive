@@ -22,14 +22,15 @@ private functions
 """
 import json
 import os
-from typing import Optional, List
+from typing import List
 
-from OpenDrive.net_interface import server
-from OpenDrive.client_side import paths as client_paths
+from OpenDrive import net_interface
+from OpenDrive.client_side import file_changes as c_file_changes
 from OpenDrive.client_side import file_changes_json as client_json
+from OpenDrive.client_side import paths as client_paths
+from OpenDrive.client_side.od_logging import logger
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import file_exchanges as gen_file_exchanges
-from OpenDrive.client_side.od_logging import logger
 from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.general.paths import NormalizedPath
 
@@ -45,9 +46,13 @@ def full_synchronize() -> None:
         logger.error(f"Unhandled conflicts: {conflicts}")
 
 
+def trigger_server_synchronization():
+    c_file_changes.sync_waiter.sync()
+
+
 def _get_server_changes() -> dict:
     dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "server_changes.json")
-    changes_file = server.get_changes(dest_path)
+    changes_file = net_interface.server.get_changes(dest_path)
     with open(changes_file.dst_path, "r") as file:
         return json.load(file)
 
@@ -115,13 +120,13 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
             gen_file_exchanges.move_file(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
-            server.get_file(src_path, dest_path)
+            net_interface.server.get_file(src_path, dest_path)
         else:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
 
 def _execute_server_actions(server_actions: List[SyncAction]) -> None:
-    server.execute_actions(server_actions)
+    net_interface.server.execute_actions(server_actions)
 
 
 def _create_action(local_folder_path: NormalizedPath, rel_file_path: NormalizedPath, action_type: gen_json.ActionType,

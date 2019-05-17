@@ -14,7 +14,7 @@ private functions
 
 
 """
-from typing import List
+from typing import List, Dict
 
 import pynetworking as net
 import os
@@ -55,3 +55,13 @@ def execute_actions(actions: List[SyncAction]) -> None:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 
         server_json.distribute_action(action, device_ids)
+
+    if len(actions) > 0:
+        notify_other_devices(user)
+
+
+def notify_other_devices(user: 'net_interface.ClientCommunicator'):
+    clients: Dict[int, net_interface.ClientCommunicator] = net.ClientManager().clients
+    for client in clients.values():
+        if client.user_id == user.user_id and client.device_id != user.device_id:
+            client.remote_functions.trigger_server_synchronization()
