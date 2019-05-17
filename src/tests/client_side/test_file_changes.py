@@ -19,31 +19,17 @@ def h_create_empty_dummy_folder(id_: int = 1) -> paths.NormalizedPath:
 
 def h_create_expected_change(rel_file_path: str, action: gen_json.ActionType, is_folder: bool = False,
                              new_file_path: str = None):
-    dummy_changes = {}
-    file_changes_json.gen_json._add_new_change_entry(dummy_changes, paths.normalize_path(rel_file_path), action,
-                                                     is_folder, new_file_path)
-
-    actual_path = rel_file_path if new_file_path is None else new_file_path
-    expected_change = dummy_changes[actual_path]
-    if new_file_path:
-        expected_change["new_file_path"] = new_file_path
-    return expected_change
+    expected_changes = {}
+    gen_json._add_new_change_entry(expected_changes, paths.normalize_path(rel_file_path), action, is_folder,
+                                   new_file_path)
+    return expected_changes
 
 
-def h_min_equal_changes(test_object: unittest.TestCase, expected_change, folder_path, expected_min_changes=1,
-                        second_expected_change=None):
-    folder = file_changes_json.get_folder_entry(folder_path)
-    test_object.assertGreaterEqual(expected_min_changes, len(folder["changes"]))
-    if expected_min_changes == 0:
-        test_object.assertEqual(0, len(folder["changes"]))
-        return
-    change = folder["changes"][expected_change["new_file_path"]]
-    expected_change["last_change_time_stamp"] = change["last_change_time_stamp"]
-    test_object.assertEqual(expected_change, change)
-    if second_expected_change:
-        second_change = folder["changes"][second_expected_change["new_file_path"]]
-        expected_change["last_change_time_stamp"] = second_change["last_change_time_stamp"]
-        test_object.assertEqual(expected_change, change)
+def h_min_equal_changes(test_object: unittest.TestCase, expected_changes, folder_path, rel_file_path):
+    data = gen_json._get_json_data()
+    actual_changes = data[folder_path]["changes"]
+    expected_changes[rel_file_path]["timestamp"] = actual_changes[rel_file_path]["timestamp"]
+    test_object.assertEqual(expected_changes[rel_file_path], actual_changes[rel_file_path])
 
 
 class TestFileChange(unittest.TestCase):
@@ -78,8 +64,15 @@ class TestFileCreate(TestFileChange):
             with open(abs_file_path, "w") as f:
                 f.write("Hello" * 10)
         time.sleep(1)
-        expected_change = h_create_expected_change(rel_file_path, gen_json.ACTION_PULL, is_folder)
-        h_min_equal_changes(self, expected_change, self.abs_folder_path, 0 if ignore else 1)
+        expected_changes = {}
+        gen_json._add_new_change_entry(expected_changes, paths.normalize_path(rel_file_path), gen_json.ACTION_PULL, is_folder)
+        data = gen_json._get_json_data()
+        actual_changes = data[self.abs_folder_path]["changes"]
+        if ignore:
+            self.assertEqual({}, actual_changes)
+        else:
+            expected_changes[rel_file_path]["timestamp"] = actual_changes[rel_file_path]["timestamp"]
+            self.assertEqual(expected_changes, actual_changes)
 
     def test_create_file(self):
         """no folder_id, no ignore_patterns"""
@@ -157,8 +150,8 @@ class TestFileChanges(unittest.TestCase):
         with open(self.abs_file_path, "w") as f:
             f.write(100 * "Edited text")
         time.sleep(0.5)
-        expected_change = h_create_expected_change(self.rel_file_path, gen_json.ACTION_PULL)
-        h_min_equal_changes(self, expected_change, self.abs_folder_path)
+        expected_changes = h_create_expected_change(self.rel_file_path, gen_json.ACTION_PULL)
+        h_min_equal_changes(self, expected_changes, self.abs_folder_path, self.rel_file_path)
 
     def test_create_edit_file(self):
         rel_file_path = "test2.txt"
@@ -166,20 +159,20 @@ class TestFileChanges(unittest.TestCase):
             f.write(100 * "Edited text")
         time.sleep(0.5)
         expected_change = h_create_expected_change(rel_file_path, gen_json.ACTION_PULL)
-        h_min_equal_changes(self, expected_change, self.abs_folder_path)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, rel_file_path)
 
     def test_remove_file(self):
         os.remove(self.abs_file_path)
         time.sleep(0.5)
         expected_change = h_create_expected_change(self.rel_file_path, gen_json.ACTION_DELETE)
-        h_min_equal_changes(self, expected_change, self.abs_folder_path)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, self.rel_file_path)
 
     def test_move_same_folder(self):
         new_rel_path = "test2.txt"
         shutil.move(self.abs_file_path, os.path.join(self.abs_folder_path, new_rel_path))
         time.sleep(0.5)
         expected_change = h_create_expected_change(self.rel_file_path, gen_json.ACTION_MOVE, new_file_path=new_rel_path)
-        h_min_equal_changes(self, expected_change, self.abs_folder_path)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, new_rel_path)
 
     def test_twice_move(self):
         new_rel_path = "test2.txt"
@@ -189,7 +182,7 @@ class TestFileChanges(unittest.TestCase):
         shutil.move(new_abs_path, os.path.join(self.abs_folder_path, new_rel_path))
         time.sleep(1)
         expected_change = h_create_expected_change(self.rel_file_path, gen_json.ACTION_MOVE, new_file_path=new_rel_path)
-        h_min_equal_changes(self, expected_change, self.abs_folder_path)
+        h_min_equal_changes(self, expected_change, self.abs_folder_path, new_rel_path)
 
     def test_move_modify(self):
         new_rel_path = "test2.txt"
@@ -200,7 +193,8 @@ class TestFileChanges(unittest.TestCase):
         time.sleep(0.5)
         expected_change_delete = h_create_expected_change(self.rel_file_path, gen_json.ACTION_DELETE)
         expected_change_pull = h_create_expected_change(new_rel_path, gen_json.ACTION_PULL)
-        h_min_equal_changes(self, expected_change_delete, self.abs_folder_path, 2, expected_change_pull)
+        h_min_equal_changes(self, expected_change_delete, self.abs_folder_path, self.rel_file_path)
+        h_min_equal_changes(self, expected_change_pull, self.abs_folder_path, new_rel_path)
 
 
 class TestAPI(unittest.TestCase):
