@@ -109,9 +109,10 @@ class TestDistributeAction(unittest.TestCase):
         server_json.distribute_action(action, [1])
         data = server_json._get_json_data()
         changes: dict = data["folder1"]["changes"]
+        changes_data = changes["test.txt"]
         self.assertEqual({"test.txt": {
             "action": "pull",
-            "timestamp": changes["timestamp"],
+            "timestamp": changes_data["timestamp"],
             "is_directory": False,
             "rel_old_file_path": None
         }}, changes)

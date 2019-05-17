@@ -34,6 +34,7 @@ from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive import net_interface
+from OpenDrive.general.file_changes_json import ActionType
 
 
 def _override_gen_functions(func):
@@ -121,5 +122,5 @@ def distribute_action(action: SyncAction, devices_ids: List[int]) -> None:
             else:
                 rel_file_path = action["rel_old_file_path"]
                 new_file_path = action["rel_file_path"]
-            add_change_entry(action["local_folder_path"], rel_file_path, action["action_type"],
+            add_change_entry(action["local_folder_path"], rel_file_path, ActionType((action["action_type"], 0)),
                              action["is_directory"], new_file_path)

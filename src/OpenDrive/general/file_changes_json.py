@@ -107,7 +107,7 @@ def _set_json_data(data: dict):
 
 def _update_existing_change_entry(changes: dict, existing_entry: dict, rel_entry_path: NormalizedPath,
                                   action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None):
-    existing_entry["time_stamp"] = str(datetime.datetime.now())
+    existing_entry["timestamp"] = str(datetime.datetime.now())
     existing_entry["is_directory"] = is_directory
     if action == ACTION_MOVE:
         if existing_entry["action"] == ACTION_PULL[0]:
@@ -137,7 +137,7 @@ def get_all_synced_folders_paths() -> List[NormalizedPath]:
 def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action: ActionType,
                           is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     entry = {"action": action[0],
-             "time_stamp": str(datetime.datetime.now()),
+             "timestamp": str(datetime.datetime.now()),
              "is_directory": is_directory,
              "rel_old_file_path": None}
     if action == ACTION_MOVE:
