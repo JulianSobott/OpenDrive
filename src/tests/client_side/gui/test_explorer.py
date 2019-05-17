@@ -20,5 +20,5 @@ class TestExplorer(TestCase):
         h_watch_dummy_folder("folder_1")
         h_watch_dummy_folder("folder_2")
 
-    def test_remove_folder(self):
+    def simulate_remove_folder(self):
         gui.main.main()

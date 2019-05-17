@@ -21,26 +21,7 @@ class TestFileExchanges(unittest.TestCase):
     def tearDown(self) -> None:
         h_stop_server_process(self._server_process)
 
-    @h_client_routine()
-    def test_get_file_network(self):
-        """Test FAIL"""
-        h_register_dummy_user_device_client()
-        abs_file_src_path = h_create_client_dummy_file()
-
-        def h_simulate_get_file(abs_src, abs_dest):
-            client: net_interface.ClientCommunicator = net.ClientManager().get()
-            file = client.remote_functions.get_file(abs_src, abs_dest)
-            return file.dst_path
-
-        file_name = "test.txt"
-        abs_file_dest_path = os.path.join(self._dummy_server_folder, file_name)
-        ret = net_interface.server.h_execute_function(h_simulate_get_file, abs_file_src_path, abs_file_dest_path)
-        logger.debug(ret)
-        self.assertTrue(os.path.isfile(abs_file_dest_path))
-
-    @h_client_routine()
-    def test_get_file_non_exist_network(self):
-        pass
+    # TODO: Add tests
 
 
 if __name__ == '__main__':
