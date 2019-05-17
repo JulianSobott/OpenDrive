@@ -28,9 +28,9 @@ class PongGame(Widget):
 
 class PongApp(App):
 
-    def build_1(self):
+    def build(self):
         return PongGame()
 
 
-if __name__ == '__kivy_pong__':
+if __name__ == '__main__':
     PongApp().run()

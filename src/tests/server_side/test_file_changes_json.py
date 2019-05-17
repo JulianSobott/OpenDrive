@@ -4,8 +4,9 @@ import json
 
 from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side import paths as server_paths
+from OpenDrive.general import paths as gen_paths
 from OpenDrive.general import file_changes_json as gen_json
-from OpenDrive import net_interface
+from OpenDrive.client_side import synchronization as c_sync
 
 from tests.client_side.helper_client import h_get_dummy_folder_data
 
@@ -55,7 +56,7 @@ class TestJson(unittest.TestCase):
         path = server_paths.NormalizedPath("folder_1")
         server_json.add_folder(path)
         data = server_json._get_json_data()
-        expected = {path : {"changes": {}}}
+        expected = {path: {"changes": {}}}
         self.assertEqual(expected, data)
 
     @h_mock_set_get_json
@@ -89,3 +90,29 @@ class TestJson(unittest.TestCase):
         folder_entry = gen_json.get_folder_entry(path)
         changes = folder_entry["changes"]
         self.assertEqual(1, len(changes))
+
+
+class TestDistributeAction(unittest.TestCase):
+
+    def setUp(self) -> None:
+        pass
+
+    @h_mock_set_get_json
+    def test_distribute_action(self):
+        server_json.create_changes_file_for_new_device(1, 1)
+        server_json.add_folder("folder1")
+        src_path = "Dummy_client_path"
+        action = c_sync._create_action(gen_paths.normalize_path("folder1"),
+                                       gen_paths.normalize_path("test.txt"),
+                                       gen_json.ACTION_PULL,
+                                       remote_abs_path=src_path)
+        server_json.distribute_action(action, [1])
+        data = server_json._get_json_data()
+        changes: dict = data["folder1"]["changes"]
+        self.assertEqual({"test.txt": {
+            "action": "pull",
+            "timestamp": changes["timestamp"],
+            "is_directory": False,
+            "rel_old_file_path": None
+        }}, changes)
+
