@@ -3,16 +3,16 @@ Internal documentation
 ======================
 
 .. toctree::
+    :maxdepth: 2
 
     authentication
     getting_started
     file_changes
     file_changes_json
     file_exchanges
-    client_database
     databases
-    synchronisation
-    authentication
+    synchronization
     folders
     gui
     interface
+    main

@@ -1,9 +1,8 @@
-Synchronisation
+Synchronization
 =================
 
-
-On this site the process of synchronisation is described. All kinds of authentications are ignored and are seen
-as given.
+On this site, the process of synchronization is described. All kinds of authentications are ignored and are
+considered given.
 
 Normal case
 ------------
