@@ -25,39 +25,17 @@ Folder Structure at the server
     |   |___folder_ZXY
 
 
-Database at server
-*******************
+Storing folder information
+*****************************
 
-All synchronized folders are stored inside a DB table:
+All synchronized folders are stored inside a DB table. Any additional meta data can be added here later on:
 
     - folder_id
     - user_id (owner -> necessary for path)
     - folder_name
 
-
-Considerations
-***************
-
-Is it possible to nest synchronized folders.
-
-e.g. S_A synced with C_A and S_A/S_B synced with C_D.
-
-**Advantages:**
-
-- More user friendly
-    - The user may sync one upper folder at the one device, but one inner folder at another device
-
-**Disadvantages:**
-
-
-**Difficulties:**
-
-- Doubled changes must be prevented
-    - Folder is aware of all its subfolders
-    - These changes can be taken in account
-- Prevent one device to sync with inner folders
-- Allow only for different devices
-- Prevent deleting inner folder, that is synced with other device
+In Addition every folder that is synced with a device is stored in the accordingly changes.json file. This is needed to
+assign changes to the appropriate folder.
 
 
 
