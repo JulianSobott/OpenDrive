@@ -1,5 +1,5 @@
 """
-:module: OpenDrive.client_side.file_watcher
+:module: OpenDrive.client_side.file_changes
 :synopsis: Tracks changes to files in all defined folders.
 :author: Julian Sobott
 
@@ -57,8 +57,8 @@ def start_observing() -> None:
 
 
 def stop_observing():
-    global watchers
     """Protects the `observer` from external access"""
+    global watchers
     observer.stop()
     watchers = {}
     observer.__init__()
