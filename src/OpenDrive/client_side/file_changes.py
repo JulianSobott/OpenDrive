@@ -28,8 +28,6 @@ private classes
     :show-inheritance:
 
 """
-__all__ = ["start_observing", "add_folder", "remove_folder_from_watching", "add_single_ignores"]
-
 import os
 from typing import List, Dict, Tuple, Optional
 from watchdog import events as watchdog_events, observers as watchdog_observers
