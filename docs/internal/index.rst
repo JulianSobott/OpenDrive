@@ -4,6 +4,7 @@ Internal documentation
 
 .. toctree::
 
+    authentication
     getting_started
     file_changes
     file_changes_json

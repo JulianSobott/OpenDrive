@@ -6,18 +6,16 @@
 public functions
 -----------------
 
-.. autofunction:: register_user_device
-.. autofunction:: register_user
-
-.. autofunction:: login_manual_user_device
-
 .. autofunction:: login_auto
+.. autofunction:: login_manual_user_device
+.. autofunction:: logout
+.. autofunction:: register_user
+.. autofunction:: register_user_device
 
 private functions
 ------------------
 
 .. autofunction:: _add_update_device
-
 .. autofunction:: _set_user_authenticated
 
 """
@@ -50,7 +48,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
 
 def register_user(username: str, password: str, email: Optional[str] = None) -> Union[str, int]:
     """Registers a new user. On success the user_id  is returned. On any failure a string with the error message
-    is returned. No device is added or registered. So the needs ti login or choose the other register method."""
+    is returned. No device is added or registered."""
     assert len(username) > 3, "Username must be at least 4 characters long!"
     assert len(password) > 4, "Password must be at least 5 characters long!"
 
@@ -91,6 +89,7 @@ def login_auto(token: Token, mac_address: str) -> bool:
 
 def logout() -> None:
     _set_user_authenticated(-1, -1, False)
+    # TODO: remove client from ClientManager
 
 
 def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
@@ -113,7 +112,7 @@ def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
 
 
 def _set_user_authenticated(user_id: int, device_id: int, value: bool = True) -> None:
-    """Set the client, to be authenticated. This allows further communication. Also stores the user_id"""
+    """Set the client, to be authenticated. This allows further communication. Also stores the user_id."""
     client = net.ClientManager().get()
     client.is_authenticated = value
     client.user_id = user_id

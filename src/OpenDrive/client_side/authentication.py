@@ -24,6 +24,7 @@ private functions
 """
 import getpass
 from typing import Optional
+import functools
 
 from OpenDrive import net_interface
 from OpenDrive.net_interface import server
@@ -36,6 +37,7 @@ from OpenDrive.client_side.interface import Status
 
 def connection_needed(func):
     """Only execute function, when device is connected to the server."""
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if not net_interface.ServerCommunicator.is_connected():
             return Status.fail("Can not connect to server. Please try again later.")
