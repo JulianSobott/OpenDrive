@@ -59,15 +59,18 @@ def _take_1(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAc
     f1_folder_name = folder_1_content["folder_name"]
     f2_folder_name = folder_2_content["folder_name"]
 
-    # DELETE dir
     f2_actions.append(c_syc.create_action(f2_folder_name, normalize_path(""), gen_json.ACTION_DELETE, True))
+    f2_actions.append(c_syc.create_action(f2_folder_name, normalize_path(""), gen_json.ACTION_PULL, True))
+    return f1_actions, f2_actions
 
-    # PULL DIR
+
+def _take_2(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAction], List[SyncAction]]:
+    return _take_1(folder_2_content, folder_1_content)
 
 
 class MergeMethods(Enum):
     TAKE_1 = _take_1  # Clear 2 and copy 1 into it
-    TAKE_2 = auto()  # Clear 1 and copy 2 into it
+    TAKE_2 = _take_2  # Clear 1 and copy 2 into it
     COMPLETE_BOTH = auto()  # Copies missing files at both sides
     CONFLICTS = auto()  # MERGE_COMPLETE_BOTH + create conflicts for files, that exists on both sides
     PRIORITIZE_1 = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 1
