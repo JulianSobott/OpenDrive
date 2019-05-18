@@ -53,7 +53,10 @@ def execute_actions(actions: List[SyncAction]) -> None:
             file_exchanges.move(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
-            file_exchanges.pull_file(src_path, dest_path)
+            if action["is_directory"]:
+                file_exchanges.pull_dir(src_path, dest_path)
+            else:
+                file_exchanges.pull_file(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_MKDIR[0]:
             file_exchanges.make_dirs(dest_path)
         else:

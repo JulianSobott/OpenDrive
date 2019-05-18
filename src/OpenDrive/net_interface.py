@@ -5,14 +5,15 @@ class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
     from OpenDrive.server_side.authentication import register_user_device, login_manual_user_device, login_auto, \
         logout
-    from OpenDrive.server_side.file_exchanges import get_file
+    from OpenDrive.server_side.file_exchanges import get_file, pull_file, make_dirs, get_dir
     from OpenDrive.server_side.synchronization import get_changes, execute_actions
     from OpenDrive.server_side.folders import add_folder
 
 
 class ClientFunctions(net.ClientFunctions):
     """All client functions, that can be called by the server"""
-    from OpenDrive.general.file_exchanges import get_file
+    from OpenDrive.general.file_exchanges import get_file, make_dirs
+    from OpenDrive.client_side.file_exchanges import get_dir, pull_file
     from OpenDrive.client_side.synchronization import trigger_server_synchronization
 
 
