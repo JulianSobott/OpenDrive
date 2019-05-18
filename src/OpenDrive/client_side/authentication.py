@@ -1,6 +1,6 @@
 """
 :module: OpenDrive.client_side.authentication
-:synopsis: Functions, to authenticate, login, register a user/device, with CLI
+:synopsis: Functions, to authenticate, login, register a user/device.
 :author: Julian Sobott
 
 

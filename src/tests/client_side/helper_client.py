@@ -10,11 +10,6 @@ from OpenDrive.client_side import paths as client_paths
 from tests.server_side.database import h_setup_server_database
 
 
-def h_delete_recreate_client_db():
-    delete_db_file(client_side.paths.LOCAL_DB_PATH)
-    client_side.database.create_database()
-
-
 def h_register_dummy_user_device_client() -> database.User:
     h_setup_server_database()
 

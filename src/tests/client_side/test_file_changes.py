@@ -4,7 +4,7 @@ import os
 import shutil
 from thread_testing import wait_till_condition
 
-from OpenDrive.client_side import database, paths, file_changes, file_changes_json
+from OpenDrive.client_side import paths, file_changes, file_changes_json
 from OpenDrive.general import file_changes_json as gen_json
 from tests.helper_all import h_clear_init_all_folders, h_create_empty
 from tests.client_side.helper_client import h_get_dummy_folder_data

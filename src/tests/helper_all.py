@@ -49,8 +49,7 @@ def h_stop_server_process(process: Process):
     process.join()
 
 
-def h_client_routine(clear_server_db: bool = False, clear_client_db: bool = False, clear_folders: bool = True):
-    from tests.client_side.helper_client import h_delete_recreate_client_db
+def h_client_routine(clear_server_db: bool = False, clear_folders: bool = True):
     from tests.server_side.helper_server import h_delete_recreate_server_db
 
     def decorator(func):
@@ -59,8 +58,6 @@ def h_client_routine(clear_server_db: bool = False, clear_client_db: bool = Fals
                 h_clear_init_all_folders()
             if clear_server_db:
                 h_delete_recreate_server_db()
-            if clear_client_db:
-                h_delete_recreate_client_db()
 
             client_net = OpenDrive.client_side.net_start
             connected = client_net.connect(timeout=2)
