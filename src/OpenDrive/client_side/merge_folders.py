@@ -44,6 +44,8 @@ from typing import Tuple, List
 
 from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.client_side import synchronization as c_syc
+from OpenDrive.general import file_changes_json as gen_json
+from OpenDrive.general.paths import NormalizedPath, normalize_path
 
 
 def merge_two_folders(folder_1_content: dict, folder_2_content: dict, merge_method: int):
@@ -54,8 +56,13 @@ def merge_two_folders(folder_1_content: dict, folder_2_content: dict, merge_meth
 def _take_1(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAction], List[SyncAction]]:
     f1_actions = []
     f2_actions = []
-    for dir_name, sub_dirnames, files in walk_directories(folder_2_content):
-        action = c_syc.create_action()
+    f1_folder_name = folder_1_content["folder_name"]
+    f2_folder_name = folder_2_content["folder_name"]
+
+    # DELETE dir
+    f2_actions.append(c_syc.create_action(f2_folder_name, normalize_path(""), gen_json.ACTION_DELETE, True))
+
+    # PULL DIR
 
 
 class MergeMethods(Enum):
@@ -68,17 +75,18 @@ class MergeMethods(Enum):
     PRIORITIZE_LATEST = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides, the latest changed is taken
 
 
-def walk_directories(dir_content: dict):
+def walk_directories(dir_content: dict, parent_path: NormalizedPath):
     """Directory tree generator.
 
     For each directory in the directory tree, yields a 3-tuple
 
-        folder_name, dir_names, files (Tuple[filename, timestamp])
+        parent_path, dir_path, files (Tuple[filename, timestamp])
+
+        path of file: parent_path + dir_path + file_name
     """
     folder_name = dir_content["folder_name"]
-    dir_names = [f["folder_name"] for f in dir_content["folders"]]
     files = [(f["file_name"], f["modified_timestamp"]) for f in dir_content["files"]]
-    yield folder_name, dir_names, files
+    yield parent_path, folder_name, files
 
     for folder in dir_content["folders"]:
-        yield from walk_directories(folder)
+        yield from walk_directories(folder, normalize_path(parent_path, dir_content["folder_name"]))
