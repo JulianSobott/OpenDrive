@@ -46,7 +46,7 @@ class TestFileExchanges(unittest.TestCase):
     def test_move_file(self):
         abs_src_path = self._dummy_file_path
         abs_dest_path = os.path.join(self._dummy_server_folder, "new_name.txt")
-        file_exchanges.move_file(abs_src_path, abs_dest_path)
+        file_exchanges.move(abs_src_path, abs_dest_path)
         self.assertTrue(os.path.isfile(abs_dest_path))
         self.assertFalse(os.path.isfile(abs_src_path))
 

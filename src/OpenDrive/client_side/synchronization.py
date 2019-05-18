@@ -115,10 +115,13 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
     for action in client_actions:
         dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            gen_file_exchanges.remove_file(dest_path)
+            if action["is_directory"]:
+                gen_file_exchanges.remove_dir(dest_path)
+            else:
+                gen_file_exchanges.remove_file(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
             src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
-            gen_file_exchanges.move_file(src_path, dest_path)
+            gen_file_exchanges.move(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
             net_interface.server.get_file(src_path, dest_path)

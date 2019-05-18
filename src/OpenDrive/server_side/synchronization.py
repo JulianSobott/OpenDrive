@@ -44,10 +44,13 @@ def execute_actions(actions: List[SyncAction]) -> None:
     for action in actions:
         dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            file_exchanges.remove_file(dest_path)
+            if action["is_directory"]:
+                file_exchanges.remove_dir(dest_path)
+            else:
+                file_exchanges.remove_file(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
             src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
-            file_exchanges.move_file(src_path, dest_path)
+            file_exchanges.move(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
             file_exchanges.pull_file(src_path, dest_path)

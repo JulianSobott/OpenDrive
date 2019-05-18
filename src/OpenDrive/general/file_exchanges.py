@@ -7,7 +7,7 @@ public functions
 -----------------
 
 .. autofunction:: get_file
-.. autofunction:: move_file
+.. autofunction:: move
 .. autofunction:: make_dirs
 .. autofunction:: remove_file
 
@@ -26,7 +26,7 @@ def get_file(abs_file_src_path: str, abs_file_dest_path: str) -> net.File:
         raise FileNotFoundError(abs_file_src_path)
 
 
-def move_file(src_path: str, dest_path: str, implicit=True):
+def move(src_path: str, dest_path: str, implicit=True):
     """"""
     if not implicit:
         """src_file must exist, dest_folder must exist, dest_file must not exist."""
@@ -51,6 +51,14 @@ def remove_file(abs_src_path: str, implicit=True):
     except FileNotFoundError as e:
         if not implicit:
             raise e
+
+
+def remove_dir(abs_path: str, only_empty: bool = False):
+    if not os.path.exists(abs_path):
+        raise FileNotFoundError(f"Cannot remove non existing directory! {abs_path}")
+    if only_empty and len(os.listdir(abs_path)) > 0:
+        raise FileExistsError(f"Directory is not empty! {abs_path}")
+    shutil.rmtree(abs_path)
 
 
 SyncAction = NewType("SyncAction", dict)
