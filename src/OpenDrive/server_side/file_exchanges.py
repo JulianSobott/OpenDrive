@@ -10,10 +10,6 @@ public functions
 .. autofunction:: move_file
 .. autofunction:: remove_file
 
-
-private functions
-------------------
-
 """
 import os
 import pynetworking as net

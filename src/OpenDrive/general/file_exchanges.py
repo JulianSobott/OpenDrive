@@ -1,13 +1,15 @@
 """
 :module: OpenDrive.general.file_exchanges
-:synopsis: Send and receive files over the network
+:synopsis: Exchange, move and delete files.
 :author: Julian Sobott
+
 public functions
 -----------------
-.. autofunction:: get_file
 
-private functions
-------------------
+.. autofunction:: get_file
+.. autofunction:: move_file
+.. autofunction:: remove_file
+
 """
 import os
 import shutil
@@ -21,15 +23,6 @@ def get_file(abs_file_src_path: str, abs_file_dest_path: str) -> net.File:
         return net.File(abs_file_src_path, abs_file_dest_path)
     else:
         raise FileNotFoundError(abs_file_src_path)
-
-
-class Action:
-
-    def __init__(self, abs_local_path: str):
-        self.abs_local_path = abs_local_path
-
-    def run(self):
-        raise NotImplementedError
 
 
 def move_file(src_path: str, dest_path: str, implicit=True):
