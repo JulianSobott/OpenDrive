@@ -26,14 +26,25 @@ import getpass
 from typing import Optional
 
 from OpenDrive import net_interface
+from OpenDrive.net_interface import server
 from OpenDrive.general.device_data import get_mac
 from OpenDrive.server_side.database import Token
 from OpenDrive.client_side import paths
 from OpenDrive.client_side.od_logging import logger
-from OpenDrive.net_interface import server
 from OpenDrive.client_side.interface import Status
 
 
+def connection_needed(func):
+    """Only execute function, when device is connected to the server."""
+    def wrapper(*args, **kwargs):
+        if not net_interface.ServerCommunicator.is_connected():
+            return Status.fail("Can not connect to server. Please try again later.")
+        ret_value = func(*args, **kwargs)
+        return ret_value
+    return wrapper
+
+
+@connection_needed
 def register_user_device(username: str, password: str, email: str = None) -> Status:
     mac_address = get_mac()
     ret = server.register_user_device(username, password, mac_address, email)
@@ -44,10 +55,8 @@ def register_user_device(username: str, password: str, email: str = None) -> Sta
         return Status.success("Successfully registered")
 
 
+@connection_needed
 def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
-    if not net_interface.ServerCommunicator.is_connected():
-        print("Can not connect to server. Please try again later")
-        return Status.fail("Can not connect to server. Please try again later.")
     mac_address = get_mac()
     ret = server.login_manual_user_device(username, password, mac_address)
     if isinstance(ret, str):
@@ -59,12 +68,14 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
         return Status.success("Successfully logged in")
 
 
-def logout():
+@connection_needed
+def logout() -> Status:
     server.logout()
     net_interface.ServerCommunicator.close_connection()
     return Status.success("Successfully logged out.")
 
 
+@connection_needed
 def login_auto() -> Status:
     token = _get_token()
     if token is not None:
@@ -80,10 +91,8 @@ def login_auto() -> Status:
         return Status.fail("Failed to automatically log in.")
 
 
-def register_user_device_cli() -> None:
-    if not net_interface.ServerCommunicator.is_connected():
-        print("Can not connect to server. PLease try again later")
-        return
+@connection_needed
+def register_user_device_cli() -> Status:
     while True:
         username = input("Username: ")
         while True:
@@ -98,22 +107,20 @@ def register_user_device_cli() -> None:
             email = None
         status = register_user_device(username, password, email)
         if status.was_successful():
-            break
+            return Status.success("Successfully logged in")
         else:
             print(status.get_text())
 
 
-def login_manual_user_device_cli() -> None:
-    if not net_interface.ServerCommunicator.is_connected():
-        print("Can not connect to server. PLease try again later")
-        return
+@connection_needed
+def login_manual_user_device_cli() -> Status:
     while True:
         username = input("Username: ")
         password = getpass.getpass("Password: ")
         status = login_manual(username, password)
         print(status.get_text())
         if status.was_successful():
-            break
+            return Status.success("Successfully logged in")
 
 
 def _save_received_token(token: Token) -> None:
