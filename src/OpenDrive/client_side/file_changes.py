@@ -167,8 +167,11 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
     def on_created(self, event):
         if self._ignore:
             return
-        file_changes_json.add_change_entry(self.folder_path, self._rel_path, gen_json.ACTION_PULL,
-                                           is_directory=self._is_dir)
+        if self._is_dir:
+            action = gen_json.ACTION_MKDIR
+        else:
+            action = gen_json.ACTION_PULL
+        file_changes_json.add_change_entry(self.folder_path, self._rel_path, action, is_directory=self._is_dir)
 
     def on_deleted(self, event):
         if self._ignore:

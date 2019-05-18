@@ -122,6 +122,8 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
             net_interface.server.get_file(src_path, dest_path)
+        elif action["action_type"] == gen_json.ACTION_MKDIR[0]:
+            gen_file_exchanges.make_dirs(dest_path)
         else:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 

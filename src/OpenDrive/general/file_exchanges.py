@@ -8,6 +8,7 @@ public functions
 
 .. autofunction:: get_file
 .. autofunction:: move_file
+.. autofunction:: make_dirs
 .. autofunction:: remove_file
 
 """
@@ -37,6 +38,10 @@ def move_file(src_path: str, dest_path: str, implicit=True):
         if os.path.isfile(dest_path):
             raise FileExistsError(dest_path)
     shutil.move(src_path, dest_path)
+
+
+def make_dirs(abs_path: str, exist_ok: bool = True):
+    os.makedirs(abs_path, exist_ok=exist_ok)
 
 
 def remove_file(abs_src_path: str, implicit=True):

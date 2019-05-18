@@ -51,6 +51,8 @@ def execute_actions(actions: List[SyncAction]) -> None:
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
             file_exchanges.pull_file(src_path, dest_path)
+        elif action["action_type"] == gen_json.ACTION_MKDIR[0]:
+            file_exchanges.make_dirs(dest_path)
         else:
             raise KeyError(f"Unknown action type: {action['action_type']} in {action}")
 

@@ -37,6 +37,7 @@ ActionType = typing.NewType("ActionType", typing.Tuple[str, int])
 ACTION_PULL = ActionType(("pull", 1 << 0))
 ACTION_MOVE = ActionType(("move", 1 << 1))
 ACTION_DELETE = ActionType(("delete", 1 << 2))
+ACTION_MKDIR = ActionType(("mkdir", 1 << 3))
 
 
 def init_file(file_path: str, empty: bool = False) -> None:

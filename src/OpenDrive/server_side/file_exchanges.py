@@ -7,6 +7,7 @@ public functions
 -----------------
 
 .. autofunction:: get_file
+.. autofunction:: make_dirs
 .. autofunction:: move_file
 .. autofunction:: remove_file
 
@@ -30,6 +31,11 @@ def move_file(rel_src_path: str, rel_dest_path: str) -> None:
     abs_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
     abs_dest_path = server_paths.rel_user_path_to_abs(rel_dest_path)
     return gen_file_exchanges.move_file(abs_src_path, abs_dest_path)
+
+
+def make_dirs(rel_path: str, exist_ok: bool = True):
+    abs_path = server_paths.rel_user_path_to_abs(rel_path)
+    return gen_file_exchanges.make_dirs(abs_path, exist_ok)
 
 
 def remove_file(rel_src_path: str) -> None:

@@ -65,7 +65,11 @@ class TestFileCreate(TestFileChange):
                 f.write("Hello" * 10)
         time.sleep(1)
         expected_changes = {}
-        gen_json._add_new_change_entry(expected_changes, paths.normalize_path(rel_file_path), gen_json.ACTION_PULL, is_folder)
+        if is_folder:
+            action = gen_json.ACTION_MKDIR
+        else:
+            action = gen_json.ACTION_PULL
+        gen_json._add_new_change_entry(expected_changes, paths.normalize_path(rel_file_path), action, is_folder)
         data = gen_json._get_json_data()
         actual_changes = data[self.abs_folder_path]["changes"]
         if ignore:
