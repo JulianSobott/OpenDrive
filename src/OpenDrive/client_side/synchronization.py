@@ -8,6 +8,7 @@ public functions
 -----------------
 
 .. autofunction:: full_synchronize
+.. autofunction:: create_action
 
 
 private functions
@@ -102,9 +103,9 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
                 remote_abs_path = client_paths.normalize_path(local_folder_path, l_file_path)
             else:
                 remote_abs_path = None
-            action = _create_action(remote_folder_path, l_file_path, gen_json.ActionType((l_file["action"], 0)),
-                                    l_file["is_directory"],
-                                    l_file["rel_old_file_path"], remote_abs_path)
+            action = create_action(remote_folder_path, l_file_path, gen_json.ActionType((l_file["action"], 0)),
+                                   l_file["is_directory"],
+                                   l_file["rel_old_file_path"], remote_abs_path)
             needed_remote_actions.append(action)
 
     return needed_remote_actions, conflicts
@@ -129,9 +130,9 @@ def _execute_server_actions(server_actions: List[SyncAction]) -> None:
     net_interface.server.execute_actions(server_actions)
 
 
-def _create_action(local_folder_path: NormalizedPath, rel_file_path: NormalizedPath, action_type: gen_json.ActionType,
-                   is_directory: bool = False, rel_old_file_path: NormalizedPath = None,
-                   remote_abs_path: str = None) -> SyncAction:
+def create_action(local_folder_path: NormalizedPath, rel_file_path: NormalizedPath, action_type: gen_json.ActionType,
+                  is_directory: bool = False, rel_old_file_path: NormalizedPath = None,
+                  remote_abs_path: str = None) -> SyncAction:
     sync_action = {"local_folder_path": local_folder_path,  # folder key. To create abs_path of file
                    "rel_file_path": rel_file_path,  # changes key at pull, delete. destination
                    "action_type": action_type[0],  # pull, move, delete

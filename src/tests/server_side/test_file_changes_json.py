@@ -102,10 +102,10 @@ class TestDistributeAction(unittest.TestCase):
         server_json.create_changes_file_for_new_device(1, 1)
         server_json.add_folder("folder1")
         src_path = "Dummy_client_path"
-        action = c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                       gen_paths.normalize_path("test.txt"),
-                                       gen_json.ACTION_PULL,
-                                       remote_abs_path=src_path)
+        action = c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                      gen_paths.normalize_path("test.txt"),
+                                      gen_json.ACTION_PULL,
+                                      remote_abs_path=src_path)
         server_json.distribute_action(action, [1])
         data = server_json._get_json_data()
         changes: dict = data["folder1"]["changes"]

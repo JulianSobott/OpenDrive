@@ -82,10 +82,10 @@ class TestMerging(unittest.TestCase):
         server_changes = h_create_folder_entry(gen_paths.normalize_path("folder1"), {})
 
         src_path = gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1", "test.txt")
-        expected_server = [c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                                 gen_paths.normalize_path("test.txt"),
-                                                 gen_json.ACTION_PULL,
-                                                 remote_abs_path=src_path)
+        expected_server = [c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_PULL,
+                                                remote_abs_path=src_path)
                            ]
         expected_client = []
         expected_conflicts = []
@@ -101,10 +101,10 @@ class TestMerging(unittest.TestCase):
 
         server_changes = h_create_folder_entry(gen_paths.normalize_path("folder1"), {})
 
-        expected_server = [c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                                 gen_paths.normalize_path("new_test.txt"),
-                                                 gen_json.ACTION_MOVE,
-                                                 rel_old_file_path=gen_paths.normalize_path("test.txt"))
+        expected_server = [c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                                gen_paths.normalize_path("new_test.txt"),
+                                                gen_json.ACTION_MOVE,
+                                                rel_old_file_path=gen_paths.normalize_path("test.txt"))
                            ]
         expected_client = []
         expected_conflicts = []
@@ -118,9 +118,9 @@ class TestMerging(unittest.TestCase):
 
         server_changes = h_create_folder_entry(gen_paths.normalize_path("folder1"), {})
 
-        expected_server = [c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                                 gen_paths.normalize_path("test.txt"),
-                                                 gen_json.ACTION_DELETE)
+        expected_server = [c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_DELETE)
                            ]
         expected_client = []
         expected_conflicts = []
@@ -137,10 +137,10 @@ class TestMerging(unittest.TestCase):
         src_path = gen_paths.normalize_path("folder1", "test.txt")
         expected_server = []
         expected_conflicts = []
-        expected_client = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
-                                                 gen_paths.normalize_path("test.txt"),
-                                                 gen_json.ACTION_PULL,
-                                                 remote_abs_path=src_path)
+        expected_client = [c_sync.create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_PULL,
+                                                remote_abs_path=src_path)
                            ]
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
 
@@ -156,10 +156,10 @@ class TestMerging(unittest.TestCase):
 
         expected_server = []
         expected_conflicts = []
-        expected_client = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
-                                                 gen_paths.normalize_path("new_test.txt"),
-                                                 gen_json.ACTION_MOVE,
-                                                 rel_old_file_path=gen_paths.normalize_path("test.txt"))
+        expected_client = [c_sync.create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                gen_paths.normalize_path("new_test.txt"),
+                                                gen_json.ACTION_MOVE,
+                                                rel_old_file_path=gen_paths.normalize_path("test.txt"))
                            ]
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
 
@@ -174,9 +174,9 @@ class TestMerging(unittest.TestCase):
 
         expected_server = []
         expected_conflicts = []
-        expected_client = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
-                                                 gen_paths.normalize_path("test.txt"),
-                                                 gen_json.ACTION_DELETE)
+        expected_client = [c_sync.create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                                gen_paths.normalize_path("test.txt"),
+                                                gen_json.ACTION_DELETE)
                            ]
         self.h_check_merge(server_changes, client_changes, expected_server, expected_client, expected_conflicts)
 
@@ -231,10 +231,10 @@ class TestExecution(unittest.TestCase):
         with open(server_file_path, "w") as f:
             f.write("Hello" * 10)
 
-        client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
-                                                gen_paths.normalize_path("test.txt"),
-                                                gen_json.ACTION_PULL,
-                                                remote_abs_path=gen_paths.NormalizedPath("folder1/test.txt"))
+        client_actions = [c_sync.create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                               gen_paths.normalize_path("test.txt"),
+                                               gen_json.ACTION_PULL,
+                                               remote_abs_path=gen_paths.NormalizedPath("folder1/test.txt"))
                           ]
         c_sync._execute_client_actions(client_actions)
         client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
@@ -246,10 +246,10 @@ class TestExecution(unittest.TestCase):
         with open(client_src_path, "w") as f:
             f.write("Lorem ipsum " * 10)
         client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/new_test.txt")
-        client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
-                                                gen_paths.normalize_path("new_test.txt"),
-                                                gen_json.ACTION_MOVE,
-                                                rel_old_file_path=gen_paths.normalize_path("test.txt"))
+        client_actions = [c_sync.create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                               gen_paths.normalize_path("new_test.txt"),
+                                               gen_json.ACTION_MOVE,
+                                               rel_old_file_path=gen_paths.normalize_path("test.txt"))
                           ]
         c_sync._execute_client_actions(client_actions)
         self.assertTrue(os.path.isfile(client_dest_path))
@@ -260,9 +260,9 @@ class TestExecution(unittest.TestCase):
         with open(client_src_path, "w") as f:
             f.write("Lorem ipsum " * 10)
 
-        client_actions = [c_sync._create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
-                                                gen_paths.normalize_path("test.txt"),
-                                                gen_json.ACTION_DELETE)
+        client_actions = [c_sync.create_action(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
+                                               gen_paths.normalize_path("test.txt"),
+                                               gen_json.ACTION_DELETE)
                           ]
         c_sync._execute_client_actions(client_actions)
         self.assertFalse(os.path.isfile(client_src_path))
@@ -274,10 +274,10 @@ class TestExecution(unittest.TestCase):
         with open(client_src_path, "w") as f:
             f.write("Lorem ipsum " * 10)
 
-        server_actions = [c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                                gen_paths.normalize_path("test.txt"),
-                                                gen_json.ACTION_PULL,
-                                                remote_abs_path=client_src_path)
+        server_actions = [c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                               gen_paths.normalize_path("test.txt"),
+                                               gen_json.ACTION_PULL,
+                                               remote_abs_path=client_src_path)
                           ]
         c_sync._execute_server_actions(server_actions)
         server_dest_path = os.path.join(self.server_folder, "test.txt")
@@ -291,10 +291,10 @@ class TestExecution(unittest.TestCase):
         with open(src_file_path, "w") as f:
             f.write("Hello")
 
-        server_actions = [c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                                gen_paths.normalize_path("new_test.txt"),
-                                                gen_json.ACTION_MOVE,
-                                                rel_old_file_path=gen_paths.normalize_path("test.txt"))
+        server_actions = [c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                               gen_paths.normalize_path("new_test.txt"),
+                                               gen_json.ACTION_MOVE,
+                                               rel_old_file_path=gen_paths.normalize_path("test.txt"))
                           ]
         c_sync._execute_server_actions(server_actions)
         expected_path = os.path.join(self.server_folder, "new_test.txt")
@@ -308,9 +308,9 @@ class TestExecution(unittest.TestCase):
         with open(src_file_path, "w") as f:
             f.write("Hello")
 
-        server_actions = [c_sync._create_action(gen_paths.normalize_path("folder1"),
-                                                gen_paths.normalize_path("test.txt"),
-                                                gen_json.ACTION_DELETE)
+        server_actions = [c_sync.create_action(gen_paths.normalize_path("folder1"),
+                                               gen_paths.normalize_path("test.txt"),
+                                               gen_json.ACTION_DELETE)
                           ]
         c_sync._execute_server_actions(server_actions)
         self.assertFalse(os.path.isfile(src_file_path))

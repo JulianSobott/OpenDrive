@@ -165,8 +165,6 @@ TODO next:
             - success:
                 - authenticate
                 - sync everything
-    - main loop
-        - sync on changes at the server     <----
     - shutdown
         - is finished syncing?
 
