@@ -93,3 +93,41 @@ def walk_directories(dir_content: dict, parent_path: NormalizedPath):
 
     for folder in dir_content["folders"]:
         yield from walk_directories(folder, normalize_path(parent_path, dir_content["folder_name"]))
+
+
+def generate_content_of_folder(abs_folder_path: str) -> dict:
+    """
+    :param abs_folder_path:
+    :return: dict with following structure
+
+        Folder:
+            "folder_name": top_folder_name,
+            "files": List[Dict["filename": str, "modified_timestamp": str]
+            "folders": List[Folder]
+    """
+    return _recursive_generate_content_of_folder(abs_folder_path, abs_folder_path)
+
+
+def _recursive_generate_content_of_folder(abs_folder_path: str, folder_name: str):
+    content = {
+        "folder_name": folder_name,
+        "files": [],
+        "folders": []
+    }
+    _, dir_list, file_list = next(os.walk(abs_folder_path))
+    for file in file_list:
+        file_path = os.path.join(abs_folder_path, file)
+        content["files"].append({"file_name": file, "modified_timestamp": os.path.getmtime(file_path)})
+    for dir_name in dir_list:
+        abs_path = os.path.join(abs_folder_path, dir_name)
+        content["folders"].append(_recursive_generate_content_of_folder(abs_path, dir_name))
+    return content
+
+
+if __name__ == '__main__':
+    from OpenDrive.client_side import paths
+    import json
+    p = os.path.join(paths.LOCAL_CLIENT_DATA)
+    c = generate_content_of_folder(p)
+    print(json.dumps(c, indent=4))
+
