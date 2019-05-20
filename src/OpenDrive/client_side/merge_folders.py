@@ -40,7 +40,7 @@ private functions
 """
 import os
 from enum import Enum, auto
-from typing import Tuple, List
+from typing import Tuple, List, Callable
 
 from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.client_side import synchronization as c_syc
@@ -48,9 +48,10 @@ from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general.paths import NormalizedPath, normalize_path
 
 
-def merge_two_folders(folder_1_content: dict, folder_2_content: dict, merge_method: int):
+def merge_two_folders(folder_1_content: dict, folder_2_content: dict, merge_method: Callable):
     """Merges two folders content. Returns actions for both folders.
     """
+    return merge_method(folder_1_content, folder_2_content)
 
 
 def _take_1(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAction], List[SyncAction]]:
@@ -60,7 +61,8 @@ def _take_1(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAc
     f2_folder_name = folder_2_content["folder_name"]
 
     f2_actions.append(c_syc.create_action(f2_folder_name, normalize_path(""), gen_json.ACTION_DELETE, True))
-    f2_actions.append(c_syc.create_action(f2_folder_name, normalize_path(""), gen_json.ACTION_PULL, True))
+    f2_actions.append(c_syc.create_action(f2_folder_name, normalize_path(""), gen_json.ACTION_PULL, True,
+                                          remote_abs_path=f1_folder_name))
     return f1_actions, f2_actions
 
 
@@ -68,14 +70,14 @@ def _take_2(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAc
     return _take_1(folder_2_content, folder_1_content)
 
 
-class MergeMethods(Enum):
-    TAKE_1 = _take_1  # Clear 2 and copy 1 into it
-    TAKE_2 = _take_2  # Clear 1 and copy 2 into it
-    COMPLETE_BOTH = auto()  # Copies missing files at both sides
-    CONFLICTS = auto()  # MERGE_COMPLETE_BOTH + create conflicts for files, that exists on both sides
-    PRIORITIZE_1 = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 1
-    PRIORITIZE_2 = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 2
-    PRIORITIZE_LATEST = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides, the latest changed is taken
+class MergeMethods:
+    TAKE_1: Callable = _take_1  # Clear 2 and copy 1 into it
+    TAKE_2: Callable = _take_2  # Clear 1 and copy 2 into it
+    COMPLETE_BOTH: Callable = auto()  # Copies missing files at both sides
+    CONFLICTS: Callable = auto()  # MERGE_COMPLETE_BOTH + create conflicts for files, that exists on both sides
+    PRIORITIZE_1: Callable = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 1
+    PRIORITIZE_2: Callable = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 2
+    PRIORITIZE_LATEST: Callable = auto()  # MERGE_COMPLETE_BOTH + files that exists at both sides, the latest changed is taken
 
 
 def walk_directories(dir_content: dict, parent_path: NormalizedPath):
@@ -125,9 +127,6 @@ def _recursive_generate_content_of_folder(abs_folder_path: str, folder_name: str
 
 
 if __name__ == '__main__':
-    from OpenDrive.client_side import paths
-    import json
-    p = os.path.join(paths.LOCAL_CLIENT_DATA)
-    c = generate_content_of_folder(p)
-    print(json.dumps(c, indent=4))
+    print(MergeMethods.TAKE_1)
+
 

@@ -124,7 +124,10 @@ def _execute_client_actions(client_actions: List[SyncAction]) -> None:
             gen_file_exchanges.move(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]
-            net_interface.server.get_file(src_path, dest_path)
+            if action["is_directory"]:
+                net_interface.server.get_dir(src_path, dest_path)
+            else:
+                net_interface.server.get_file(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_MKDIR[0]:
             gen_file_exchanges.make_dirs(dest_path)
         else:
