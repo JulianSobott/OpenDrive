@@ -24,7 +24,7 @@ def h_create_files_folders(abs_dest_path: str, structure: dict, start_empty=Fals
             "files": List[file_names]
             "folders": List[Folder]
 
-    :param start_empty: removes everything that is already in the fodler at the beginning
+    :param start_empty: removes everything that is already in the folder at the beginning
     :return: None
     """
     if start_empty:
@@ -75,6 +75,7 @@ class TestFolderWalker(unittest.TestCase):
         h_create_empty(abs_local_path)
         interface.add_sync_folder(abs_local_path, "folder1")
         f1_path = os.path.join(c_paths.LOCAL_CLIENT_DATA, "folder1")
+        f2_path = s_paths.rel_user_path_to_abs("folder1", 1)
         dummy_content = {"folder_name": "folder1", "files": ["test.txt", "test2.txt"], "folders": [
             {"folder_name": "inner1", "files": ["inner1_test.txt", "inner1_test2.txt"], "folders":[]},
             {"folder_name": "inner2", "files": ["inner2_test.txt", "inner2_test2.txt"], "folders": []}
@@ -82,9 +83,13 @@ class TestFolderWalker(unittest.TestCase):
         h_create_files_folders(f1_path, dummy_content)
 
         f1_content = merge_folders.generate_content_of_folder(f1_path)
-        f2_content = merge_folders.generate_content_of_folder(s_paths.rel_user_path_to_abs("folder1", 1))
+        f2_content = merge_folders.generate_content_of_folder(f2_path)
         f1_actions, f2_actions = merge_folders.merge_two_folders(f1_content, f2_content,
                                                                  merge_folders.MergeMethods.TAKE_1)
         print(f1_actions, f2_actions)
         c_sync._execute_client_actions(f1_actions)
         c_sync._execute_client_actions(f2_actions)
+        current_structure = merge_folders.generate_content_of_folder(f2_path, only_files_list=True)
+        dummy_content["folder_name"] = f2_path
+        expected_structure = dummy_content
+        self.assertEqual(expected_structure, current_structure)
