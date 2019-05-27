@@ -170,7 +170,7 @@ TODO next:
 
     - special cases
         - new folder added at client        <----
-            - mark everything as created?
+            - One folder that should be pulled and merged (merge method) (possible?)
         - existing client folder is merged with existing server folder
             - options:
                 - use latest

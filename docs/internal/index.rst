@@ -16,3 +16,5 @@ Internal documentation
     gui
     interface
     main
+    merge_folders
+    tests
