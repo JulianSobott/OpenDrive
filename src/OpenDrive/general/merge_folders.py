@@ -28,9 +28,10 @@ import os
 from general.paths import NormalizedPath, normalize_path
 
 
-def generate_content_of_folder(abs_folder_path: str, only_files_list=False) -> dict:
+def generate_content_of_folder(abs_folder_path: str, only_files_list=False, top_folder_name: str = "") -> dict:
     """
     :param abs_folder_path:
+    :param top_folder_name: optional name of the root folder. Used to allow relative path at server
     :param only_files_list: True: Files are only stored as list with only the names. Else: see return
     :return: dict with following structure
 
@@ -41,7 +42,8 @@ def generate_content_of_folder(abs_folder_path: str, only_files_list=False) -> d
     """
     if not os.path.exists(abs_folder_path):
         raise FileNotFoundError
-    return _recursive_generate_content_of_folder(abs_folder_path, abs_folder_path, only_files_list)
+    top_folder_name = top_folder_name if top_folder_name else abs_folder_path
+    return _recursive_generate_content_of_folder(abs_folder_path, top_folder_name, only_files_list)
 
 
 def walk_directories(dir_content: dict, parent_path: NormalizedPath):

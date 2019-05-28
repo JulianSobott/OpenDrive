@@ -182,5 +182,4 @@ TODO next:
 - synchronization
     - test: distribute actions to other changes files   <----
 
-- generate content: folder_name at server rel to user
 - merge works over network? -> test

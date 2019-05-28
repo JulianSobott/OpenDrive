@@ -90,7 +90,8 @@ def _take_1(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAc
 
 
 def _take_2(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAction], List[SyncAction]]:
-    return _take_1(folder_2_content, folder_1_content)
+    f1_actions, f2_actions = _take_1(folder_2_content, folder_1_content)
+    return f2_actions, f1_actions
 
 
 class MergeMethods:

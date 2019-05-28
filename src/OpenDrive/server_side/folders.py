@@ -70,5 +70,5 @@ def generate_content_of_folder(folder_name: str, only_files_list=False, user_id:
     if user_id == -1:
         user_id = net_interface.get_user_id()
     abs_path = paths.rel_user_path_to_abs(folder_name, user_id)
-    return gen_merge_folders.generate_content_of_folder(abs_path, only_files_list)
+    return gen_merge_folders.generate_content_of_folder(abs_path, only_files_list, folder_name)
 
