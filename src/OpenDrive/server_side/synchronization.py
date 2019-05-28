@@ -29,14 +29,14 @@ from OpenDrive.general.file_exchanges import SyncAction
 
 
 def get_changes(dest_path: str) -> net.File:
-    user: net_interface.ClientCommunicator = net.ClientManager().get()
+    user = net_interface.get_user()
     user_path = server_paths.get_users_root_folder(user.user_id)
     changes_path = os.path.join(user_path, f"changes_{user.device_id}.json")
     return net.File(changes_path, dest_path)
 
 
 def execute_actions(actions: List[SyncAction]) -> None:
-    user: net_interface.ClientCommunicator = net.ClientManager().get()
+    user = net_interface.get_user()
     devices = db.Device.get_by_user_id(user.user_id)
     device_ids = [device.device_id for device in devices]
     device_ids.remove(user.device_id)

@@ -27,8 +27,6 @@ import json
 import os
 from typing import List
 
-import pynetworking as net
-
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general.file_exchanges import SyncAction
@@ -86,14 +84,14 @@ def remove_change_entry(abs_folder_path: NormalizedPath, rel_entry_path: Normali
 
 
 def _get_json_data() -> dict:
-    user: net_interface.ClientCommunicator = net.ClientManager().get()
+    user = net_interface.get_user()
     file_path = _get_file_path(user.user_id, user.device_id)
     with open(file_path, "r") as file:
         return json.load(file)
 
 
 def _set_json_data(data: dict):
-    user: net_interface.ClientCommunicator = net.ClientManager().get()
+    user = net_interface.get_user()
     file_path = _get_file_path(user.user_id, user.device_id)
     with open(file_path, "w") as file:
         return json.dump(data, file)

@@ -22,8 +22,7 @@ FOLDERS_ROOT = os.path.join(LOCAL_SERVER_DATA, "ROOT/")
 
 def rel_user_path_to_abs(rel_path: str, user_id: int = -1):
     if user_id == -1:
-        client: net_interface.ClientCommunicator = net.ClientManager().get()
-        user_id = client.user_id
+        user_id = net_interface.get_user_id()
     return os.path.join(get_users_root_folder(user_id), rel_path)
 
 

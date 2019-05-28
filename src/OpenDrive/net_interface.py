@@ -42,3 +42,17 @@ class ClientCommunicator(net.ClientCommunicator):
 
 
 server = ServerCommunicator.remote_functions
+
+
+def get_user_id() -> int:
+    user: ClientCommunicator = net.ClientManager().get()
+    return user.user_id
+
+
+def get_device_id() -> int:
+    user: ClientCommunicator = net.ClientManager().get()
+    return user.device_id
+
+
+def get_user() -> ClientCommunicator:
+    return net.ClientManager().get()

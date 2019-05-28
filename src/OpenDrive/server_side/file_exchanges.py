@@ -28,8 +28,8 @@ def get_file(rel_src_path: str, abs_file_dest_path: str) -> net.File:
 def get_dir(rel_src_path: str, abs_dest_path: str) -> None:
     abs_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
     return gen_file_exchanges.get_dir(abs_src_path, abs_dest_path,
-                                      net.ClientManager().get().remote_functions.pull_file,
-                                      net.ClientManager().get().remote_functions.make_dirs)
+                                      net_interface.get_user().remote_functions.pull_file,
+                                      net_interface.get_user().remote_functions.make_dirs)
 
 
 def move(rel_src_path: str, rel_dest_path: str) -> None:
@@ -58,7 +58,7 @@ def remove_dir(rel_path: str, only_empty: bool = False):
 def pull_file(abs_client_path: str, rel_server_path: str) -> None:
     """Pulls a file from the client and saves it at the server. The server path is relative to the users root folder.
     Folders that don't exist are created."""
-    client: net_interface.ClientCommunicator = net.ClientManager().get()
+    client = net_interface.get_user()
     abs_server_path = server_paths.rel_user_path_to_abs(rel_server_path, client.user_id)
     os.makedirs(os.path.split(abs_server_path)[0], exist_ok=True)
     file = client.remote_functions.get_file(abs_client_path, abs_server_path)
@@ -66,7 +66,7 @@ def pull_file(abs_client_path: str, rel_server_path: str) -> None:
 
 def pull_dir(abs_client_path: str, rel_server_path: str) -> None:
     """Pulls a folder with all it files and subfolders from the client."""
-    client: net_interface.ClientCommunicator = net.ClientManager().get()
+    client = net_interface.get_user()
     abs_server_path = server_paths.rel_user_path_to_abs(rel_server_path, client.user_id)
     os.makedirs(abs_server_path, exist_ok=True)
     client.remote_functions.get_dir(abs_client_path, abs_server_path)

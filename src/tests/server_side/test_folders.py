@@ -22,13 +22,13 @@ class TestFolders(unittest.TestCase):
     def test_create_physical_folder(self):
         folder_name = "TestFolder"
         folders._create_physical_folder(self.user.user_id, folder_name)
-        expected = folders.get_users_root_folder(self.user.user_id).joinpath(folder_name)
-        self.assertTrue(expected.exists())
+        expected = os.path.join(server_paths.get_users_root_folder(self.user.user_id), folder_name)
+        self.assertTrue(os.path.exists(expected))
 
     def test_add_folder(self):
         folder_name = "TestFolder"
         folders._add_folder_to_user(self.user.user_id, folder_name)
-        expected = folders.get_users_root_folder(self.user.user_id).joinpath(folder_name)
-        self.assertTrue(expected.exists())
+        expected = os.path.join(server_paths.get_users_root_folder(self.user.user_id), folder_name)
+        self.assertTrue(os.path.exists(expected))
         folder_entry = database.Folder.get_by_user_and_name(self.user.user_id, folder_name)
         self.assertIsInstance(folder_entry, database.Folder)

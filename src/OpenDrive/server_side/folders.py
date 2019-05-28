@@ -19,7 +19,6 @@ private functions
 """
 import os
 from pathlib import Path
-import pynetworking as net
 
 from OpenDrive.server_side import database
 from OpenDrive.server_side import paths
@@ -28,21 +27,22 @@ from OpenDrive.server_side import file_changes_json
 from OpenDrive import net_interface
 
 
-def add_folder(folder_name: str):
-    """If the folder does not exist, creates a new folder at the users path and creates a new entry at the DB. Else
-    do nothing"""
-    user: net_interface.ClientCommunicator = net.ClientManager().get()
+def add_folder(folder_name: str) -> bool:
+    """If the folder does not exist, creates a new folder at the users path and creates a new entry at the DB.
+    Returns True if a new folder is created and added. If the folder already exists return False."""
+    user = net_interface.get_user()
     if database.Folder.get_by_user_and_name(user.user_id, folder_name) is None:
         _add_folder_to_user(user.user_id, folder_name)
+        return True
     else:
-        pass
+        return False
 
 
 def create_folder_for_new_user(user: User) -> None:
     """For every user a folder in the root folder is created. Inside this new  folder every synchronized folder is
     stored"""
-    users_root = get_users_root_folder(user.user_id)
-    assert not os.path.exists(str(users_root)), "User folder already exists!"
+    users_root = paths.get_users_root_folder(user.user_id)
+    assert not os.path.exists(users_root), "User folder already exists!"
     os.makedirs(str(users_root))
 
 
