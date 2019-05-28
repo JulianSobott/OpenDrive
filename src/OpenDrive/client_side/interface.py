@@ -34,6 +34,7 @@ from typing import List
 from OpenDrive.client_side import authentication
 from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import file_changes
+from OpenDrive.client_side import merge_folders
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive.net_interface import server
 
@@ -84,14 +85,18 @@ def logout() -> Status:
     return authentication.logout()
 
 
-def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str, include_regexes: List[str] = (".*",),
-                    exclude_regexes: List[str] = ()) -> Status:
-    """Adds a synchronization between a local folder and a server folder."""
+def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str,
+                    include_regexes: List[str] = (".*",), exclude_regexes: List[str] = (),
+                    merge_method: merge_folders.MergeMethod = merge_folders.MergeMethods.DEFAULT) -> Status:
+    """Adds a synchronization between a local folder and a server folder. The content of both folders is merged,
+    so that both folders are identical."""
     success = file_changes.add_folder(abs_local_path, include_regexes, exclude_regexes, remote_name)
     if not success:
         return Status.fail("Folder can not be added locally. It is nested in an existing folder or wraps "
                            "around an existing folder")
-    server.add_folder(remote_name)
+    new_added = server.add_folder(remote_name)
+    if not new_added:
+        merge_folders.merge_folders(abs_local_path, remote_name, merge_method)
     return Status.success("Successfully added new sync folder pair.")
 
 
