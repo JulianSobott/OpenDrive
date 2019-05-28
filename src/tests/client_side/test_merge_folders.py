@@ -68,6 +68,15 @@ class TestFolderWalker(unittest.TestCase):
         for dir_name, dirs, file_names in general.merge_folders.walk_directories(example_dict, normalize_path("")):
             print(f"parent_path: {dir_name}, dir_name: {dirs}, file_names: {file_names}")
 
+
+class TestMergeMethods(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self._server_process = h_start_server_process()
+
+    def tearDown(self) -> None:
+        h_stop_server_process(self._server_process)
+
     @h_client_routine(clear_folders=True)
     def test_take_1(self):
         c_json.init_file(empty=True)
@@ -88,9 +97,37 @@ class TestFolderWalker(unittest.TestCase):
         f1_actions, f2_actions = merge_folders.merge_two_folders(f1_content, f2_content,
                                                                  merge_folders.MergeMethods.TAKE_1)
         print(f1_actions, f2_actions)
-        c_sync._execute_client_actions(f1_actions)
-        c_sync._execute_client_actions(f2_actions)
+        c_sync.execute_client_actions(f1_actions)
+        c_sync.execute_client_actions(f2_actions)
         current_structure = general.merge_folders.generate_content_of_folder(f2_path, only_files_list=True)
         dummy_content["folder_name"] = f2_path
+        expected_structure = dummy_content
+        self.assertEqual(expected_structure, current_structure)
+
+
+class TestMerge(unittest.TestCase):
+    def setUp(self) -> None:
+        self._server_process = h_start_server_process()
+
+    def tearDown(self) -> None:
+        h_stop_server_process(self._server_process)
+
+    @h_client_routine(clear_folders=True)
+    def test_merge_folders(self):
+        c_json.init_file(empty=True)
+        h_register_dummy_user_device_client()
+        abs_local_path = normalize_path(c_paths.LOCAL_CLIENT_DATA, "folder1")
+        h_create_empty(abs_local_path)
+        dummy_content = {"folder_name": "folder1", "files": ["test.txt", "test2.txt"], "folders": [
+            {"folder_name": "inner1", "files": ["inner1_test.txt", "inner1_test2.txt"], "folders": []},
+            {"folder_name": "inner2", "files": ["inner2_test.txt", "inner2_test2.txt"], "folders": []}
+        ]}
+        h_create_files_folders(abs_local_path, dummy_content)
+
+        interface.add_sync_folder(abs_local_path, "folder1")
+
+        server_path = s_paths.rel_user_path_to_abs("folder1", 1)
+        current_structure = general.merge_folders.generate_content_of_folder(server_path, only_files_list=True)
+        dummy_content["folder_name"] = server_path
         expected_structure = dummy_content
         self.assertEqual(expected_structure, current_structure)

@@ -95,8 +95,13 @@ def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str,
         return Status.fail("Folder can not be added locally. It is nested in an existing folder or wraps "
                            "around an existing folder")
     new_added = server.add_folder(remote_name)
-    if not new_added:
-        merge_folders.merge_folders(abs_local_path, remote_name, merge_method)
+    if new_added:
+        merge_method = merge_folders.MergeMethods.TAKE_1
+
+    status = merge_folders.merge_folders(abs_local_path, remote_name, merge_method)
+    if not status.was_successful():
+        return status
+
     return Status.success("Successfully added new sync folder pair.")
 
 

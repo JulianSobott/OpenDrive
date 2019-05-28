@@ -9,6 +9,7 @@ public functions
 
 .. autofunction:: full_synchronize
 .. autofunction:: create_action
+.. autofunction:: execute_client_actions
 
 
 private functions
@@ -17,7 +18,6 @@ private functions
 .. autofunction:: _get_server_changes
 .. autofunction:: _get_client_changes
 .. autofunction:: _merge_changes
-.. autofunction:: _execute_client_actions
 .. autofunction:: _execute_server_actions
 
 """
@@ -42,7 +42,7 @@ def full_synchronize() -> None:
     client_changes = _get_client_changes()
     server_actions, client_actions, conflicts = _merge_changes(server_changes, client_changes)
     _execute_server_actions(server_actions)
-    _execute_client_actions(client_actions)
+    execute_client_actions(client_actions)
     if len(conflicts) > 0:
         logger.error(f"Unhandled conflicts: {conflicts}")
 
@@ -111,7 +111,7 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
     return needed_remote_actions, conflicts
 
 
-def _execute_client_actions(client_actions: List[SyncAction]) -> None:
+def execute_client_actions(client_actions: List[SyncAction]) -> None:
     for action in client_actions:
         dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:

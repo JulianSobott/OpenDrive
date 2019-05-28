@@ -236,7 +236,7 @@ class TestExecution(unittest.TestCase):
                                                gen_json.ACTION_PULL,
                                                remote_abs_path=gen_paths.NormalizedPath("folder1/test.txt"))
                           ]
-        c_sync._execute_client_actions(client_actions)
+        c_sync.execute_client_actions(client_actions)
         client_dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "folder1/test.txt")
         self.assertTrue(os.path.isfile(client_dest_path))
 
@@ -251,7 +251,7 @@ class TestExecution(unittest.TestCase):
                                                gen_json.ACTION_MOVE,
                                                rel_old_file_path=gen_paths.normalize_path("test.txt"))
                           ]
-        c_sync._execute_client_actions(client_actions)
+        c_sync.execute_client_actions(client_actions)
         self.assertTrue(os.path.isfile(client_dest_path))
 
     def test_execute_client_actions_delete(self):
@@ -264,7 +264,7 @@ class TestExecution(unittest.TestCase):
                                                gen_paths.normalize_path("test.txt"),
                                                gen_json.ACTION_DELETE)
                           ]
-        c_sync._execute_client_actions(client_actions)
+        c_sync.execute_client_actions(client_actions)
         self.assertFalse(os.path.isfile(client_src_path))
 
     @h_client_routine()

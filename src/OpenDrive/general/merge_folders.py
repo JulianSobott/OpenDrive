@@ -39,6 +39,8 @@ def generate_content_of_folder(abs_folder_path: str, only_files_list=False) -> d
             "files": List[Dict["filename": str, "modified_timestamp": str]
             "folders": List[Folder]
     """
+    if not os.path.exists(abs_folder_path):
+        raise FileNotFoundError
     return _recursive_generate_content_of_folder(abs_folder_path, abs_folder_path, only_files_list)
 
 
