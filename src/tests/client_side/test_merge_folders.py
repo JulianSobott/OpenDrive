@@ -1,6 +1,7 @@
 import unittest
 import os
 
+import general.merge_folders
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_stop_server_process, h_start_server_process, h_client_routine, h_create_empty
 
@@ -64,7 +65,7 @@ class TestFolderWalker(unittest.TestCase):
                               "folders": []}]},
                         ]
         }
-        for dir_name, dirs, file_names in merge_folders.walk_directories(example_dict, normalize_path("")):
+        for dir_name, dirs, file_names in general.merge_folders.walk_directories(example_dict, normalize_path("")):
             print(f"parent_path: {dir_name}, dir_name: {dirs}, file_names: {file_names}")
 
     @h_client_routine(clear_folders=True)
@@ -82,14 +83,14 @@ class TestFolderWalker(unittest.TestCase):
         ]}
         h_create_files_folders(f1_path, dummy_content)
 
-        f1_content = merge_folders.generate_content_of_folder(f1_path)
-        f2_content = merge_folders.generate_content_of_folder(f2_path)
+        f1_content = general.merge_folders.generate_content_of_folder(f1_path)
+        f2_content = general.merge_folders.generate_content_of_folder(f2_path)
         f1_actions, f2_actions = merge_folders.merge_two_folders(f1_content, f2_content,
                                                                  merge_folders.MergeMethods.TAKE_1)
         print(f1_actions, f2_actions)
         c_sync._execute_client_actions(f1_actions)
         c_sync._execute_client_actions(f2_actions)
-        current_structure = merge_folders.generate_content_of_folder(f2_path, only_files_list=True)
+        current_structure = general.merge_folders.generate_content_of_folder(f2_path, only_files_list=True)
         dummy_content["folder_name"] = f2_path
         expected_structure = dummy_content
         self.assertEqual(expected_structure, current_structure)
