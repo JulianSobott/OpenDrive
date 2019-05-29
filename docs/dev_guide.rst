@@ -126,9 +126,13 @@ Tasks
 =======
 
 - GUI
-    - Define features
-    - Define procedure
-    - Draft the gui design
+    - explorer
+        - good tool for editing include/exclude patterns
+        - tool for selecting merge_method
+    - registration
+    - input validation
+    - beautiful design
+        - mock the design as image
 
 - UI
     - Console interface
@@ -136,14 +140,9 @@ Tasks
 
 - Backend
     - folders
-        - Add folder to be synchronized
-            - local folder
-            - server folder (existing one/create new)
-        - Get all existing server folders
         - Remove folder synchronization
         - Remove server folder (danger)
-        - Merge folders
-            - Merge conflicts?
+        - implement all merge_methods
         - Edit folder privileges
             - Share link
             - Add user
@@ -151,35 +150,14 @@ Tasks
                 - Edit
                 - View
                 - Full access (edit, view, delete)
-    - Get files
+    - synchronization
+        - test: distribute actions to other changes files
 
 
 TODO next:
 ==========
 
-- GUI define features
-- Main program
-    - startup
-        - start watching
-        - connect to server
-            - success:
-                - authenticate
-                - sync everything
-    - shutdown
-        - is finished syncing?
+- implement all merge_methods
 
-    - special cases
-        - new folder added at client        <----
-            - One folder that should be pulled and merged (merge method) (possible?)
-        - existing client folder is merged with existing server folder
-            - options:
-                - use latest
-                - use one side
-                - decide individual
-                - make copies of duplicates
-
-
-- synchronization
-    - test: distribute actions to other changes files   <----
-
-- merge works over network? -> test
+- allow method calls only when authenticated
+    - when not authenticated open gui (once)
