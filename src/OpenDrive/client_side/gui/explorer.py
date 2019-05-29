@@ -97,13 +97,23 @@ class PopupConfigFolder(Popup):
     def browse_server_path(self):
         status, all_server_folders = interface.get_all_remote_folders()
         if status.was_successful():
-            #all_server_folders = ["folder1", "folder2"]
             popup_server_folders = PopupBrowseServerFolder(self)
             popup_server_folders.foldersView.set_folders(all_server_folders)
             popup_server_folders.open()
         else:
             logger.warning(status.get_text())
             # TODO: transmit message to user
+
+    def btn_release_add(self):
+        abs_local_path = self.tf_client_path.text
+        server_path = self.tf_server_path.text
+        status = interface.add_sync_folder(abs_local_path, server_path)
+        if status.was_successful():
+            self.dismiss()
+        else:
+            logger.warning(status.get_text())
+            # TODO: transmit message to user
+
 
 
 class FoldersView(RecycleView):
