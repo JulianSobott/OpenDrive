@@ -15,6 +15,7 @@
 
     tf_client_path: tf_client_path
     tf_server_path: tf_server_path
+    btn_save_add: btn_save_add
 
     BoxLayout:
         orientation: "vertical"
@@ -24,6 +25,7 @@
 
         TextInput:
             id: tf_client_path
+            text: "D:\Programmieren\OpenDrive\local\client_side/folder1"
 
         Button:
             text: "browse"
@@ -34,6 +36,7 @@
 
         TextInput:
             id: tf_server_path
+            #text: "folder1"
 
         Button:
             text: "browse"
@@ -52,6 +55,7 @@
             id: tf_excludes
 
         Button:
+            id: btn_save_add
             text: "Add"
             on_release: root.btn_release_add()
 

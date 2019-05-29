@@ -49,7 +49,7 @@ class ScreenExplorer(Screen):
         btn_expand = Button(text="expand")
         box_folder.add_widget(btn_expand)
 
-        btn_edit = Button(text="edit")
+        btn_edit = Button(text="edit", on_release=partial(self.btn_release_edit_synchronization, path))
         box_folder.add_widget(btn_edit)
 
         btn_delete = Button(text="delete", on_release=partial(self.btn_release_remove_sync_folder, path))
@@ -63,8 +63,21 @@ class ScreenExplorer(Screen):
         self.box_folders_container.clear_widgets([self.folder_containers[folder_path]])
 
     def btn_release_add_synchronization(self, button):
-        popup = PopupConfigFolder(self)
+        popup = PopupConfigFolder(self, edit_existing=False)
         popup.open()
+
+    def update_folders_on_added(self, folder_path: str):
+        """Call this when a new folder is added from the popup window."""
+        all_folders = interface.get_sync_data()
+        folder_path = gen_paths.normalize_path(folder_path)
+        self._add_folder(folder_path, all_folders[folder_path])
+
+    def btn_release_edit_synchronization(self, folder_path, button):
+        data = interface.get_sync_data()
+        folder_data = data[folder_path]
+        popup = PopupConfigFolder(self, edit_existing=True)
+        popup.open()
+        popup.set_data(client_path=folder_path, server_path=folder_data["server_folder_path"])
 
 
 class BtnAddSynchronization(Button):
@@ -78,10 +91,20 @@ class PopupConfigFolder(Popup):
 
     tf_client_path: TextInput = ObjectProperty(None)
     tf_server_path: TextInput = ObjectProperty(None)
+    btn_save_add: Button = ObjectProperty(None)
 
-    def __init__(self, explorer, **kwargs):
+    def __init__(self, explorer, edit_existing: bool, **kwargs):
         super().__init__(**kwargs)
-        self._explorer = explorer
+        self._explorer: ScreenExplorer = explorer
+        self._edit_existing = edit_existing
+        if edit_existing:
+            self.btn_save_add.text = "Save"
+
+    def set_data(self, client_path=None, server_path=None, include_regexes=None, exclude_regexes=None):
+        if client_path:
+            self.tf_client_path.text = client_path
+        if server_path:
+            self.tf_server_path.text = server_path
 
     def browse_client_path(self):
         Desktop_FolderDialog(
@@ -105,15 +128,18 @@ class PopupConfigFolder(Popup):
             # TODO: transmit message to user
 
     def btn_release_add(self):
-        abs_local_path = self.tf_client_path.text
-        server_path = self.tf_server_path.text
-        status = interface.add_sync_folder(abs_local_path, server_path)
-        if status.was_successful():
-            self.dismiss()
+        if self._edit_existing:
+            logger.warning("Editing folders is not implemented yet.")
         else:
-            logger.warning(status.get_text())
-            # TODO: transmit message to user
-
+            abs_local_path = self.tf_client_path.text
+            server_path = self.tf_server_path.text
+            status = interface.add_sync_folder(abs_local_path, server_path)
+            if status.was_successful():
+                self.dismiss()
+                self._explorer.update_folders_on_added(abs_local_path)
+            else:
+                logger.warning(status.get_text())
+                # TODO: transmit message to user
 
 
 class FoldersView(RecycleView):
