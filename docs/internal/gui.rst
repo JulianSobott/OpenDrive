@@ -35,3 +35,14 @@ Config synchronization
 - excludes
 - includes
 
+
+Explorer
+----------
+
+- show all synchronizations
+- add new synchronization
+    - existing client folder
+    - new/existing server folder
+    - merge method (only when server folder already exists)
+    - include and exclude patterns
+

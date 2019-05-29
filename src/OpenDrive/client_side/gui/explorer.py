@@ -11,11 +11,12 @@ from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.screenmanager import Screen
 from functools import partial
 
+from kivy.uix.textinput import TextInput
+
 from OpenDrive.client_side import interface
 from OpenDrive.general import paths as gen_paths
 from OpenDrive.client_side.gui.desktop_file_dialogs import Desktop_FolderDialog
 from OpenDrive.client_side.od_logging import logger
-
 
 
 class ScreenExplorer(Screen):
@@ -74,8 +75,8 @@ class BtnAddSynchronization(Button):
 
 class PopupConfigFolder(Popup):
 
-    tf_client_path = ObjectProperty(None)
-    tf_server_path = ObjectProperty(None)
+    tf_client_path: TextInput = ObjectProperty(None)
+    tf_server_path: TextInput = ObjectProperty(None)
 
     def __init__(self, explorer, **kwargs):
         super().__init__(**kwargs)
@@ -95,15 +96,21 @@ class PopupConfigFolder(Popup):
     def browse_server_path(self):
         all_server_folders = interface.get_all_remote_folders()
         all_server_folders = ["folder1", "folder2"]
-        popup_server_folders = Popup()
-        view = FoldersView(all_server_folders)
-        popup_server_folders.add_widget(view)
+        popup_server_folders = PopupBrowseServerFolder(self)
+        popup_server_folders.foldersView.set_folders(all_server_folders)
         popup_server_folders.open()
 
 
 class FoldersView(RecycleView):
-    def __init__(self, folders: list, **kwargs):
-        super(FoldersView, self).__init__(**kwargs)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.selected_path: str = ""
+
+    def update_selected_path(self, path: str):
+        self.selected_path = path
+
+    def set_folders(self, folders: list):
         self.data = [{"text": folder} for folder in folders]
 
 
@@ -133,5 +140,21 @@ class SelectableLabel(RecycleDataViewBehavior, Label):
         self.selected = is_selected
         if is_selected:
             print("selection changed to {0}".format(rv.data[index]))
+            rv.update_selected_path(rv.data[index]["text"])
         else:
             print("selection removed for {0}".format(rv.data[index]))
+
+
+class PopupBrowseServerFolder(Popup):
+
+    foldersView: FoldersView = ObjectProperty(None)
+
+    def __init__(self, popup_config: PopupConfigFolder, **kwargs):
+        super().__init__(**kwargs)
+        self.popup_config = popup_config
+
+    def set_server_path(self):
+        path = self.foldersView.selected_path
+        self.popup_config.tf_server_path.text = path
+        self.dismiss()
+

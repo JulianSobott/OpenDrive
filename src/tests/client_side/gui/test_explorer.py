@@ -13,12 +13,8 @@ def h_watch_dummy_folder(folder_name: str):
     file_changes.add_folder(abs_path)
 
 
-class TestExplorer(TestCase):
-
-    def setUp(self) -> None:
-        file_changes_json.init_file(empty=True)
-        h_watch_dummy_folder("folder_1")
-        h_watch_dummy_folder("folder_2")
-
-    def simulate_remove_folder(self):
-        gui.main.main()
+if __name__ == '__main__':
+    file_changes_json.init_file(empty=True)
+    h_watch_dummy_folder("folder_1")
+    h_watch_dummy_folder("folder_2")
+    gui.main.main()

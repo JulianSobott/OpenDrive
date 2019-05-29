@@ -58,6 +58,28 @@
             text: "Cancel"
             on_release: root.dismiss()
 
+
+<PopupBrowseServerFolder@Popup>
+    title: "Browse server folder"
+    auto_dismiss: False
+
+    foldersView: foldersView
+
+    BoxLayout:
+        orientation: "vertical"
+
+        FoldersView:
+            id: foldersView
+
+        Button:
+            text: "Select"
+            on_release: root.set_server_path()
+
+        Button:
+            text: "Cancel"
+            on_release: root.dismiss()
+
+
 <FoldersView>:
     viewclass: 'SelectableLabel'
     text_selected: ''
@@ -71,6 +93,7 @@
         size_hint: 1, .9
         multiselect: False
         touch_multiselect: False
+
 
 <SelectableLabel>:
     canvas.before:
