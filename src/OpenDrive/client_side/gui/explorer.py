@@ -1,7 +1,6 @@
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.button import Button
-from kivy.uix.dropdown import DropDown
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
@@ -162,26 +161,27 @@ class PopupBrowseServerFolder(Popup):
         self.dismiss()
 
 
-class DropDownMergeMethods(DropDown):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        merge_methods = merge_folders.MergeMethods
-        self.add_widget(BtnMergeMethod(merge_methods.TAKE_1, self))
-        self.add_widget(BtnMergeMethod(merge_methods.TAKE_2, self))
-        self.add_widget(BtnMergeMethod(merge_methods.COMPLETE_BOTH, self))
-        self.add_widget(BtnMergeMethod(merge_methods.CONFLICTS, self))
-        self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_1, self))
-        self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_2, self))
-        self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_LATEST, self))
-
-
-class BtnMergeMethod(Button):
-
-    def __init__(self, merge_method, dropdown, **kwargs):
-        super().__init__(text=str(merge_method), **kwargs)
-        self.dropdown: DropDownMergeMethods = dropdown
-        self.merge_method = merge_method
-
-    def on_release(self):
-        self.dropdown.select(self.text)
+# TODO: For some reason the program crashes when the following line is added: `from kivy.uix.dropdown import DropDown`
+# class DropDownMergeMethods(kivy.uix.dropdown.DropDown):
+#
+#     def __init__(self, **kwargs):
+#         super().__init__(**kwargs)
+#         merge_methods = merge_folders.MergeMethods
+#         self.add_widget(BtnMergeMethod(merge_methods.TAKE_1, self))
+#         self.add_widget(BtnMergeMethod(merge_methods.TAKE_2, self))
+#         self.add_widget(BtnMergeMethod(merge_methods.COMPLETE_BOTH, self))
+#         self.add_widget(BtnMergeMethod(merge_methods.CONFLICTS, self))
+#         self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_1, self))
+#         self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_2, self))
+#         self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_LATEST, self))
+#
+#
+# class BtnMergeMethod(Button):
+#
+#     def __init__(self, merge_method, dropdown, **kwargs):
+#         super().__init__(text=str(merge_method), **kwargs)
+#         self.dropdown: DropDownMergeMethods = dropdown
+#         self.merge_method = merge_method
+#
+#     def on_release(self):
+#         self.dropdown.select(self.text)
