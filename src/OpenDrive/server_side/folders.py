@@ -29,8 +29,10 @@ from OpenDrive.server_side.database import User
 from OpenDrive.server_side import file_changes_json
 from OpenDrive.general import merge_folders as gen_merge_folders
 from OpenDrive import net_interface
+from OpenDrive.server_side.authentication import requires_authentication
 
 
+@requires_authentication
 def add_folder(folder_name: str) -> bool:
     """If the folder does not exist, creates a new folder at the users path and creates a new entry at the DB.
     Returns True if a new folder is created and added. If the folder already exists return False."""
@@ -55,6 +57,7 @@ def get_users_root_folder(user_id: int) -> Path:
     return Path(paths.FOLDERS_ROOT, user_path)
 
 
+@requires_authentication
 def generate_content_of_folder(folder_name: str, only_files_list=False, user_id: int = -1):
     if user_id == -1:
         user_id = net_interface.get_user_id()
@@ -62,6 +65,7 @@ def generate_content_of_folder(folder_name: str, only_files_list=False, user_id:
     return gen_merge_folders.generate_content_of_folder(abs_path, only_files_list, folder_name)
 
 
+@requires_authentication
 def get_all_available_folders(user_id: int = -1) -> List[str]:
     if user_id == -1:
         user_id = net_interface.get_user_id()

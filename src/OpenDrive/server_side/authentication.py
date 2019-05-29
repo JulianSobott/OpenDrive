@@ -20,6 +20,7 @@ private functions
 
 """
 import os
+import functools
 
 from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
@@ -120,3 +121,15 @@ def _set_user_authenticated(user_id: int, device_id: int, value: bool = True) ->
     client.is_authenticated = value
     client.user_id = user_id
     client.device_id = device_id
+
+
+def requires_authentication(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        user = net_interface.get_user()
+        if not user.is_authenticated:
+            user.remote_functions.open_gui_authentication()
+            if not user.is_authenticated:
+                return
+        return func(*args, **kwargs)
+    return wrapper

@@ -27,7 +27,6 @@ from typing import Optional
 import functools
 
 from OpenDrive import net_interface
-from OpenDrive.net_interface import server
 from OpenDrive.general.device_data import get_mac
 from OpenDrive.server_side.database import Token
 from OpenDrive.client_side import paths
@@ -49,7 +48,7 @@ def connection_needed(func):
 @connection_needed
 def register_user_device(username: str, password: str, email: str = None) -> Status:
     mac_address = get_mac()
-    ret = server.register_user_device(username, password, mac_address, email)
+    ret = net_interface.server.register_user_device(username, password, mac_address, email)
     if isinstance(ret, str):
         return Status.fail(ret)
     else:
@@ -60,7 +59,7 @@ def register_user_device(username: str, password: str, email: str = None) -> Sta
 @connection_needed
 def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
     mac_address = get_mac()
-    ret = server.login_manual_user_device(username, password, mac_address)
+    ret = net_interface.server.login_manual_user_device(username, password, mac_address)
     if isinstance(ret, str):
         return Status.fail(ret)
     else:
@@ -72,7 +71,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
 
 @connection_needed
 def logout() -> Status:
-    server.logout()
+    net_interface.server.logout()
     net_interface.ServerCommunicator.close_connection()
     return Status.success("Successfully logged out.")
 
@@ -82,7 +81,7 @@ def login_auto() -> Status:
     token = _get_token()
     if token is not None:
         mac = get_mac()
-        success = server.login_auto(token, mac)
+        success = net_interface.server.login_auto(token, mac)
         if not success:
             return Status.fail("Failed to automatically log in.")
         else:

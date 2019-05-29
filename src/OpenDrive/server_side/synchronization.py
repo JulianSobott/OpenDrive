@@ -26,8 +26,10 @@ from OpenDrive.server_side import file_exchanges
 from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side import database as db
 from OpenDrive.general.file_exchanges import SyncAction
+from OpenDrive.server_side.authentication import requires_authentication
 
 
+@requires_authentication
 def get_changes(dest_path: str) -> net.File:
     user = net_interface.get_user()
     user_path = server_paths.get_users_root_folder(user.user_id)
@@ -35,6 +37,7 @@ def get_changes(dest_path: str) -> net.File:
     return net.File(changes_path, dest_path)
 
 
+@requires_authentication
 def execute_actions(actions: List[SyncAction]) -> None:
     user = net_interface.get_user()
     devices = db.Device.get_by_user_id(user.user_id)
