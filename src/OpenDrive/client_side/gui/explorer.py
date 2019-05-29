@@ -1,6 +1,7 @@
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
@@ -14,6 +15,7 @@ from functools import partial
 from kivy.uix.textinput import TextInput
 
 from OpenDrive.client_side import interface
+from OpenDrive.client_side import merge_folders
 from OpenDrive.general import paths as gen_paths
 from OpenDrive.client_side.gui.desktop_file_dialogs import Desktop_FolderDialog
 from OpenDrive.client_side.od_logging import logger
@@ -159,3 +161,27 @@ class PopupBrowseServerFolder(Popup):
         self.popup_config.tf_server_path.text = path
         self.dismiss()
 
+
+class DropDownMergeMethods(DropDown):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        merge_methods = merge_folders.MergeMethods
+        self.add_widget(BtnMergeMethod(merge_methods.TAKE_1, self))
+        self.add_widget(BtnMergeMethod(merge_methods.TAKE_2, self))
+        self.add_widget(BtnMergeMethod(merge_methods.COMPLETE_BOTH, self))
+        self.add_widget(BtnMergeMethod(merge_methods.CONFLICTS, self))
+        self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_1, self))
+        self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_2, self))
+        self.add_widget(BtnMergeMethod(merge_methods.PRIORITIZE_LATEST, self))
+
+
+class BtnMergeMethod(Button):
+
+    def __init__(self, merge_method, dropdown, **kwargs):
+        super().__init__(text=str(merge_method), **kwargs)
+        self.dropdown: DropDownMergeMethods = dropdown
+        self.merge_method = merge_method
+
+    def on_release(self):
+        self.dropdown.select(self.text)
