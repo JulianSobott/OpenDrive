@@ -9,6 +9,8 @@ public functions
 .. autofunction:: add_folder
 .. autofunction:: create_folder_for_new_user
 .. autofunction:: get_users_root_folder
+.. autofunction:: get_all_available_folders
+.. autofunction:: generate_content_of_folder
 
 private functions
 ------------------
@@ -19,6 +21,7 @@ private functions
 """
 import os
 from pathlib import Path
+from typing import List
 
 from OpenDrive.server_side import database
 from OpenDrive.server_side import paths
@@ -52,6 +55,20 @@ def get_users_root_folder(user_id: int) -> Path:
     return Path(paths.FOLDERS_ROOT, user_path)
 
 
+def generate_content_of_folder(folder_name: str, only_files_list=False, user_id: int = -1):
+    if user_id == -1:
+        user_id = net_interface.get_user_id()
+    abs_path = paths.rel_user_path_to_abs(folder_name, user_id)
+    return gen_merge_folders.generate_content_of_folder(abs_path, only_files_list, folder_name)
+
+
+def get_all_available_folders(user_id: int = -1) -> List[str]:
+    if user_id == -1:
+        user_id = net_interface.get_user_id()
+    folders = database.Folder.get_by_user(user_id)
+    return [folder.folder_name for folder in folders]
+
+
 def _add_folder_to_user(user_id: int, folder_name: str):
     """Creates a new folder at the users path and creates a new entry at the DB and json_file."""
     _create_physical_folder(user_id, folder_name)
@@ -64,11 +81,4 @@ def _create_physical_folder(user_id: int, folder_name: str):
     users_root = paths.get_users_root_folder(user_id)
     new_folder_path = os.path.join(users_root, folder_name)
     os.mkdir(new_folder_path)
-
-
-def generate_content_of_folder(folder_name: str, only_files_list=False, user_id: int = -1):
-    if user_id == -1:
-        user_id = net_interface.get_user_id()
-    abs_path = paths.rel_user_path_to_abs(folder_name, user_id)
-    return gen_merge_folders.generate_content_of_folder(abs_path, only_files_list, folder_name)
 

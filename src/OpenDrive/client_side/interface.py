@@ -29,7 +29,7 @@ public functions
 
 
 """
-from typing import List
+from typing import List, Tuple
 
 from OpenDrive.client_side import authentication
 from OpenDrive.client_side import file_changes_json
@@ -37,6 +37,7 @@ from OpenDrive.client_side import file_changes
 from OpenDrive.client_side import merge_folders
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive.net_interface import server
+from OpenDrive import net_interface
 
 
 class Status:
@@ -116,9 +117,12 @@ def remove_remote_folder(remote_name: NormalizedPath) -> Status:
     pass
 
 
-def get_all_remote_folders(access_level=None) -> list:    # TODO: specify type hint
+def get_all_remote_folders(access_level=None) -> Tuple[Status, List[str]]:    # TODO: specify type hint
     """Returns a list with all folders that the user has access to."""
-    pass
+    if net_interface.ServerCommunicator.is_connected():
+        return Status.success(""), server.get_all_available_folders()
+    else:
+        return Status.fail("Cannot connect to server. Please ensure you are connected with the internet"), []
 
 
 def get_sync_data() -> dict:

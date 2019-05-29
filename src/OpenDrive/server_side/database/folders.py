@@ -14,7 +14,7 @@ public classes
     :undoc-members:
 
 """
-from typing import Optional
+from typing import Optional, List
 
 from OpenDrive.general.database import TableEntry, DBConnection
 from OpenDrive.server_side import paths
@@ -84,6 +84,11 @@ class Folder(TableEntry):
             return None
         folder: Folder = entries[0]
         return folder
+
+    @classmethod
+    def get_by_user(cls, user_id: int) -> List['Folder']:
+        entries = cls.from_columns("user_id = ?", (user_id,))
+        return entries
 
     def __repr__(self):
         return f"User({self._id}, {self._user_id}, {self._folder_name})"
