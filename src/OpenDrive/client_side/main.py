@@ -35,6 +35,7 @@ def start():
     """Function that setups everything."""
     c_json.init_file()
     c_file_changes.start_observing()
+    c_file_changes.sync_waiter.waiter.clear()
     c_net_start.connect()
     status = c_interface.login_auto()
     if not status.was_successful():
