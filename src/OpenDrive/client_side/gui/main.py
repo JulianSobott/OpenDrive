@@ -41,6 +41,7 @@ def main():
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
     app.run()
 
+
 app = OpenDriveApp()
 screens.screen_manager = screens.ScreenManager(app)
 

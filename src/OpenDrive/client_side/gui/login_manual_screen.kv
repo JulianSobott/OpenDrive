@@ -6,29 +6,93 @@
     tf_password: tf_password
     lbl_user_hints: lbl_user_hints
 
+    # Screen background
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'assets/login_background_blurred.jpg'
+
     BoxLayout:
+        id: main_container
+        space_x: self.size[0]/5
         orientation: "vertical"
+        padding: self.size[0]/5, 50
+
+        canvas.before:
+            Color:
+                rgba: (.0, .0, .0, 0.6)
+            RoundedRectangle:
+                size: self.size[0] - 2*self.padding[0], self.size[1] - 2*self.padding[1]
+                pos: self.pos[0] + self.padding[0], self.pos[1] + self.padding[1]
+                radius: [20,]
 
 
-        Label:
-            text: "Username"
+        BoxLayout:
+            orientation: "vertical"
+            #padding: main_container.space_x, 10
+            spacing: 10
+            padding: 20, 20
 
-        TextInput:
-            id: tf_username
+            Label:
+                text: "Login"
+                font_size: "64sp"
+                color: (230/255,81/255,0, 1)
+                color: (1,1,1, 1)
 
-        Label:
-            text: "Password"
+            BoxLayout:
+                orientation: "vertical"
+                height: 80
+                spacing: 10
+                size_hint_y: None
 
-        TextInput:
-            id: tf_password
+                TextInput:
+                    id: tf_username
+                    hint_text: "Username or email"
+                    multiline: False
+                    write_tab: False
+                    focus: True
 
-        Button:
-            text: "Login"
-            on_release: root.btn_release_login()
+                TextInput:
+                    id: tf_password
+                    hint_text: "Password"
+                    multiline: False
+                    write_tab: False
+                    password: True
 
-        Button:
-            text: "Register"
 
-        Label:
-            id: lbl_user_hints
-            color: 1, 0, 0, 1
+            BoxLayout:
+                orientation: "horizontal"
+                height: 50
+                padding: 200, 0, 0, 0
+                size_hint_y: None
+
+                Button:
+                    text: "Register"
+                    height: 40
+                    size_hint_y: None
+                    background_color: 0, 0, 0, .7
+
+                Button:
+                    text: "Login"
+                    on_release: root.btn_release_login()
+                    height: 40
+                    size_hint_y: None
+                    background_color: .06, .45, .45, .7
+
+
+            Label:
+                id: lbl_user_hints
+                color: 1, 0, 0, 0
+                font_size: "18sp"
+                height: 36
+                size_hint_y: None
+
+                canvas.before:
+                    Color:
+                        rgba: (.9, .9, .9, self.color[3])
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+
+            BoxLayout:

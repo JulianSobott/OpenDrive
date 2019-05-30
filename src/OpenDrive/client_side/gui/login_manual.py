@@ -20,4 +20,5 @@ class ScreenLoginManual(Screen):
             logger.debug("Successfully logged in")
             screens.screen_manager.set_screen(screens.EXPLORER)
         else:
+            self.lbl_user_hints.color[3] = 1
             self.lbl_user_hints.text = status.get_text()
