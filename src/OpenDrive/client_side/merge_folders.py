@@ -63,7 +63,7 @@ def merge_folders(abs_local_path: str, remote_name: str, merge_method: MergeMeth
         client_content = gen_merge_folders.generate_content_of_folder(abs_local_path)
     except FileNotFoundError:
         return interface.Status.fail(f"Client folder ({abs_local_path}) does not exist!")
-    client_actions,  server_actions = merge_two_folders(client_content, server_content, merge_method)
+    client_actions, server_actions = merge_two_folders(client_content, server_content, merge_method)
     net_interface.server.execute_actions(server_actions)
     client_sync.execute_client_actions(client_actions)
     return interface.Status.success("Successfully merged folders")
@@ -77,7 +77,6 @@ def merge_two_folders(folder_1_content: dict, folder_2_content: dict, merge_meth
 
 
 def _take_1(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAction], List[SyncAction]]:
-    """Some docs"""
     f1_actions = []
     f2_actions = []
     f1_folder_name = folder_1_content["folder_name"]
@@ -94,6 +93,58 @@ def _take_2(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAc
     return f2_actions, f1_actions
 
 
+def _prioritize_latest(folder_1_content: dict, folder_2_content: dict) -> Tuple[List[SyncAction], List[SyncAction]]:
+    f1_actions = []
+    f2_actions = []
+    f1_folder_name = folder_1_content["folder_name"]
+    f2_folder_name = folder_2_content["folder_name"]
+
+    new_f1_actions, new_f2_actions = _prioritize_latest_recursive(folder_1_content, folder_2_content, f1_folder_name,
+                                                                  f2_folder_name)
+    f1_actions += new_f1_actions
+    f2_actions += new_f2_actions
+    new_f2_actions, new_f1_actions = _prioritize_latest_recursive(folder_2_content, folder_1_content, f2_folder_name,
+                                                                  f1_folder_name)
+    f1_actions += new_f1_actions
+    f2_actions += new_f2_actions
+
+    # folder: not exists -> pull folder
+    # file: not exists -> pull
+    # file: exists -> take latest
+    return f1_actions, f2_actions
+
+
+def _prioritize_latest_recursive(folder_1_content: dict, folder_2_content: dict, f1_path: str, f2_path: str):
+    f1_actions = []
+    f2_actions = []
+    f1_files: list = folder_1_content["files"]
+    f2_files: list = folder_2_content["files"]
+
+    f2_file_names = [file["file_name"] for file in f2_files]
+    for file in f1_files:
+        if file["file_name"] in f2_file_names:
+            f2_idx = f2_file_names.index(file["file_name"])
+            if f2_files[f2_idx]["timestamp"] > file["timestamp"]:
+                take_from_folder = 2
+            else:
+                take_from_folder = 1
+            f2_files.pop(f2_idx)
+        else:
+            take_from_folder = 1
+
+        if take_from_folder == 1:
+            f2_actions.append(c_syc.create_action(normalize_path(f2_path), normalize_path(file["filename"]),
+                                                  gen_json.ACTION_PULL, False,
+                                                  remote_abs_path=normalize_path(f1_path, file["file_name"])))
+        else:
+            f1_actions.append(c_syc.create_action(normalize_path(f1_path), normalize_path(file["filename"]),
+                                                  gen_json.ACTION_PULL, False,
+                                                  remote_abs_path=normalize_path(f2_path, file["file_name"])))
+    f1_files.clear()
+    # TODO: merge folders in folders
+    return f1_actions, f2_actions
+
+
 class MergeMethods:
     TAKE_1: MergeMethod = MergeMethod(_take_1)  #: Clear 2 and copy 1 into it
     TAKE_2 = MergeMethod(_take_2)  #: Clear 1 and copy 2 into it
@@ -102,7 +153,5 @@ class MergeMethods:
     PRIORITIZE_1: Callable = auto()  #: MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 1
     PRIORITIZE_2: Callable = auto()  #: MERGE_COMPLETE_BOTH + files that exists at both sides are taken from 2
     #: MERGE_COMPLETE_BOTH + files that exists at both sides, the latest changed is taken
-    PRIORITIZE_LATEST: Callable = auto()
+    PRIORITIZE_LATEST: MergeMethod = MergeMethod(_prioritize_latest)
     DEFAULT = TAKE_1
-
-
