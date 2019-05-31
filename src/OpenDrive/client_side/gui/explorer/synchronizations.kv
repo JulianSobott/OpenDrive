@@ -1,0 +1,25 @@
+#:kivy 1.10.1
+
+<Synchronizations>:
+    viewclass: 'SynchronizationContainer'
+    RecycleBoxLayout:
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+
+<SynchronizationContainer>:
+    orientation: "horizontal"
+
+    lbl_local_path: lbl_local_path
+    lbl_remote_path: lbl_remote_path
+
+    Label:
+        id: lbl_local_path
+        text: "Hello"
+
+    Label:
+        id: lbl_remote_path
+        text: "World"
+

@@ -35,14 +35,20 @@ def simulate_explorer():
 
 @h_client_routine(clear_folders=True)
 def simulate_main():
-    user = h_register_dummy_user_device_client()
+    h_register_dummy_user_device_client()
     main_thread = threading.Thread(target=main.start, daemon=True)
     main_thread.start()
     gui.main.main()
     main.shutdown()
 
 
+@h_client_routine(clear_server_db=True, clear_folders=True)
+def simulate_register():
+    file_changes_json.init_file()
+    gui.main.main()
+
+
 if __name__ == '__main__':
     server_process = h_start_server_process()
-    simulate_explorer()
+    simulate_register()
     h_stop_server_process(server_process)

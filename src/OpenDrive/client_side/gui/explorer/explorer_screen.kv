@@ -1,7 +1,18 @@
 #:kivy 1.10.1
 
+#:include explorer/synchronizations.kv
+
 <ScreenExplorer>:
     name: 'screen_explorer'
+
+    ScreenContainer: # TODO
+
+        # TopBar:
+
+        Synchronizations:
+
+<ScreenContainer@BoxLayout>:
+    orientation: "vertical"
 
 
 <BtnAddSynchronization>
