@@ -8,12 +8,12 @@ from OpenDrive.client_side.gui import screens
 
 class ScreenLoginManual(Screen):
 
-    tf_username = ObjectProperty(None)
+    tf_username_email = ObjectProperty(None)
     tf_password = ObjectProperty(None)
     lbl_user_hints = ObjectProperty(None)
 
     def btn_release_login(self):
-        username = self.tf_username.text
+        username = self.tf_username_email.text
         password = self.tf_password.text
         status = interface.login_manual(username, password)
         if status.was_successful():

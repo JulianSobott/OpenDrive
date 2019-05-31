@@ -1,5 +1,8 @@
 #:kivy 1.10.1
 
+#:include authentication/widgets.kv
+
+
 <ScreenRegistration>:
     name: 'screen_registration'
 
@@ -8,3 +11,23 @@
             pos: self.pos
             size: self.size
             source: 'assets/login_background_blurred.jpg'
+
+    AuthenticationContainer:
+        HeaderContainer:
+            LabelHeader:
+                text: "Register"
+
+        InputContainer:
+            InputUsername:
+            InputEmail:
+            InputPassword:
+            InputPassword:
+                hint_text: "Repeat password"
+
+        ButtonsContainer:
+            ButtonLogin:
+            ButtonRegister:
+
+    UserHints:
+
+    BoxLayout:
