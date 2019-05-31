@@ -16,7 +16,7 @@ from tests.client_side.helper_client import h_register_dummy_user_device_client
 def h_watch_dummy_folder(folder_name: str):
     abs_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, folder_name)
     os.makedirs(abs_path, exist_ok=True)
-    file_changes.add_folder(abs_path)
+    file_changes.add_folder(abs_path, remote_name=folder_name)
 
 
 def h_add_dummy_server_folder(folder_name: str):
@@ -30,6 +30,14 @@ def simulate_explorer():
     file_changes_json.init_file(empty=True)
     h_add_dummy_server_folder("folder1")
     h_add_dummy_server_folder("folder2")
+    gui.main.main()
+
+
+def simulate_explorer2():
+    file_changes_json.init_file()
+    h_watch_dummy_folder("folder1")
+    h_watch_dummy_folder("r2folsdfsf")
+
     gui.main.main()
 
 
@@ -50,5 +58,5 @@ def simulate_register():
 
 if __name__ == '__main__':
     server_process = h_start_server_process()
-    simulate_register()
+    simulate_explorer2()
     h_stop_server_process(server_process)

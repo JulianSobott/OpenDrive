@@ -1,9 +1,10 @@
 #:kivy 1.10.1
 
+
 <Synchronizations>:
     viewclass: 'SynchronizationContainer'
     RecycleBoxLayout:
-        default_size: None, dp(56)
+        default_size: None, dp(45)
         default_size_hint: 1, None
         size_hint_y: None
         height: self.minimum_height
@@ -17,9 +18,64 @@
 
     Label:
         id: lbl_local_path
-        text: "Hello"
+        size: self.texture_size
+        size_hint: None, 1
 
     Label:
         id: lbl_remote_path
-        text: "World"
 
+
+
+    Label:
+        id: lbl_status
+
+    Button:
+        id: btn_edit
+        size_hint: None, 1
+        width: 50
+
+        canvas.after:
+            Rectangle:
+                pos: self.pos[0] + 10, self.pos[1] + 10
+                size: self.size[0] - 20, self.size[1] - 20
+                source: 'assets/edit_button.png'
+
+
+    Button:
+        id: btn_delete
+        size_hint: None, 1
+        width: 50
+
+        canvas.after:
+            Rectangle:
+                pos: self.pos[0] + 10, self.pos[1] + 10
+                size: self.size[0] - 20, self.size[1] - 20
+                source: 'assets/delete_button.png'
+
+<FloatAddButton@FloatLayout>:
+    id: float_root
+
+    btn_add_synchronization: btn_add_synchronization
+
+    size_hint: None, None
+    size: 70, 70
+    pos_hint: {'x': .8}
+    btn2_size: 70, 70
+
+    Button:
+        id: btn_add_synchronization
+        size_hint: None, None
+        size: 70, 70
+        pos_hint: {'x': .8, 'y': .2}
+        background_color: (0,0,0,0)
+        canvas.after:
+            Rectangle:
+                pos: self.pos[0] + 10, self.pos[1] + 10
+                size: self.size[0] - 20, self.size[1] - 20
+                source: 'assets/add_button.png'
+
+
+
+# Icon made by https://www.flaticon.com/authors/google from www.flaticon.com
+# Icon made by https://www.flaticon.com/authors/gregor-cresnar from www.flaticon.com
+# Icon made by https://www.flaticon.com/authors/smashicons from www.flaticon.com

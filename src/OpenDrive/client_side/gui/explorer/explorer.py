@@ -22,7 +22,20 @@ from OpenDrive.client_side.gui.explorer import synchronizations
 
 
 class ScreenExplorer(Screen):
-    pass
+
+    btn_add_synchronization: Button = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def do_layout(self, *args):
+        super().do_layout(*args)
+        self.btn_add_synchronization.bind(on_release=self.test)
+
+    def test(self, button):
+        print("Successu")
+
+
     # def __init__(self, **kwargs):
     #     super().__init__(**kwargs)
     #     self.folders = interface.get_sync_data()

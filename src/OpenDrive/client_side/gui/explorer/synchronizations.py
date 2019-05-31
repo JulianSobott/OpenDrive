@@ -25,12 +25,16 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.recycleview import RecycleView
 
+from OpenDrive.client_side import interface
+
 
 class Synchronizations(RecycleView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.data = [{'local_path': str(x), 'remote_path': str(x)} for x in range(100)]
+        self.folders = interface.get_sync_data()
+        self.data = [{'local_path': str(path), 'remote_path': str(folder["server_folder_path"])} for path, folder in
+                     self.folders.items()]
 
 
 class SynchronizationContainer(BoxLayout):
