@@ -78,8 +78,7 @@ class TestMergeMethods(unittest.TestCase):
     def tearDown(self) -> None:
         h_stop_server_process(self._server_process)
 
-    def h_test_merge_method(self, merge_method, f1_init_content, f2_init_content, expected_content,
-                            yield_before_merge=False):
+    def h_test_merge_method(self, merge_method, f1_init_content, f2_init_content, expected_content):
         c_json.init_file(empty=True)
         h_register_dummy_user_device_client()
         abs_local_path = normalize_path(c_paths.LOCAL_CLIENT_DATA, "folder1")
@@ -91,8 +90,7 @@ class TestMergeMethods(unittest.TestCase):
         h_create_files_folders(f1_path, f1_init_content)
         h_create_files_folders(f2_path, f2_init_content)
 
-        if yield_before_merge:
-            yield
+        yield
 
         interface.add_sync_folder(abs_local_path, "folder1", merge_method=merge_method)
 
@@ -112,7 +110,9 @@ class TestMergeMethods(unittest.TestCase):
         ]}
         f2_content = {"folder_name": "folder1", "files": [], "folders": []}
 
-        self.h_test_merge_method(merge_folders.MergeMethods.TAKE_1, f1_content, f2_content, f1_content)
+        generator = self.h_test_merge_method(merge_folders.MergeMethods.TAKE_1, f1_content, f2_content, f1_content)
+        next(generator)
+        next(generator)
 
     @h_client_routine(clear_folders=True)
     def test_take_2(self):
@@ -122,7 +122,9 @@ class TestMergeMethods(unittest.TestCase):
             {"folder_name": "inner2", "files": ["inner2_test.txt", "inner2_test2.txt"], "folders": []}
         ]}
 
-        self.h_test_merge_method(merge_folders.MergeMethods.TAKE_2, f1_content, f2_content, f2_content)
+        generator = self.h_test_merge_method(merge_folders.MergeMethods.TAKE_2, f1_content, f2_content, f2_content)
+        next(generator)
+        next(generator)
 
     @h_client_routine(clear_folders=True)
     def test_prioritize_latest(self):
@@ -132,7 +134,7 @@ class TestMergeMethods(unittest.TestCase):
         f2_path = s_paths.rel_user_path_to_abs("folder1", 1)
 
         generator = self.h_test_merge_method(merge_folders.MergeMethods.PRIORITIZE_LATEST, f1_content, f2_content,
-                                             f2_content, yield_before_merge=True)
+                                             f2_content)
         next(generator)
         with open(os.path.join(f1_path, "f1.txt"), "w") as f:
             f.write("New content in f1")
@@ -143,6 +145,16 @@ class TestMergeMethods(unittest.TestCase):
             self.assertEqual("New content in f2", f.read().strip())
         with open(os.path.join(f2_path, "f1.txt"), "r") as f:
             self.assertEqual("New content in f1", f.read().strip())
+
+    @h_client_routine(clear_folders=True)
+    def test_prioritize_latest2(self):
+        f1_content = {"folder_name": "folder1", "files": [], "folders": [
+            {"folder_name": "inner", "files": ["test.txt"], "folders": []}]}
+        f2_content = {"folder_name": "folder1", "files": [], "folders": []}
+        generator = self.h_test_merge_method(merge_folders.MergeMethods.PRIORITIZE_LATEST, f1_content, f2_content,
+                                             f1_content)
+        next(generator)
+        next(generator)
 
 
 class TestMerge(unittest.TestCase):
