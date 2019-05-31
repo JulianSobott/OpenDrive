@@ -1,7 +1,7 @@
 import unittest
 import os
 
-import general.merge_folders
+from OpenDrive.general import merge_folders as gen_merge_folders
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_stop_server_process, h_start_server_process, h_client_routine, h_create_empty
 
@@ -9,7 +9,6 @@ from OpenDrive.client_side import merge_folders
 from OpenDrive.general.paths import normalize_path
 from OpenDrive.client_side import paths as c_paths
 from OpenDrive.server_side import paths as s_paths
-from OpenDrive.client_side import synchronization as c_sync
 from OpenDrive.client_side import interface
 from OpenDrive.client_side import file_changes_json as c_json
 from OpenDrive import net_interface
@@ -66,7 +65,7 @@ class TestFolderWalker(unittest.TestCase):
                               "folders": []}]},
                         ]
         }
-        for dir_name, dirs, file_names in general.merge_folders.walk_directories(example_dict, normalize_path("")):
+        for dir_name, dirs, file_names in gen_merge_folders.walk_directories(example_dict, normalize_path("")):
             print(f"parent_path: {dir_name}, dir_name: {dirs}, file_names: {file_names}")
 
 
@@ -94,10 +93,10 @@ class TestMergeMethods(unittest.TestCase):
 
         interface.add_sync_folder(abs_local_path, "folder1", merge_method=merge_method)
 
-        f1_structure = general.merge_folders.generate_content_of_folder(f1_path, only_files_list=True,
-                                                                        top_folder_name=f1_init_content["folder_name"])
-        f2_structure = general.merge_folders.generate_content_of_folder(f2_path, only_files_list=True,
-                                                                        top_folder_name=f2_init_content["folder_name"])
+        f1_structure = gen_merge_folders.generate_content_of_folder(f1_path, only_files_list=True,
+                                                                    top_folder_name=f1_init_content["folder_name"])
+        f2_structure = gen_merge_folders.generate_content_of_folder(f2_path, only_files_list=True,
+                                                                    top_folder_name=f2_init_content["folder_name"])
         self.assertEqual(expected_content, f2_structure)
         self.assertEqual(expected_content, f1_structure)
         yield
@@ -179,7 +178,7 @@ class TestMerge(unittest.TestCase):
         interface.add_sync_folder(abs_local_path, "folder1")
 
         server_path = s_paths.rel_user_path_to_abs("folder1", 1)
-        current_structure = general.merge_folders.generate_content_of_folder(server_path, only_files_list=True,
-                                                                             top_folder_name="folder1")
+        current_structure = gen_merge_folders.generate_content_of_folder(server_path, only_files_list=True,
+                                                                         top_folder_name="folder1")
         expected_structure = dummy_content
         self.assertEqual(expected_structure, current_structure)
