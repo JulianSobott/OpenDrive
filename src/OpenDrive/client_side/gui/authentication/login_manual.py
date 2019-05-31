@@ -22,3 +22,6 @@ class ScreenLoginManual(Screen):
         else:
             self.lbl_user_hints.color[3] = 1
             self.lbl_user_hints.text = status.get_text()
+
+    def btn_release_register(self):
+        screens.screen_manager.set_screen(screens.REGISTRATION)

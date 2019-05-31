@@ -6,6 +6,12 @@
 <ScreenRegistration>:
     name: 'screen_registration'
 
+    tf_username: tf_username
+    tf_email: tf_email
+    tf_password: tf_password
+    tf_repeated_password: tf_repeated_password
+    lbl_user_hints: lbl_user_hints
+
     canvas.before:
         Rectangle:
             pos: self.pos
@@ -19,15 +25,25 @@
 
         InputContainer:
             InputUsername:
+                id: tf_username
+
             InputEmail:
+                id: tf_email
+
             InputPassword:
+                id: tf_password
+
             InputPassword:
+                id: tf_repeated_password
                 hint_text: "Repeat password"
 
         ButtonsContainer:
             ButtonLogin:
+                on_release: root.btn_release_login()
             ButtonRegister:
+                on_release: root.btn_release_register()
 
-    UserHints:
+        UserHints:
+            id: lbl_user_hints
 
     BoxLayout:
