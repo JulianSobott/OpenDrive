@@ -39,8 +39,8 @@ Details:
 ========
 
 **Software:**
-    - Core: python (with networking library)
-    - GUI: JavaFX?, PyQT?, Website, Kivy?
+    - Core: python (with pynetworking library)
+    - GUI: python with Kivy, maybe later on a website?
 
 
 **Project structure:**
@@ -66,7 +66,6 @@ Details:
     |___src
     |   |
     |   |___OpenDrive
-    |   |   |   debug_client_server.py
     |   |   |   net_interface.py
     |   |   |   start.py ?
     |   |   |
@@ -84,19 +83,6 @@ Details:
     |   |   |
     |   |   |___general
 
-
-Workflow:
-=========
-
-One important point of this project is "clean" development process. The following list contains a possible workflow
-(when a new feature is implemented), that can help to achieve this.
-
-- Create broad documentation
-- Create specific documentation
-- Define code (not implement)
-- Create tests for documentation
-- Implement code
-- Add code specific documentation
 
 Style-guide:
 =============
