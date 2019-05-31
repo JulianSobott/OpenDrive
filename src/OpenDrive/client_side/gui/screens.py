@@ -6,6 +6,7 @@ __all__ = ["ScreenManager", "screen_manager", "LOGIN_MANUAL", "EXPLORER"]
 ScreenName = NewType("ScreenName", str)
 
 LOGIN_MANUAL = ScreenName("authentication/screen_login_manual")
+REGISTRATION = ScreenName("authentication/registration")
 EXPLORER = ScreenName("explorer/screen_explorer")
 
 
