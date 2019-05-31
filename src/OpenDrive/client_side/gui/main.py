@@ -46,5 +46,11 @@ def main():
 app = OpenDriveApp()
 screens.screen_manager = screens.ScreenManager(app)
 
+
+def open_authentication_window():
+    """Opens a window where the user can log in. After successful login the window is closed"""
+    main()
+
+
 if __name__ == '__main__':
     main()

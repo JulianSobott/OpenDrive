@@ -6,9 +6,10 @@ from typing import Tuple
 import os
 
 from OpenDrive.server_side import database, paths, authentication
-from OpenDrive.general.database import delete_db_file
+from OpenDrive import net_interface
 from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side.database import Token
+from helper_all import h_start_server_process, h_stop_server_process, h_client_routine
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
     h_register_dummy_user_device, h_clear_init_server_folders, h_register_dummy_user
 from tests.server_side.database import h_setup_server_database
@@ -91,6 +92,26 @@ class TestLogin(unittest.TestCase):
         mac = self.device.mac_address
         ret = authentication.login_auto(self.token, mac)
         self.assertTrue(ret)
+
+
+class TestRequiresAuthentication(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self._server_process = h_start_server_process()
+
+    def tearDown(self) -> None:
+        h_stop_server_process(self._server_process)
+
+    @h_client_routine(clear_folders=False)
+    def test_requires_authentication(self):
+        self.opened = False
+
+        def h_mock_open_authentication_window():
+            self.opened = True
+
+        net_interface.ClientFunctions.open_authentication_window = h_mock_open_authentication_window
+        net_interface.server.execute_actions([])
+        self.assertTrue(self.opened)
 
 
 if __name__ == '__main__':

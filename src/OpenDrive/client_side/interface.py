@@ -36,7 +36,6 @@ from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import file_changes
 from OpenDrive.client_side import merge_folders
 from OpenDrive.general.paths import NormalizedPath
-from OpenDrive.net_interface import server
 from OpenDrive import net_interface
 
 
@@ -95,7 +94,7 @@ def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str,
     if not success:
         return Status.fail("Folder can not be added locally. It is nested in an existing folder or wraps "
                            "around an existing folder")
-    new_added = server.add_folder(remote_name)
+    new_added = net_interface.server.add_folder(remote_name)
 
     if new_added:
         merge_method = merge_folders.MergeMethods.TAKE_1
@@ -121,7 +120,7 @@ def remove_remote_folder(remote_name: NormalizedPath) -> Status:
 def get_all_remote_folders(access_level=None) -> Tuple[Status, List[str]]:    # TODO: specify type hint
     """Returns a list with all folders that the user has access to."""
     if net_interface.ServerCommunicator.is_connected():
-        return Status.success(""), server.get_all_available_folders()
+        return Status.success(""), net_interface.server.get_all_available_folders()
     else:
         return Status.fail("Cannot connect to server. Please ensure you are connected with the internet"), []
 

@@ -128,8 +128,9 @@ def requires_authentication(func):
     def wrapper(*args, **kwargs):
         user = net_interface.get_user()
         if not user.is_authenticated:
-            user.remote_functions.open_gui_authentication()
+            net_interface.get_user().remote_functions.open_authentication_window()
             if not user.is_authenticated:
+                logger.error("User is still not authenticated!")
                 return
         return func(*args, **kwargs)
     return wrapper

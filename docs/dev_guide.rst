@@ -143,7 +143,5 @@ Tasks
 TODO next:
 ==========
 
-- implement all merge_methods
-
-- allow method calls only when authenticated
-    - when not authenticated open gui (once)
+- Add authentication only gui window. That closes after successful login/register or cancel
+- Ensure that changes.json is always created. It is needed at the gui explorer
