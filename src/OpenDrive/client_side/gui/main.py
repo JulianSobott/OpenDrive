@@ -29,8 +29,8 @@ from OpenDrive.client_side import paths as client_paths
 
 # DO NOT DELETE UNUSED IMPORTS!
 # They are needed inside the OpenDriveApp
-from OpenDrive.client_side.gui import login_manual
-from OpenDrive.client_side.gui import explorer
+from OpenDrive.client_side.gui.authentication import login_manual
+from OpenDrive.client_side.gui.explorer import explorer
 
 
 class OpenDriveApp(App):

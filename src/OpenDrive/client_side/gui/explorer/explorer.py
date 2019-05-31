@@ -14,9 +14,8 @@ from functools import partial
 from kivy.uix.textinput import TextInput
 
 from OpenDrive.client_side import interface
-from OpenDrive.client_side import merge_folders
 from OpenDrive.general import paths as gen_paths
-from OpenDrive.client_side.gui.desktop_file_dialogs import Desktop_FolderDialog
+from client_side.gui.explorer.desktop_file_dialogs import Desktop_FolderDialog
 from OpenDrive.client_side.od_logging import logger
 
 
