@@ -146,6 +146,10 @@ TODO next:
 - Add authentication only gui window. That closes after successful login/register or cancel
 - Ensure that changes.json is always created. It is needed at the gui explorer
 
+- GUI try auto login.
+    - success -> explorer
+    - else -> login manual
+
 - Explorer:
     - validate patterns
     - process patterns
