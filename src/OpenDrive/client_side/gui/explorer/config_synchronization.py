@@ -91,6 +91,10 @@ class PopupConfigFolder(Popup):
                 logger.warning(status.get_text())
                 # TODO: transmit message to user
 
+    def dummy(self, *args):
+        logger.debug(self.tf_server_path.text)
+        logger.debug(self.tf_client_path.text)
+
 
 class FoldersView(RecycleView):
 

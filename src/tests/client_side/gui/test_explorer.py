@@ -58,5 +58,5 @@ def simulate_register():
 
 if __name__ == '__main__':
     server_process = h_start_server_process()
-    simulate_explorer()
+    simulate_explorer2()
     h_stop_server_process(server_process)

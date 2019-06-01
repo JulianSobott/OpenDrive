@@ -1,7 +1,72 @@
 #:kivy 1.10.1
 
+<PopupConfigFolder>:
+    title: "Config folder"
 
-<PopupConfigFolder>
+    tf_client_path: paths_container.tf_client_path
+    tf_server_path: paths_container.tf_server_path
+    # btn_save_add: btn_save_add
+
+    WidgetsContainer:
+        PathsContainer:
+            id: paths_container
+
+        # PatternsContainer:
+
+        # MergeMethodsContainer:
+
+        # ButtonsContainer:
+
+        Button:
+            text: "dummy"
+            on_release: root.dummy()
+
+
+<WidgetsContainer@BoxLayout>:
+    orientation: "vertical"
+
+
+<PathsContainer@StackLayout>:
+
+    tf_client_path: client_path.tf_path
+    tf_server_path: server_path.tf_path
+
+    Path:
+        id: client_path
+        text: "Local path: "
+        browse: None
+        size_hint_x: 1
+
+    Path:
+        id: server_path
+        text: "Remote path: "
+        browse: None
+        size_hint_x: 1
+
+<Path@BoxLayout>:
+    id: root_path
+    text: ""
+    browse: None
+    height: 32
+    size_hint: 1, None
+
+    tf_path: tf_path
+
+    Label:
+        text: root_path.text
+        size_hint: 0.2, 1
+
+    TextInput:
+        id: tf_path
+        size_hint: 0.7, 1
+
+    Button:
+        text: "Browse"
+        size_hint: 0.1, 1
+        # on_release: 0.1 # TODO
+
+
+<PopupConfigFolderOLD>
     title: "Config folder"
     auto_dismiss: False
 
