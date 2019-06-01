@@ -1,0 +1,102 @@
+#:kivy 1.10.1
+
+
+<PopupConfigFolder>
+    title: "Config folder"
+    auto_dismiss: False
+
+    tf_client_path: tf_client_path
+    tf_server_path: tf_server_path
+    btn_save_add: btn_save_add
+
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            text: "local path"
+
+        TextInput:
+            id: tf_client_path
+            text: "D:\Programmieren\OpenDrive\local\client_side/folder1"
+
+        Button:
+            text: "browse"
+            on_release: root.browse_client_path()
+
+        Label:
+            text: "server path"
+
+        TextInput:
+            id: tf_server_path
+            #text: "folder1"
+
+        Button:
+            text: "browse"
+            on_release: root.browse_server_path()
+
+        Label:
+            text: "include"
+
+        TextInput:
+            id: tf_includes
+
+        Label:
+            text: "exclude"
+
+        TextInput:
+            id: tf_excludes
+
+        Button:
+            id: btn_save_add
+            text: "Add"
+            on_release: root.btn_release_add()
+
+        Button:
+            text: "Cancel"
+            on_release: root.dismiss()
+
+
+<PopupBrowseServerFolder>
+    title: "Browse server folder"
+    auto_dismiss: False
+
+    foldersView: foldersView
+
+    BoxLayout:
+        orientation: "vertical"
+
+        FoldersView:
+            id: foldersView
+
+        Button:
+            text: "Select"
+            on_release: root.set_server_path()
+
+        Button:
+            text: "Cancel"
+            on_release: root.dismiss()
+
+
+<FoldersView>:
+    viewclass: 'SelectableLabel'
+    text_selected: ''
+    name_selected: ''
+
+    SelectableRecycleBoxLayout:
+        id: culture_sub_view_layout
+        orientation: 'vertical'
+        default_size: None, dp(32)
+        default_size_hint: .6, None
+        size_hint: 1, .9
+        multiselect: False
+        touch_multiselect: False
+
+
+<SelectableLabel>:
+    canvas.before:
+        Color:
+            rgba: (.05, 0.5, .9, .8) if self.selected else (.5, .5, .5, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
