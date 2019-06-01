@@ -15,14 +15,17 @@
 
     lbl_local_path: lbl_local_path
     lbl_remote_path: lbl_remote_path
+    btn_delete: btn_delete
 
     Label:
         id: lbl_local_path
+        text: root.local_path
         size: self.texture_size
         size_hint: None, 1
 
     Label:
         id: lbl_remote_path
+        text: root.remote_path
 
 
 
@@ -45,6 +48,7 @@
         id: btn_delete
         size_hint: None, 1
         width: 50
+        on_release: root.release_btn_delete()
 
         canvas.after:
             Rectangle:

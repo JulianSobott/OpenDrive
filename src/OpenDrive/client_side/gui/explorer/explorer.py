@@ -28,12 +28,12 @@ class ScreenExplorer(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def do_layout(self, *args):
-        super().do_layout(*args)
-        self.btn_add_synchronization.bind(on_release=self.test)
+    def on_btn_add_synchronization(self, *args):
+        self.btn_add_synchronization.bind(on_release=self.btn_release_add_synchronization)
 
-    def test(self, button):
-        print("Successu")
+    def btn_release_add_synchronization(self, button):
+        popup = PopupConfigFolder(self, edit_existing=False)
+        popup.open()
 
 
     # def __init__(self, **kwargs):
@@ -92,13 +92,6 @@ class ScreenExplorer(Screen):
     #     popup = PopupConfigFolder(self, edit_existing=True)
     #     popup.open()
     #     popup.set_data(client_path=folder_path, server_path=folder_data["server_folder_path"])
-
-
-class BtnAddSynchronization(Button):
-
-    def __init__(self, explorer_screen, **kwargs):
-        super().__init__(**kwargs)
-        self._explorer: ScreenExplorer = explorer_screen
 
 
 class PopupConfigFolder(Popup):
