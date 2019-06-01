@@ -12,18 +12,26 @@
     WidgetsContainer:
         PathsContainer:
             id: paths_container
+            canvas.before:
+                Color:
+                    rgba: (1, 0, .9, 1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
 
-        # PatternsContainer:
+        PatternsContainer:
+            canvas.before:
+                Color:
+                    rgba: (0, 0, 0, 1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
 
-        # MergeMethodsContainer:
+        MergeMethodsContainer:
 
         ConfigButtonsContainer:
             add: root.btn_release_add
             cancel: root.btn_release_cancel
-
-        Button:
-            text: "dummy"
-            on_release: root.dummy()
 
 
 <WidgetsContainer@BoxLayout>:
@@ -34,6 +42,7 @@
 
     tf_client_path: client_path.tf_path
     tf_server_path: server_path.tf_path
+    size_hint: 1, None
 
     Path:
         id: client_path
@@ -82,59 +91,100 @@
         text: "Add"
         on_release: root.add()
 
-<PopupConfigFolderOLD>
-    title: "Config folder"
-    auto_dismiss: False
+<PatternsContainer@BoxLayout>:
+    orientation: "vertical"
+    size_hint: 1, 1
 
-    tf_client_path: tf_client_path
-    tf_server_path: tf_server_path
-    btn_save_add: btn_save_add
+    Patterns:
+        id: include_patterns
+        title: "Include patterns"
+
+    Patterns:
+        id: exclude_patterns
+        title: "Exclude patterns"
+
+
+<Patterns@BoxLayout>:
+    orientation: "vertical"
+    title: ""
+    tf_file_extensions: file_extensions.tf_patterns
+    tf_folders: folders.tf_patterns
+    size_hint: 1, 1
+
 
     BoxLayout:
-        orientation: "vertical"
+        padding: 20, 0, 0, 0
 
         Label:
-            text: "local path"
+            text: root.title
+            size_hint: 1, None
+            height: 30
+            font_size: 20
+            text_size:self.size
+            halign:'left'
+            valign:'middle'
+            underline: True
 
-        TextInput:
-            id: tf_client_path
-            text: "D:\Programmieren\OpenDrive\local\client_side/folder1"
+    PatternsLine:
+        id: file_extensions
+        label: "File extensions: "
+        hint_text: "e.g. .txt, .pdf"
 
-        Button:
-            text: "browse"
-            on_release: root.browse_client_path()
+    PatternsLine:
+        id: folders
+        label: "Folders: "
+        hint_text: "e.g. folder1/, more/inner/"
 
-        Label:
-            text: "server path"
+    PatternsLine:
+        id: advanced
+        label: "Advanced regular expressions: "
+        hint_text: "e.g. folder1\/.*\.txt"
 
-        TextInput:
-            id: tf_server_path
-            #text: "folder1"
 
-        Button:
-            text: "browse"
-            on_release: root.browse_server_path()
+<PatternsLine@BoxLayout>:
+    label: ""
+    hint_text: ""
+    tf_patterns: tf_patterns
+    size_hint: 1, None
+    height: 32
 
-        Label:
-            text: "include"
+    Label:
+        text: root.label
+        size_hint: 0.3, 1
 
-        TextInput:
-            id: tf_includes
+    InputGeneral:
+        id: tf_patterns
+        hint_text: root.hint_text
+        size_hint: 0.7, 1
 
-        Label:
-            text: "exclude"
+<MergeMethodsContainer@StackLayout>:
+    size_hint: 1, None
+    height: 30
 
-        TextInput:
-            id: tf_excludes
+    Label:
+        text: "Merge Method: "
+        size_hint: 0.2, 1
 
-        Button:
-            id: btn_save_add
-            text: "Add"
-            on_release: root.btn_release_add()
+    MergeMethods:
 
-        Button:
-            text: "Cancel"
-            on_release: root.dismiss()
+<MergeMethods>:
+    size_hint: 0.4, 1
+    dropdown: dropdown
+
+    Button:
+        id: btn
+        text: 'Merge Method'
+        on_parent: dropdown.dismiss()
+        on_release: dropdown.open(self)
+        height: 35
+
+    DropDown:
+        id: dropdown
+        on_select: btn.text = '{}'.format(args[1])
+
+<MergeMethodItem>:
+    size_hint_y: None
+    height: 35
 
 
 <PopupBrowseServerFolder>
