@@ -40,12 +40,22 @@ from OpenDrive.client_side.gui.explorer.desktop_file_dialogs import Desktop_Fold
 from OpenDrive.client_side.gui.explorer import synchronizations
 from OpenDrive.general.paths import NormalizedPath, normalize_path
 from OpenDrive.client_side.od_logging import logger
-from OpenDrive.client_side.interface import Status
+from OpenDrive.client_side import merge_folders
 
 
 class PopupConfigFolder(Popup):
+
     tf_client_path: TextInput = ObjectProperty(None)
     tf_server_path: TextInput = ObjectProperty(None)
+
+    tf_include_files: TextInput = ObjectProperty(None)
+    tf_include_folders: TextInput = ObjectProperty(None)
+    tf_include_advanced: TextInput = ObjectProperty(None)
+
+    tf_exclude_files: TextInput = ObjectProperty(None)
+    tf_exclude_folders: TextInput = ObjectProperty(None)
+    tf_exclude_advanced: TextInput = ObjectProperty(None)
+
     btn_save_add: Button = ObjectProperty(None)
 
     def __init__(self, synchronizations_container: synchronizations.Synchronizations, edit_existing: bool, **kwargs):
@@ -82,6 +92,14 @@ class PopupConfigFolder(Popup):
         self.dismiss()
 
     def _validate_data(self) -> bool:
+        validate_methods = [self._validate_paths]
+        for validation in validate_methods:
+            is_valid = validation()
+            if not is_valid:
+                return False
+        return True
+
+    def _validate_paths(self) -> bool:
         client_path = normalize_path(self.tf_client_path.text)
         server_path = self.tf_server_path.text
         if not os.path.exists(client_path):
@@ -91,12 +109,10 @@ class PopupConfigFolder(Popup):
         if sum([1 if sign in server_path else 0 for sign in invalid_signs]):
             self.show_error_message(f"Invalid server path! Following signs are not allowed: {invalid_signs}")
             return False
-
         return True
 
-    def dummy(self, *args):
-        logger.debug(self.tf_server_path.text)
-        logger.debug(self.tf_client_path.text)
+    def _validate_patterns(self):
+        pass
 
     def show_error_message(self, message: str):
         logger.debug(f"ERROR message: {message}")
@@ -194,7 +210,8 @@ class MergeMethods(BoxLayout):
         super().__init__(**kwargs)
 
     def on_dropdown(self, *args):
-        self.dropdown.add_widget(MergeMethodItem(self, text="Hello world"))
+        for method in merge_folders.ALL_METHODS:
+            self.dropdown.add_widget(MergeMethodItem(self, text=method.NAME))
 
     def set_method(self, merge_method_item: 'MergeMethodItem'):
         self.dropdown.select(merge_method_item.text)

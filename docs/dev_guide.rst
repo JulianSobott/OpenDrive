@@ -145,4 +145,9 @@ TODO next:
 
 - Add authentication only gui window. That closes after successful login/register or cancel
 - Ensure that changes.json is always created. It is needed at the gui explorer
-- register screen
+
+- Explorer:
+    - validate patterns
+    - process patterns
+    - add sync with: paths, patterns and merge_method
+    - hide merge_method, when a new server folder is created

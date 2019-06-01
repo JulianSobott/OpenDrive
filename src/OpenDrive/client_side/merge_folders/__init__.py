@@ -72,7 +72,7 @@ from OpenDrive.client_side.merge_folders import take_1, take_2, prioritize_lates
 
 MergeMethod = NewType("MergeMethod", Any)
 
-__all__ = ["MergeMethods", "MergeMethod", "merge_folders", "generate_merge_actions"]
+__all__ = ["MergeMethods", "MergeMethod", "merge_folders", "generate_merge_actions", "ALL_METHODS"]
 
 
 class MergeMethods:
@@ -98,6 +98,9 @@ class MergeMethods:
     PRIORITIZE_LATEST: MergeMethod = MergeMethod(prioritize_latest)
 
     DEFAULT = TAKE_1
+
+
+ALL_METHODS = [MergeMethods.TAKE_1, MergeMethods.TAKE_2, MergeMethods.PRIORITIZE_LATEST]
 
 
 def merge_folders(abs_local_path: str, remote_name: str, merge_method: MergeMethod) -> 'interface.Status':
