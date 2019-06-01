@@ -1,5 +1,7 @@
 #:kivy 1.10.1
 
+#:include authentication/widgets.kv # Maybe some widgets in new general file
+
 <PopupConfigFolder>:
     title: "Config folder"
 
@@ -15,7 +17,9 @@
 
         # MergeMethodsContainer:
 
-        # ButtonsContainer:
+        ConfigButtonsContainer:
+            add: root.btn_release_add
+            cancel: root.btn_release_cancel
 
         Button:
             text: "dummy"
@@ -65,6 +69,18 @@
         size_hint: 0.1, 1
         on_release: root.browse()
 
+<ConfigButtonsContainer@ButtonsContainer>:
+
+    add: None
+    cancel: None
+
+    ButtonGeneral:
+        text: "Cancel"
+        on_release: root.cancel()
+
+    ButtonGeneral:
+        text: "Add"
+        on_release: root.add()
 
 <PopupConfigFolderOLD>
     title: "Config folder"

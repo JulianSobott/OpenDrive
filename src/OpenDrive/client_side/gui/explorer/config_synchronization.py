@@ -37,6 +37,7 @@ from OpenDrive.client_side.gui.explorer.desktop_file_dialogs import Desktop_Fold
 from OpenDrive.client_side.gui.explorer import synchronizations
 from OpenDrive.general.paths import NormalizedPath, normalize_path
 from OpenDrive.client_side.od_logging import logger
+from client_side.interface import Status
 
 
 class PopupConfigFolder(Popup):
@@ -58,6 +59,12 @@ class PopupConfigFolder(Popup):
             self.tf_server_path.text = server_path
 
     def btn_release_add(self):
+        is_valid_data = self._validate_data()
+        if not is_valid_data:
+            return
+        else:
+            pass
+        return
         if self._edit_existing:
             logger.warning("Editing folders is not implemented yet.")
         else:
@@ -70,6 +77,12 @@ class PopupConfigFolder(Popup):
             else:
                 logger.warning(status.get_text())
                 # TODO: transmit message to user
+
+    def btn_release_cancel(self):
+        self.dismiss()
+
+    def _validate_data(self) -> bool:
+        pass
 
     def dummy(self, *args):
         logger.debug(self.tf_server_path.text)
