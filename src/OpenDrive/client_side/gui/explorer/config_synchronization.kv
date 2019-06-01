@@ -34,16 +34,16 @@
     Path:
         id: client_path
         text: "Local path: "
-        browse: None
+        browse: self.browse_client_path
         size_hint_x: 1
 
     Path:
         id: server_path
         text: "Remote path: "
-        browse: None
+        browse: self.browse_server_path
         size_hint_x: 1
 
-<Path@BoxLayout>:
+<Path>:
     id: root_path
     text: ""
     browse: None
@@ -63,7 +63,7 @@
     Button:
         text: "Browse"
         size_hint: 0.1, 1
-        # on_release: 0.1 # TODO
+        on_release: root.browse()
 
 
 <PopupConfigFolderOLD>

@@ -22,6 +22,7 @@ private functions
 """
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -56,27 +57,6 @@ class PopupConfigFolder(Popup):
         if server_path:
             self.tf_server_path.text = server_path
 
-    def browse_client_path(self):
-        Desktop_FolderDialog(
-            title="Select Folder",
-            initial_directory="",
-            on_accept=lambda folder_path: self.set_client_path(folder_path),
-            on_cancel=lambda: -1,
-        ).show()
-
-    def set_client_path(self, path: str):
-        self.tf_client_path.text = path
-
-    def browse_server_path(self):
-        status, all_server_folders = interface.get_all_remote_folders()
-        if status.was_successful():
-            popup_server_folders = PopupBrowseServerFolder(self)
-            popup_server_folders.foldersView.set_folders(all_server_folders)
-            popup_server_folders.open()
-        else:
-            logger.warning(status.get_text())
-            # TODO: transmit message to user
-
     def btn_release_add(self):
         if self._edit_existing:
             logger.warning("Editing folders is not implemented yet.")
@@ -94,6 +74,33 @@ class PopupConfigFolder(Popup):
     def dummy(self, *args):
         logger.debug(self.tf_server_path.text)
         logger.debug(self.tf_client_path.text)
+
+
+class Path(BoxLayout):
+
+    tf_path: TextInput = ObjectProperty(None)
+    browse = ObjectProperty(None)
+
+    def browse_client_path(self):
+        Desktop_FolderDialog(
+            title="Select Folder",
+            initial_directory="",
+            on_accept=lambda folder_path: self.set_path(folder_path),
+            on_cancel=lambda: -1,
+        ).show()
+
+    def set_path(self, path: str):
+        self.tf_path.text = normalize_path(path)
+
+    def browse_server_path(self):
+        status, all_server_folders = interface.get_all_remote_folders()
+        if status.was_successful():
+            popup_server_folders = PopupBrowseServerFolder(self)
+            popup_server_folders.foldersView.set_folders(all_server_folders)
+            popup_server_folders.open()
+        else:
+            logger.warning(status.get_text())
+            # TODO: transmit message to user
 
 
 class FoldersView(RecycleView):
@@ -140,11 +147,11 @@ class SelectableLabel(RecycleDataViewBehavior, Label):
 class PopupBrowseServerFolder(Popup):
     foldersView: FoldersView = ObjectProperty(None)
 
-    def __init__(self, popup_config: PopupConfigFolder, **kwargs):
+    def __init__(self, paths_container: Path, **kwargs):
         super().__init__(**kwargs)
-        self.popup_config = popup_config
+        self.paths_container = paths_container
 
     def set_server_path(self):
         path = self.foldersView.selected_path
-        self.popup_config.tf_server_path.text = path
+        self.paths_container.set_path(path)
         self.dismiss()
