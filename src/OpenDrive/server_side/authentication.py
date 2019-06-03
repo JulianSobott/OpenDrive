@@ -37,9 +37,6 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
         Union[str, Token]:
     """Registers a new user and adds the device to the db if it is not already in the db. On success a Token is
     returned. This Token is used for auto-login. On any failure a string with the error message is returned."""
-    assert len(username) > 3, "Username must be at least 4 characters long!"
-    assert len(password) > 4, "Password must be at least 5 characters long!"
-
     ret = register_user(username, password, email)
     if isinstance(ret, str):
         return ret
@@ -53,9 +50,10 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
 def register_user(username: str, password: str, email: Optional[str] = None) -> Union[str, int]:
     """Registers a new user. On success the user_id  is returned. On any failure a string with the error message
     is returned. No device is added or registered."""
-    assert len(username) > 3, "Username must be at least 4 characters long!"
-    assert len(password) > 4, "Password must be at least 5 characters long!"
-
+    if len(username) <= 3:
+        return "Username must be at least 4 characters long!"
+    if len(password) <= 4:
+        return "Password must be at least 5 characters long!"
     possible_user = User.get_by_username(username)
     if possible_user is not None:
         return "Username is already taken"
