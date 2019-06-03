@@ -42,13 +42,23 @@ class OpenDriveApp(App):
         super().__init__(**kwargs)
         self.start_screen = start_screen
         self.authentication_only = authentication_only
+        self.close_on_run = False
         if try_auto_login:
             status = interface.login_auto()
             if status.was_successful():
-                self.start_screen = screens.EXPLORER
+                if authentication_only:
+                    self.close_on_run = True
+                else:
+                    self.start_screen = screens.EXPLORER
 
     def build(self):
         screens.screen_manager.set_screen(self.start_screen)
+
+    def run(self):
+        if self.close_on_run:
+            self.stop()
+        else:
+            super().run()
 
 
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
@@ -62,7 +72,7 @@ def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication
 
 def open_authentication_window():
     """Opens a window where the user can log in. After successful login the window is closed"""
-    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True)
+    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True, try_auto_login=True)
 
 
 if __name__ == '__main__':

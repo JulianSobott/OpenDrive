@@ -32,8 +32,8 @@ def authentication_only():
 def auto_login():
     """Gui auto login -> explorer"""
     h_register_dummy_user_device_client()
-    main.main(screens.REGISTRATION, authentication_only=True, try_auto_login=True)
+    main.main(screens.REGISTRATION, try_auto_login=True)
 
 
 if __name__ == '__main__':
-    authentication_only()
+    auto_login()
