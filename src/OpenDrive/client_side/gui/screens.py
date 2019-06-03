@@ -18,5 +18,13 @@ class ScreenManager:
     def set_screen(self, screen_name: ScreenName):
         self.app.root.current = screen_name
 
+    def do_login(self):
+        """Action, when the user is successfully authenticated. If only a authentication was needed, the app is
+        closed."""
+        if self.app.authentication_only:
+            self.app.stop()
+        else:
+            self.set_screen(EXPLORER)
+
 
 screen_manager: ScreenManager = None    # This will be set in main.py

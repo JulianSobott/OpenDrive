@@ -38,7 +38,7 @@ class ScreenRegistration(Screen):
 
         status = interface.register(username, password, email)
         if status.was_successful():
-            screens.screen_manager.set_screen(screens.EXPLORER)
+            screens.screen_manager.do_login()
         else:
             self.show_error_message(status.get_text())
 
