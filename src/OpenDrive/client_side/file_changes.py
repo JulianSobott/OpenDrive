@@ -104,6 +104,7 @@ def _add_watcher(abs_folder_path: NormalizedPath, include_regexes: List[str] = (
     event_handler = FileSystemEventHandler(abs_folder_path, include_regexes, exclude_regexes)
     watch = observer.schedule(event_handler, abs_folder_path, recursive=True)
     watchers[abs_folder_path] = event_handler, watch
+    logger.debug(f"Start watching at: {abs_folder_path}")
 
 
 def _remove_watcher(abs_folder_path: NormalizedPath):
