@@ -35,21 +35,27 @@ from OpenDrive.client_side.gui.explorer import explorer
 
 
 class OpenDriveApp(App):
-    pass
+
+    def __init__(self, start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
+                 **kwargs):
+        super().__init__(**kwargs)
+        self.start_screen = start_screen
+        self.authentication_only = authentication_only
+
+    def build(self):
+        screens.screen_manager.set_screen(self.start_screen)
 
 
-def main():
+def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False):
+    app = OpenDriveApp(start_screen, authentication_only)
+    screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
     app.run()
 
 
-app = OpenDriveApp()
-screens.screen_manager = screens.ScreenManager(app)
-
-
 def open_authentication_window():
     """Opens a window where the user can log in. After successful login the window is closed"""
-    main()
+    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True)
 
 
 if __name__ == '__main__':

@@ -155,3 +155,5 @@ TODO next:
     - process patterns
     - add sync with: paths, patterns and merge_method
     - hide merge_method, when a new server folder is created
+
+- test synchronization with multiple devices
