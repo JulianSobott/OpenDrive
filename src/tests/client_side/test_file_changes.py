@@ -244,8 +244,10 @@ class TestAPI(unittest.TestCase):
 
     def test_add_folder(self):
         file_changes_json.init_file()
+        file_changes.start_observing()
         path, include, exclude = h_get_dummy_folder_data()
         file_changes.add_folder(path, include, exclude)
+
         time.sleep(1)
         self.assertEqual(1, len(file_changes.watchers))
         self.assertEqual([path], gen_json.get_all_synced_folders_paths())
