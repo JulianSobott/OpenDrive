@@ -238,6 +238,7 @@ class TestAPI(unittest.TestCase):
         with open(os.path.join(folder_path, rel_path), "w+") as f:
             f.write("Hello" * 100)
 
+        time.sleep(1)
         folder = file_changes_json.get_folder_entry(folder_path)
         self.assertEqual(1, len(folder["changes"]))
 
@@ -245,6 +246,7 @@ class TestAPI(unittest.TestCase):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
         file_changes.add_folder(path, include, exclude)
+        time.sleep(1)
         self.assertEqual(1, len(file_changes.watchers))
         self.assertEqual([path], gen_json.get_all_synced_folders_paths())
 

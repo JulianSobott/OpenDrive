@@ -59,7 +59,9 @@ def start_observing() -> None:
 def stop_observing():
     """Protects the `observer` from external access"""
     global watchers
+    global observer
     observer.stop()
+    observer.join()
     watchers = {}
     observer.__init__()
 
@@ -112,7 +114,7 @@ def _remove_watcher(abs_folder_path: NormalizedPath):
 
 
 def _get_event_handler(abs_folder_path: NormalizedPath) -> 'FileSystemEventHandler':
-    norm_folder_path = normalize_path(abs_folder_path)
+    norm_folder_path = abs_folder_path
     assert norm_folder_path in watchers.keys(), f"No event_handler, watches at the specified folder: {norm_folder_path}"
     event_handler, _ = watchers[norm_folder_path]
     return event_handler
