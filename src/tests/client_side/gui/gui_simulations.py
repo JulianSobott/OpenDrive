@@ -7,6 +7,7 @@ from tests.client_side.helper_client import h_register_dummy_user_device_client
 
 @h_client_routine()
 def start_from_zero():
+    h_register_dummy_user_device_client()
     main.main(screens.REGISTRATION, authentication_only=True)
 
 

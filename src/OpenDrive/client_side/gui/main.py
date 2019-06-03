@@ -27,6 +27,7 @@ from kivy.app import App
 from OpenDrive.client_side.gui import screens
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import file_changes_json
+from OpenDrive.client_side import interface
 
 # DO NOT DELETE UNUSED IMPORTS!
 # They are needed inside the OpenDriveApp
@@ -37,19 +38,23 @@ from OpenDrive.client_side.gui.explorer import explorer
 
 class OpenDriveApp(App):
 
-    def __init__(self, start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
-                 **kwargs):
+    def __init__(self, start_screen: screens.ScreenName, authentication_only: bool, try_auto_login: bool, **kwargs):
         super().__init__(**kwargs)
         self.start_screen = start_screen
         self.authentication_only = authentication_only
+        if try_auto_login:
+            status = interface.login_auto()
+            if status.was_successful():
+                self.start_screen = screens.EXPLORER
 
     def build(self):
         screens.screen_manager.set_screen(self.start_screen)
 
 
-def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False):
+def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
+         try_auto_login: bool = True):
     file_changes_json.init_file()
-    app = OpenDriveApp(start_screen, authentication_only)
+    app = OpenDriveApp(start_screen, authentication_only, try_auto_login)
     screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
     app.run()
