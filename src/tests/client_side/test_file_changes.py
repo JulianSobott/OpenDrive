@@ -89,7 +89,7 @@ class TestFileCreate(TestFileChange):
         self.create_file(ignore=True)
 
     def test_create_many(self):
-        ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+"]
+        ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+", ".*\\/ignore\\/.+"]
         file_changes.add_folder(self.abs_folder_path, exclude_regexes=ignore_patterns)
         # root: 10 files + 1 folder
         for i in range(10):

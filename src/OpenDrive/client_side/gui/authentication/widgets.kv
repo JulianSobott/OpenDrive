@@ -68,14 +68,14 @@
 
 
 <UserHints@Label>:
-    color: 1, 0, 0, 1
+    color: 1, 0, 0, 0
     font_size: "18sp"
     height: 36
     size_hint_y: None
 
     canvas.before:
         Color:
-            rgba: (.9, .9, .9, self.color[3])
+            rgba: (.9, .9, .9, 0)
         Rectangle:
             size: self.size
             pos: self.pos
