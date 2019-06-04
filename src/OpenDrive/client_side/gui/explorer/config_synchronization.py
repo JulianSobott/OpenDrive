@@ -48,13 +48,9 @@ class PopupConfigFolder(Popup):
     tf_client_path: TextInput = ObjectProperty(None)
     tf_server_path: TextInput = ObjectProperty(None)
 
-    tf_include_files: TextInput = ObjectProperty(None)
-    tf_include_folders: TextInput = ObjectProperty(None)
-    tf_include_advanced: TextInput = ObjectProperty(None)
+    tf_include: TextInput = ObjectProperty(None)
 
-    tf_exclude_files: TextInput = ObjectProperty(None)
-    tf_exclude_folders: TextInput = ObjectProperty(None)
-    tf_exclude_advanced: TextInput = ObjectProperty(None)
+    tf_exclude: TextInput = ObjectProperty(None)
 
     btn_save_add: Button = ObjectProperty(None)
 

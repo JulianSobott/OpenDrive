@@ -11,7 +11,7 @@ from tests.client_side.helper_client import h_register_dummy_user_device_client
 
 def h_server_client(func):
     def wrapper(*args, **kwargs):
-        @h_client_routine()
+        @h_client_routine(clear_folders=True)
         def exe():
             return func(*args, **kwargs)
 
@@ -58,4 +58,4 @@ def demonstration_example():
 
 
 if __name__ == '__main__':
-    demonstration_example()
+    auto_login()

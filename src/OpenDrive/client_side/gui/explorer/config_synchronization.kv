@@ -95,8 +95,7 @@
 <Patterns@BoxLayout>:
     orientation: "vertical"
     title: ""
-    tf_file_extensions: file_extensions.tf_patterns
-    tf_folders: folders.tf_patterns
+    tf_patterns: patterns.tf_patterns
     size_hint: 1, 1
 
 
@@ -114,19 +113,10 @@
             underline: True
 
     PatternsLine:
-        id: file_extensions
-        label: "File extensions: "
-        hint_text: "e.g. .txt, .pdf"
+        id: patterns
+        label: "Filters: "
+        hint_text: "e.g. *.txt, /folder/, *tmp*"
 
-    PatternsLine:
-        id: folders
-        label: "Folders: "
-        hint_text: "e.g. folder1/, more/inner/"
-
-    PatternsLine:
-        id: advanced
-        label: "Advanced regular expressions: "
-        hint_text: "e.g. folder1\/.*\.txt"
 
 
 <PatternsLine@BoxLayout>:
