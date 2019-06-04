@@ -23,6 +23,7 @@ Features
 
 Contribute
 ----------
+.. automodule:: OpenDrive
 
 This project is at a very early stage. Every contribution is very appreciated.
 
