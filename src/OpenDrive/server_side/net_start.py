@@ -13,7 +13,7 @@ def start(queue: multiprocessing.Queue):
     try:
         while True:
             msg = queue.get()
-            if msg:
+            if msg == "Stop":
                 break
     finally:
         client_manager.stop_listening()
