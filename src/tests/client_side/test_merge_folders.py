@@ -1,5 +1,6 @@
 import unittest
 import os
+import time
 
 from OpenDrive.general import merge_folders as gen_merge_folders
 from tests.client_side.helper_client import h_register_dummy_user_device_client
@@ -40,6 +41,7 @@ def h_create_files_folders(abs_dest_path: str, structure: dict, start_empty=Fals
             file_path = os.path.join(inner_abs_path, file)
             with open(file_path, "w"):
                 pass
+            time.sleep(0.5)
         for f in folder["folders"]:
             f_path = os.path.join(inner_abs_path, f["folder_name"])
             recursive_creation(f_path, f)

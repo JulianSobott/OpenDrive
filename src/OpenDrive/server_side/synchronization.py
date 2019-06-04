@@ -45,7 +45,10 @@ def execute_actions(actions: List[SyncAction]) -> None:
     device_ids.remove(user.device_id)
 
     for action in actions:
-        dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
+        if action["rel_file_path"] in ["","."]:
+            dest_path = action["local_folder_path"]
+        else:
+            dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
             if action["is_directory"]:
                 file_exchanges.remove_dir(dest_path)
