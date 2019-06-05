@@ -21,6 +21,7 @@ private functions
 
 """
 import os
+from typing import Tuple, List
 
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
@@ -50,6 +51,8 @@ class PopupConfigFolder(Popup):
 
     tf_include: TextInput = ObjectProperty(None)
     tf_exclude: TextInput = ObjectProperty(None)
+
+    merge_methods: 'MergeMethods' = ObjectProperty(None)
 
     btn_save_add: Button = ObjectProperty(None)
 
@@ -81,6 +84,7 @@ class PopupConfigFolder(Popup):
         client_path, server_path = self.get_valid_paths()
         include_regexes, exclude_regexes = self.get_valid_patterns()
         merge_method = self.get_valid_merge_method()
+        logger.debug(merge_method.NAME)
         if self._is_valid_data:
             status = interface.add_sync_folder(client_path, server_path, include_regexes, exclude_regexes,
                                                merge_method)
@@ -96,33 +100,45 @@ class PopupConfigFolder(Popup):
         self.dismiss()
 
     def get_valid_paths(self):
-        client_path = normalize_path(self.tf_client_path.text)
+        client_path = self.tf_client_path.text
         server_path = self.tf_server_path.text
+        if len(server_path) == 0 or len(client_path) == 0:
+            self._error_message = "Please fill both paths!"
+            self._is_valid_data = False
+        client_path = normalize_path(self.tf_client_path.text)
         if not os.path.exists(client_path):
             self._error_message = "Local path must exist already!"
             self._is_valid_data = False
-        invalid_signs = [":", "*", "?", "/", "\\", "\"", "<", ">", "|"]
-        if sum([1 if sign in server_path else 0 for sign in invalid_signs]):
-            self._error_message = f"Invalid server path! Following signs are not allowed: {invalid_signs}"
+        try:
+            os.mkdir(server_path)
+            os.rmdir(server_path)
+        except (FileExistsError, OSError):
+            self._error_message = f"{server_path}: is not a valid name for a folder!"
             self._is_valid_data = False
+
         return client_path, server_path
 
-    def get_valid_patterns(self):
+    def get_valid_patterns(self) -> Tuple[List[str], List[str]]:
         include_patterns = self.tf_include.text
         exclude_patterns = self.tf_exclude.text
         if len(include_patterns.strip()) > 0:
             include_regexes = pattern_parser.parse_patterns(include_patterns)
         else:
-            include_regexes = ".*"
+            include_regexes = [".*"]
         if len(exclude_patterns.strip()) > 0:
             exclude_regexes = pattern_parser.parse_patterns(exclude_patterns)
         else:
-            exclude_regexes = ""
+            exclude_regexes = [""]
         return include_regexes, exclude_regexes
 
     def get_valid_merge_method(self):
-        # TODO
-        return merge_folders.MergeMethods.DEFAULT
+        if self.does_server_folder_exist():
+            return self.merge_methods.selected_merge_method
+        else:
+            return merge_folders.MergeMethods.TAKE_1
+
+    def does_server_folder_exist(self):
+        return self.tf_server_path in interface.get_all_remote_folders()
 
     def show_error_message(self, message: str):
         logger.debug(f"ERROR message: {message}")
@@ -218,6 +234,8 @@ class MergeMethods(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.selected_merge_method = merge_folders.MergeMethods.DEFAULT
+        self.names_methods = {method.NAME: method for method in merge_folders.ALL_METHODS}
 
     def on_dropdown(self, *args):
         for method in merge_folders.ALL_METHODS:
@@ -225,6 +243,8 @@ class MergeMethods(BoxLayout):
 
     def set_method(self, merge_method_item: 'MergeMethodItem'):
         self.dropdown.select(merge_method_item.text)
+        self.selected_merge_method = self.names_methods[merge_method_item.text]
+
 
 
 class MergeMethodItem(Button):

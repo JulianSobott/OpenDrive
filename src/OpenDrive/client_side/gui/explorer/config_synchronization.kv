@@ -11,6 +11,8 @@
     tf_include: patterns_container.tf_include_patterns
     tf_exclude: patterns_container.tf_exclude_patterns
 
+    merge_methods: merge_methods_container.merge_methods
+
 
     WidgetsContainer:
         PathsContainer:
@@ -22,6 +24,7 @@
             size_hint: 1, 0.1
 
         MergeMethodsContainer:
+            id: merge_methods_container
             size_hint: 1, 0.7
 
         ConfigButtonsContainer:
@@ -148,8 +151,10 @@
 <MergeMethodsContainer@StackLayout>:
     height: 30
     padding: 50, 100, 0, 0
+    merge_methods: merge_methods
 
     MergeMethods:
+        id: merge_methods
         size_hint: 0.5, 0.25
 
 <MergeMethods>:
