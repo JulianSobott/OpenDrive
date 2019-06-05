@@ -8,6 +8,7 @@ from OpenDrive.client_side import paths, file_changes, file_changes_json
 from OpenDrive.general import file_changes_json as gen_json
 from tests.helper_all import h_clear_init_all_folders, h_create_empty
 from tests.client_side.helper_client import h_get_dummy_folder_data
+from OpenDrive.client_side.gui.explorer import pattern_parser
 from src.tests.od_logging import logger
 
 
@@ -39,7 +40,7 @@ class TestFileChange(unittest.TestCase):
         h_clear_init_all_folders()
 
     def setUp(self):
-        file_changes_json.init_file()
+        file_changes_json.init_file(empty=True)
         self.abs_folder_path = h_create_empty_dummy_folder()
         file_changes.start_observing()
 
@@ -89,8 +90,9 @@ class TestFileCreate(TestFileChange):
         self.create_file(ignore=True)
 
     def test_create_many(self):
-        ignore_patterns = [".*\\.pyc", ".*\\\\ignore\\\\.+", ".*\\/ignore\\/.+"]
+        ignore_patterns = pattern_parser.parse_patterns("*.pyc, *ignore*")
         file_changes.add_folder(self.abs_folder_path, exclude_regexes=ignore_patterns)
+        time.sleep(0.5)
         # root: 10 files + 1 folder
         for i in range(10):
             rel_file_path = f"file_{i}.txt"
@@ -107,11 +109,11 @@ class TestFileCreate(TestFileChange):
         ignore_folder_path = os.path.join(folder_1_path, rel_folder_path)
         os.mkdir(ignore_folder_path)
 
-        abs_file_path = os.path.join(folder_1_path, "ignore_file.pyc")
+        abs_file_path = os.path.join(folder_1_path, "file.pyc")
         with open(abs_file_path, "w"):
             pass
 
-        abs_file_path = os.path.join(folder_1_path, "not_ignore_file.txt")
+        abs_file_path = os.path.join(folder_1_path, "not_Iggnore_file.txt")
         with open(abs_file_path, "w"):
             pass
         # ignore folder: 1 file1.txt
@@ -119,7 +121,7 @@ class TestFileCreate(TestFileChange):
         abs_file_path = os.path.join(ignore_folder_path, "file_1.txt")
         with open(abs_file_path, "w"):
             pass
-        time.sleep(1)
+        time.sleep(2)
         folder = file_changes_json.get_folder_entry(self.abs_folder_path)
         changes = folder["changes"]
         num_files = 0
@@ -128,7 +130,7 @@ class TestFileCreate(TestFileChange):
             num_folders += change["is_directory"]
             num_files += not change["is_directory"]
         self.assertEqual(11, num_files)
-        self.assertEqual(2, num_folders)
+        self.assertEqual(1, num_folders)
 
 
 class TestFileChanges(unittest.TestCase):

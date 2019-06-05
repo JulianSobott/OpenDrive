@@ -26,5 +26,6 @@ def parse_patterns(patterns: str) -> List[str]:
     patterns = patterns.replace(".", r"\.")
     patterns = patterns.replace("*", ".*")
     patterns = patterns.replace("/", r"[\/|\\]")
-    regex_patterns = patterns.split(",")
+    regex_patterns = patterns.replace(" ", "").split(",")
+
     return regex_patterns
