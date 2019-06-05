@@ -60,7 +60,7 @@ def h_client_routine(clear_server_db: bool = False, clear_folders: bool = True):
                 h_delete_recreate_server_db()
 
             client_net = OpenDrive.client_side.net_start
-            connected = client_net.connect(timeout=10)
+            connected = client_net.connect(timeout=5)
             if not connected:
                 raise ConnectionError
             ret_value = func(*args, **kwargs)

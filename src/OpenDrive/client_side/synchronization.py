@@ -135,6 +135,9 @@ def execute_client_actions(client_actions: List[SyncAction]) -> None:
 
 
 def _execute_server_actions(server_actions: List[SyncAction]) -> None:
+    for action in server_actions:
+        local_rel_path = action["remote_abs_path"].replace("/" + action["rel_file_path"], "")
+        client_json.remove_change_entry(local_rel_path, action["rel_file_path"])
     net_interface.server.execute_actions(server_actions)
 
 

@@ -6,6 +6,7 @@ import time
 from OpenDrive.client_side import main
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import interface
+from OpenDrive.client_side import file_changes_json as c_json
 
 from OpenDrive.server_side import paths as server_paths
 from tests.client_side.helper_client import h_register_dummy_user_device_client
@@ -33,11 +34,13 @@ class TestMain(unittest.TestCase):
         time.sleep(1)   # wait till changes.json is created
 
         interface.add_sync_folder(self.folder1_abs_local_path, "folder1")
+        expected_content = c_json.get_all_data()
         file_path = os.path.join(self.folder1_abs_local_path, "dummy.txt")
         with open(file_path, "w") as f:
             f.write("Hello World")
         time.sleep(2)   # wait till synchronization finished
         expected_path = os.path.join(server_paths.get_users_root_folder(user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
+        self.assertEqual(expected_content, c_json.get_all_data())
         time.sleep(1)   # wait till waiting...
         main.shutdown()
