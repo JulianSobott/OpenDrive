@@ -7,13 +7,17 @@
 
     tf_client_path: paths_container.tf_client_path
     tf_server_path: paths_container.tf_server_path
-    # btn_save_add: btn_save_add
+
+    tf_include: patterns_container.tf_include_patterns
+    tf_exclude: patterns_container.tf_exclude_patterns
+
 
     WidgetsContainer:
         PathsContainer:
             id: paths_container
 
         PatternsContainer:
+            id: patterns_container
 
         MergeMethodsContainer:
 
@@ -82,6 +86,9 @@
 <PatternsContainer@BoxLayout>:
     orientation: "vertical"
     size_hint: 1, 1
+
+    tf_include_patterns: include_patterns.tf_patterns
+    tf_exclude_patterns: exclude_patterns.tf_patterns
 
     Patterns:
         id: include_patterns

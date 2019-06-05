@@ -2,7 +2,7 @@ from typing import Tuple, Union, List
 import re
 
 
-def parse_patterns(extensions: str) -> List[str]:
+def parse_patterns(patterns: str) -> List[str]:
     """
     good resource for some rules: https://freefilesync.org/manual.php?topic=exclude-items
 
@@ -19,13 +19,13 @@ def parse_patterns(extensions: str) -> List[str]:
     - *.txt files located in subdirectories of base directories     /*/*.txt
 
 
-    :param extensions: any string, validity is checked here
+    :param patterns: any string, validity is checked here
     :return: parsing successful: True, list with all regular expressions, which matches the patterns.
     parsing fails: False, Error message
     """
-    extensions = extensions.replace("\\", r"/")
-    extensions = extensions.replace("*", ".*")
-    extensions = extensions.replace(".", r"\.")
-    extensions = extensions.replace("/", r"[\/|\\]")
-    regex_patterns = extensions.split(",")
+    patterns = patterns.replace("\\", r"/")
+    patterns = patterns.replace(".", r"\.")
+    patterns = patterns.replace("*", ".*")
+    patterns = patterns.replace("/", r"[\/|\\]")
+    regex_patterns = patterns.split(",")
     return regex_patterns

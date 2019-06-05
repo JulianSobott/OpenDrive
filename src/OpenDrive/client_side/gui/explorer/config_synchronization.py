@@ -21,7 +21,6 @@ private functions
 
 """
 import os
-import re
 
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
@@ -38,6 +37,7 @@ from kivy.uix.textinput import TextInput
 from OpenDrive.client_side import interface
 from OpenDrive.client_side.gui.explorer.desktop_file_dialogs import Desktop_FolderDialog
 from OpenDrive.client_side.gui.explorer import synchronizations
+from OpenDrive.client_side.gui.explorer import pattern_parser
 from OpenDrive.general.paths import NormalizedPath, normalize_path
 from OpenDrive.client_side.od_logging import logger
 from OpenDrive.client_side import merge_folders
@@ -49,7 +49,6 @@ class PopupConfigFolder(Popup):
     tf_server_path: TextInput = ObjectProperty(None)
 
     tf_include: TextInput = ObjectProperty(None)
-
     tf_exclude: TextInput = ObjectProperty(None)
 
     btn_save_add: Button = ObjectProperty(None)
@@ -61,54 +60,69 @@ class PopupConfigFolder(Popup):
         if edit_existing:
             self.btn_save_add.text = "Save"
 
-    def set_data(self, client_path=None, server_path=None, include_regexes=None, exclude_regexes=None):
+        self._is_valid_data = True
+        self._error_message = ""
+
+    def set_data(self, client_path: str = None, server_path: str = None, include_patterns: str = None,
+                 exclude_patterns: str = None):
         if client_path:
             self.tf_client_path.text = client_path
         if server_path:
             self.tf_server_path.text = server_path
 
+        if include_patterns:
+            self.tf_server_path.text = include_patterns
+
+        if exclude_patterns:
+            self.tf_server_path.text = exclude_patterns
+
     def btn_release_add(self):
-        is_valid_data = self._validate_data()
-        if is_valid_data:
-            if self._edit_existing:
-                logger.warning("Editing folders is not implemented yet.")
-                self.show_error_message("Editing folders is not implemented yet.")
+        self._is_valid_data = True
+        client_path, server_path = self.get_valid_paths()
+        include_regexes, exclude_regexes = self.get_valid_patterns()
+        merge_method = self.get_valid_merge_method()
+        if self._is_valid_data:
+            status = interface.add_sync_folder(client_path, server_path, include_regexes, exclude_regexes,
+                                               merge_method)
+            if status.was_successful():
+                self.dismiss()
+                self._synchronizations_container.update_folders_on_added(client_path)
             else:
-                abs_local_path = normalize_path(self.tf_client_path.text)
-                server_path = normalize_path(self.tf_server_path.text)
-                status = interface.add_sync_folder(abs_local_path, server_path)
-                if status.was_successful():
-                    self.dismiss()
-                    self._synchronizations_container.update_folders_on_added(abs_local_path)
-                else:
-                    logger.warning(status.get_text())
-                    self.show_error_message(status.get_text())
+                self.show_error_message(status.get_text())
+        else:
+            self.show_error_message(self._error_message)
 
     def btn_release_cancel(self):
         self.dismiss()
 
-    def _validate_data(self) -> bool:
-        validate_methods = [self._validate_paths]
-        for validation in validate_methods:
-            is_valid = validation()
-            if not is_valid:
-                return False
-        return True
-
-    def _validate_paths(self) -> bool:
+    def get_valid_paths(self):
         client_path = normalize_path(self.tf_client_path.text)
         server_path = self.tf_server_path.text
         if not os.path.exists(client_path):
-            self.show_error_message("Local path must exist already!")
-            return False
+            self._error_message = "Local path must exist already!"
+            self._is_valid_data = False
         invalid_signs = [":", "*", "?", "/", "\\", "\"", "<", ">", "|"]
         if sum([1 if sign in server_path else 0 for sign in invalid_signs]):
-            self.show_error_message(f"Invalid server path! Following signs are not allowed: {invalid_signs}")
-            return False
-        return True
+            self._error_message = f"Invalid server path! Following signs are not allowed: {invalid_signs}"
+            self._is_valid_data = False
+        return client_path, server_path
 
-    def _validate_patterns(self):
-        pass
+    def get_valid_patterns(self):
+        include_patterns = self.tf_include.text
+        exclude_patterns = self.tf_exclude.text
+        if len(include_patterns.strip()) > 0:
+            include_regexes = pattern_parser.parse_patterns(include_patterns)
+        else:
+            include_regexes = ".*"
+        if len(exclude_patterns.strip()) > 0:
+            exclude_regexes = pattern_parser.parse_patterns(exclude_patterns)
+        else:
+            exclude_regexes = ""
+        return include_regexes, exclude_regexes
+
+    def get_valid_merge_method(self):
+        # TODO
+        return merge_folders.MergeMethods.DEFAULT
 
     def show_error_message(self, message: str):
         logger.debug(f"ERROR message: {message}")
