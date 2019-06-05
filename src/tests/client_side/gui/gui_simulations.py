@@ -37,10 +37,10 @@ def auto_login():
     """Gui auto login -> explorer"""
     h_register_dummy_user_device_client()
 
-    main_thread = threading.Thread(target=main_prog.start, daemon=True)
-    main_thread.start()
+    #main_thread = threading.Thread(target=main_prog.start, daemon=True)
+    #main_thread.start()
 
-    time.sleep(3)
+    #time.sleep(3)
     main.main(screens.REGISTRATION, try_auto_login=True)
 
 

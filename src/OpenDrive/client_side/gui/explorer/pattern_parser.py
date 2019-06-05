@@ -1,5 +1,4 @@
-from typing import Tuple, Union, List
-import re
+from typing import List
 
 
 def parse_patterns(patterns: str) -> List[str]:

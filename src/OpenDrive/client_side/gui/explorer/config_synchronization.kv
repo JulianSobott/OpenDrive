@@ -15,26 +15,30 @@
     WidgetsContainer:
         PathsContainer:
             id: paths_container
+            size_hint: 1, 0.1
 
         PatternsContainer:
             id: patterns_container
+            size_hint: 1, 0.1
 
         MergeMethodsContainer:
+            size_hint: 1, 0.7
 
         ConfigButtonsContainer:
             add: root.btn_release_add
             cancel: root.btn_release_cancel
+            size_hint: 1, 0.1
 
 
-<WidgetsContainer@BoxLayout>:
-    orientation: "vertical"
+<WidgetsContainer@StackLayout>:
+    #orientation: "vertical"
 
 
 <PathsContainer@StackLayout>:
 
     tf_client_path: client_path.tf_path
     tf_server_path: server_path.tf_path
-    size_hint: 1, None
+    # size_hint: 1, None
 
     Path:
         id: client_path
@@ -83,26 +87,26 @@
         text: "Add"
         on_release: root.add()
 
-<PatternsContainer@BoxLayout>:
-    orientation: "vertical"
-    size_hint: 1, 1
+<PatternsContainer@StackLayout>:
+    #orientation: "vertical"
+    # size_hint: 1, None
 
     tf_include_patterns: include_patterns.tf_patterns
     tf_exclude_patterns: exclude_patterns.tf_patterns
 
     Patterns:
         id: include_patterns
-        title: "Include patterns"
+        title: "Include filters: "
 
     Patterns:
         id: exclude_patterns
-        title: "Exclude patterns"
+        title: "Exclude filters: "
 
 
 <Patterns@BoxLayout>:
     orientation: "vertical"
     title: ""
-    tf_patterns: patterns.tf_patterns
+    tf_patterns: tf_patterns
     size_hint: 1, 1
 
 
@@ -111,18 +115,17 @@
 
         Label:
             text: root.title
-            size_hint: 1, None
+            size_hint: 0.2, None
             height: 30
-            font_size: 20
             text_size:self.size
             halign:'left'
             valign:'middle'
-            underline: True
 
-    PatternsLine:
-        id: patterns
-        label: "Filters: "
-        hint_text: "e.g. *.txt, /folder/, *tmp*"
+        InputGeneral:
+            id: tf_patterns
+            size_hint: 0.75, None
+            hint_text: root.hint_text
+            hint_text: "e.g. *.txt, /folder/, *tmp*"
 
 
 
@@ -143,17 +146,14 @@
         size_hint: 0.7, 1
 
 <MergeMethodsContainer@StackLayout>:
-    size_hint: 1, None
     height: 30
-
-    Label:
-        text: "Merge Method: "
-        size_hint: 0.2, 1
+    padding: 50, 100, 0, 0
 
     MergeMethods:
+        size_hint: 0.5, 0.25
 
 <MergeMethods>:
-    size_hint: 0.4, 1
+    #size_hint: 0.4, 0.25
     dropdown: dropdown
 
     Button:
@@ -162,6 +162,8 @@
         on_parent: dropdown.dismiss()
         on_release: dropdown.open(self)
         height: 35
+        width: 200
+        size_hint: 0.4, None
 
     DropDown:
         id: dropdown
@@ -170,6 +172,7 @@
 <MergeMethodItem>:
     size_hint_y: None
     height: 35
+    size_hint: 0.4, None
 
 
 <PopupBrowseServerFolder>
