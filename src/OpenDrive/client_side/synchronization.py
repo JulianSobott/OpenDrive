@@ -40,9 +40,12 @@ def full_synchronize() -> None:
     """Starts a sync process, where changes from server and client are merged."""
     server_changes = _get_server_changes()
     client_changes = _get_client_changes()
+    start_synchronization = gen_json.get_current_timestamp()
     server_actions, client_actions, conflicts = _merge_changes(server_changes, client_changes)
     _execute_server_actions(server_actions)
     execute_client_actions(client_actions)
+    gen_json.remove_handled_changes(start_synchronization)
+    net_interface.server.remove_handled_changes(start_synchronization)
     if len(conflicts) > 0:
         logger.error(f"Unhandled conflicts: {conflicts}")
 

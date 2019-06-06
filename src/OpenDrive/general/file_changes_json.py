@@ -26,6 +26,7 @@ import json
 import os
 import typing
 from typing import List
+import copy
 
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive.general.file_exchanges import SyncAction
@@ -153,15 +154,18 @@ def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action:
 def remove_handled_changes(timestamp: float) -> None:
     """Possible issue: When file is changed, while this method is executed. The change may be overwritten."""
     data = _get_json_data()
-    for folder_path, folder in data.keys():
+    for folder_path, folder in data.items():
         idx = 0
-        changes: list = folder["changes"]
-        while idx < len(changes):
-            change = changes[idx]
+        changes: typing.Dict[str] = folder["changes"]
+        changes_copy: typing.Dict[str] = copy.deepcopy(changes)
+        for k in changes.keys():
+            change = changes_copy[k]
             if change["timestamp"] < timestamp:
-                changes.pop(idx)
+                changes_copy.pop(k)
             else:
                 idx += 1
+        folder["changes"] = changes_copy
+
     _set_json_data(data)
 
 

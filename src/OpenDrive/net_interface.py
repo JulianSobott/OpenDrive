@@ -8,6 +8,7 @@ class ServerFunctions(net.ServerFunctions):
     from OpenDrive.server_side.file_exchanges import get_file, pull_file, make_dirs, get_dir
     from OpenDrive.server_side.synchronization import get_changes, execute_actions
     from OpenDrive.server_side.folders import add_folder, generate_content_of_folder, get_all_available_folders
+    from OpenDrive.server_side.file_changes_json import remove_handled_changes
 
 
 class ClientFunctions(net.ClientFunctions):

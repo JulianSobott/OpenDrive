@@ -31,14 +31,14 @@ class TestMain(unittest.TestCase):
         user = h_register_dummy_user_device_client()
         main_thread = threading.Thread(target=main.start, daemon=True)
         main_thread.start()
-        time.sleep(1)   # wait till changes.json is created
+        time.sleep(2)   # wait till changes.json is created
 
         interface.add_sync_folder(self.folder1_abs_local_path, "folder1")
         expected_content = c_json.get_all_data()
         file_path = os.path.join(self.folder1_abs_local_path, "dummy.txt")
         with open(file_path, "w") as f:
             f.write("Hello World")
-        time.sleep(2)   # wait till synchronization finished
+        time.sleep(5)   # wait till synchronization finished
         expected_path = os.path.join(server_paths.get_users_root_folder(user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
         self.assertEqual(expected_content, c_json.get_all_data())

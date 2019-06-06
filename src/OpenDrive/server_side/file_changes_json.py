@@ -122,3 +122,7 @@ def distribute_action(action: SyncAction, devices_ids: List[int]) -> None:
                 new_file_path = action["rel_file_path"]
             add_change_entry(action["local_folder_path"], rel_file_path, ActionType((action["action_type"], 0)),
                              action["is_directory"], new_file_path)
+
+
+def remove_handled_changes(timestamp: float):
+    gen_json.remove_handled_changes(timestamp)
