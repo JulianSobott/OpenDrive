@@ -9,6 +9,13 @@
     btn_add_synchronization: btn_float.btn_add_synchronization
     synchronizations_container: synchronizations_container
 
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'assets/explorer_background.jpg'
+
+
     ScreenContainer:
 
         # TopBar:
