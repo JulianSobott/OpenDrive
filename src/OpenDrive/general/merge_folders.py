@@ -3,12 +3,6 @@
 :synopsis: Merge content (files and folders) of two folders. so that both end up identical
 :author: Julian Sobott
 
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
-
 
 public functions
 ----------------

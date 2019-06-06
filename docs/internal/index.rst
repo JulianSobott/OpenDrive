@@ -5,6 +5,7 @@ Internal documentation
 .. toctree::
     :maxdepth: 2
 
+    net_interface
     authentication
     getting_started
     file_changes

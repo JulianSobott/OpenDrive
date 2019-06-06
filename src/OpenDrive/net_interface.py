@@ -1,3 +1,43 @@
+"""
+:module: OpenDrive.net_interface
+:synopsis: Define all necessary stuff for the `pynetworking` library
+:author: Julian Sobott
+
+This program uses the `pynetworking <https://github.com/JulianSobott/pynetworking>`_ library for the communication
+over the network. This library enables an easy way
+of communication between multiple devices over a network. But to enable this some "complex" things must be setup first
+in this module. To understand what exactly is done here have a look at the
+`pynetworking documentation <https://networking.readthedocs.io/en/latest/>`_.
+
+public module members
+----------------------
+
+.. autodata:: server
+
+public classes
+-----------------
+
+.. autoclass:: ServerCommunicator
+.. autoclass:: ClientCommunicator
+
+public functions
+------------------
+
+.. autofunction:: get_device_id
+.. autofunction:: get_user
+.. autofunction:: get_user_id
+
+private classes
+--------------------
+
+.. autoclass:: ClientFunctions
+    :show-inheritance:
+
+.. autoclass:: ServerFunctions
+    :show-inheritance:
+
+"""
+
 import pynetworking as net
 
 
