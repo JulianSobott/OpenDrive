@@ -21,13 +21,14 @@ private functions
 .. autofunction:: _add_new_change_entry
 
 """
-import datetime
+import time
 import json
 import os
 import typing
 from typing import List
 
 from OpenDrive.general.paths import NormalizedPath
+from OpenDrive.general.file_exchanges import SyncAction
 
 __all__ = ["init_file", "get_folder_entry", "add_change_entry", "remove_change_entry"]
 
@@ -108,7 +109,7 @@ def _set_json_data(data: dict):
 
 def _update_existing_change_entry(changes: dict, existing_entry: dict, rel_entry_path: NormalizedPath,
                                   action: ActionType, is_directory: bool = False, new_file_path: NormalizedPath = None):
-    existing_entry["timestamp"] = str(datetime.datetime.now())
+    existing_entry["timestamp"] = get_current_timestamp()
     existing_entry["is_directory"] = is_directory
     if action == ACTION_MOVE:
         if existing_entry["action"] == ACTION_PULL[0]:
@@ -138,7 +139,7 @@ def get_all_synced_folders_paths() -> List[NormalizedPath]:
 def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action: ActionType,
                           is_directory: bool = False, new_file_path: NormalizedPath = None) -> None:
     entry = {"action": action[0],
-             "timestamp": str(datetime.datetime.now()),
+             "timestamp": get_current_timestamp(),
              "is_directory": is_directory,
              "rel_old_file_path": None}
     if action == ACTION_MOVE:
@@ -147,3 +148,22 @@ def _add_new_change_entry(changes: dict, rel_entry_path: NormalizedPath, action:
     else:
         current_path = rel_entry_path
     changes[current_path] = entry
+
+
+def remove_handled_changes(timestamp: float) -> None:
+    """Possible issue: When file is changed, while this method is executed. The change may be overwritten."""
+    data = _get_json_data()
+    for folder_path, folder in data.keys():
+        idx = 0
+        changes: list = folder["changes"]
+        while idx < len(changes):
+            change = changes[idx]
+            if change["timestamp"] < timestamp:
+                changes.pop(idx)
+            else:
+                idx += 1
+    _set_json_data(data)
+
+
+def get_current_timestamp() -> float:
+    return time.time()

@@ -13,7 +13,7 @@ Dict structure for content of a folder:
 
     Folder:
         "folder_name": top_folder_name,
-        "files": List[Dict["filename": str, "modified_timestamp": str]
+        "files": List[Dict["filename": str, "modified_timestamp": float]
         "folders": List[Folder]
 
     e.g.

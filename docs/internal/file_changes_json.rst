@@ -20,7 +20,7 @@ The following data is necessary in all changes.json files. It is needed for prop
         # file_path: relative to folder. path, where the file is currently located at the server/device
 - Change:
     + action: ActionType
-    + timestamp: str
+    + timestamp: float
     + is_directory: bool
     + rel_old_file_path: Optional[NormalizedPath] # only on move. Key at other side for Change
 
