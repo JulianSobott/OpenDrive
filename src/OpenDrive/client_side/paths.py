@@ -1,18 +1,21 @@
 """
-@author: Julian Sobott
-@brief: All paths, that are important at the client_side
-@description:
+:module: OpenDrive.client_side.paths
+:synopsis: All relevant paths for the client
+:author: Julian Sobott
 
-@external_use:
+public module members
+----------------------
 
-@internal_use:
+.. autodata:: LOCAL_CLIENT_DATA
+.. autodata:: LOCAL_DB_PATH
+.. autodata:: LOCAL_JSON_PATH
+.. autodata:: AUTHENTICATION_PATH
+
 """
-import os
-
 from OpenDrive.general.paths import *
 
-LOCAL_CLIENT_DATA = os.path.join(LOCAL_DATA, "client_side")
+LOCAL_CLIENT_DATA = normalize_path(LOCAL_DATA, "client_side")
 
-LOCAL_DB_PATH = os.path.join(LOCAL_CLIENT_DATA, "local_data.db")
-LOCAL_JSON_PATH = os.path.join(LOCAL_CLIENT_DATA, "changes.json")
-AUTHENTICATION_PATH = os.path.join(LOCAL_CLIENT_DATA, "authentication.txt")
+LOCAL_DB_PATH = normalize_path(LOCAL_CLIENT_DATA, "local_data.db")
+LOCAL_JSON_PATH = normalize_path(LOCAL_CLIENT_DATA, "changes.json")
+AUTHENTICATION_PATH = normalize_path(LOCAL_CLIENT_DATA, "authentication.txt")

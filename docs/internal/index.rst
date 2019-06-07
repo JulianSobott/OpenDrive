@@ -19,3 +19,4 @@ Internal documentation
     main
     merge_folders
     tests
+    paths
