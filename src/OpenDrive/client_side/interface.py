@@ -11,6 +11,7 @@ public classes
 
 .. autoclass:: Status
     :members:
+    :undoc-members:
 
 public functions
 -----------------

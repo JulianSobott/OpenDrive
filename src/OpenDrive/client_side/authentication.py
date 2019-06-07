@@ -20,6 +20,8 @@ private functions
 
 .. autofunction:: _get_token
 .. autofunction:: _save_received_token
+.. autofunction:: connection_needed
+
 
 """
 import getpass
@@ -35,7 +37,7 @@ from OpenDrive.client_side.interface import Status
 
 
 def connection_needed(func):
-    """Only execute function, when device is connected to the server."""
+    """Decorator that ensures that a function is only executed, when the device is connected to the server."""
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if not net_interface.ServerCommunicator.is_connected():

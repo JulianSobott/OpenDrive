@@ -29,6 +29,7 @@ private functions
 """
 import json
 from typing import List, Union, Optional
+from functools import wraps
 
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.general.paths import NormalizedPath
@@ -36,6 +37,8 @@ from OpenDrive.general import file_changes_json as gen_json
 
 
 def _override_gen_functions(func):
+    """Decorator to set the `set` and `get` functions calls in the general module."""
+    @wraps(func)
     def wrapper(*args, **kwargs):
         gen_json._set_json_data = _set_json_data
         gen_json._get_json_data = _get_json_data
@@ -47,6 +50,11 @@ def _override_gen_functions(func):
 
 @_override_gen_functions
 def init_file(empty: bool = False) -> None:
+    """
+
+    :param empty: True: all content will be deleted. This is only useful for testing purposes
+    :return: None
+    """
     return gen_json.init_file(client_paths.LOCAL_JSON_PATH, empty)
 
 
@@ -69,7 +77,10 @@ def remove_folder(abs_folder_path: NormalizedPath, non_exists_ok=True):
 
 @_override_gen_functions
 def get_all_data() -> dict:
-    """A list of all synced folders and the changes data."""
+    """
+    :returns:
+        A dict of all synced folders and the changes data. The structure of the dict is documented in
+        :doc:`file_changes_json`"""
     return _get_json_data()
 
 

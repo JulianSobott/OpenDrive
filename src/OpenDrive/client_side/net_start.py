@@ -1,3 +1,16 @@
+"""
+:module: OpenDrive.client_side.net_start
+:synopsis: Establish a connection to the server
+:author: Julian Sobott
+
+
+public functions
+----------------
+
+.. autofunction:: connect
+.. autofunction:: close_connection
+
+"""
 from OpenDrive import net_interface
 
 

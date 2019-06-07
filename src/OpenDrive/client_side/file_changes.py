@@ -6,19 +6,25 @@
 public functions
 ----------------
 
+.. autofunction:: add_folder
+.. autofunction:: add_single_ignores
+.. autofunction:: remove_folder_from_watching
+.. autofunction:: remove_single_ignore
 .. autofunction:: start_observing
 .. autofunction:: stop_observing
-.. autofunction:: add_folder
-.. autofunction:: remove_folder_from_watching
-.. autofunction:: add_single_ignores
-.. autofunction:: remove_single_ignore
+
+public members
+------------------
+
+.. autodata:: sync_waiter
+    :annotation: = Singleton of the SyncWaiter
 
 private functions
 -----------------
 
 .. autofunction:: _add_watcher
-.. autofunction:: _remove_watcher
 .. autofunction:: _get_event_handler
+.. autofunction:: _remove_watcher
 
 private classes
 ---------------
@@ -26,6 +32,8 @@ private classes
 .. autoclass:: FileSystemEventHandler
     :members:
     :show-inheritance:
+
+.. autoclass:: SyncWaiter
 
 """
 import os
@@ -216,6 +224,7 @@ class SyncWaiter:
         self.waiter = threading.Event()
 
     def sync(self):
+        """Call this, when a synchronization between server and client is wanted."""
         self.waiter.set()
 
 

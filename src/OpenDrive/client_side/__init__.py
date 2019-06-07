@@ -1,11 +1,11 @@
 """
-@author: Julian Sobott
-@brief:
-@description:
+:module: OpenDrive.client_Side
+:synopsis: All source code that is only necessary at the clients device.
+:author: Julian Sobott
 
-@external_use:
+In this package, the code for the backend is located. The backend handles mainly the synchronization, tracking of
+changes and authentication. The GUI stuff is located in a more inner package.
 
-@internal_use:
 """
 from OpenDrive.client_side import paths
 from OpenDrive.client_side import authentication

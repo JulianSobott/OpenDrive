@@ -6,7 +6,9 @@
 public functions
 -----------------
 
+.. autofunction:: get_dir
 .. autofunction:: get_file
+.. autofunction:: pull_file
 
 """
 import pynetworking as net
@@ -22,6 +24,8 @@ def get_file(abs_src_path: str, abs_dest_path: str) -> net.File:
 
 
 def get_dir(abs_src_path: str, abs_dest_path: str) -> None:
+    """Allows the server pulling a directory from the client and saving it at the server. The directory is pulled
+    with all its files and inner directories."""
     return gen_file_exchanges.get_dir(abs_src_path, abs_dest_path, net_interface.server.pull_file,
                                       net_interface.server.make_dirs)
 

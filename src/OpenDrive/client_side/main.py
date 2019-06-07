@@ -7,13 +7,14 @@
 public functions
 ----------------
 
-.. autofunction:: start
 .. autofunction:: mainloop
 .. autofunction:: shutdown
+.. autofunction:: start
 
-private functions
+private members
 -----------------
 
+.. autodata:: MIN_UPDATE_PAUSE_TIME
 
 """
 import time
@@ -26,8 +27,9 @@ from OpenDrive.client_side import synchronization as c_synchronization
 from OpenDrive.client_side import file_changes_json as c_json
 from OpenDrive.client_side.od_logging import logger
 
-"""After an call to sync appears the program waits for this time, to prevent too frequent update rates."""
 MIN_UPDATE_PAUSE_TIME = 5
+"""After a call to sync appears the program waits for this time, to prevent too frequent update rates."""
+
 is_on_event = threading.Event()
 
 
