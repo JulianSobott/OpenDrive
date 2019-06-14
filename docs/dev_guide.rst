@@ -112,17 +112,13 @@ Tasks
 =======
 
 - GUI
-    - explorer
-        - good tool for editing include/exclude patterns
-        - tool for selecting merge_method
-    - registration
     - input validation
     - beautiful design
-        - mock the design as image
+    - TextInput without tabs (TF basic class)
 
-- UI
+(- UI
     - Console interface
-    - Same interface between console and gui
+    - Same interface between console and gui)
 
 - Backend
     - folders

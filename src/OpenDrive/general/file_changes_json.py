@@ -48,11 +48,12 @@ def init_file(file_path: str, empty: bool = False) -> None:
             with open(file_path, "w+") as file:
                 all_folders = {}
                 json.dump(all_folders, file)
-    folder_path = os.path.split(file_path)[0]
-    os.makedirs(folder_path, exist_ok=True)
-    with open(file_path, "w+") as file:
-        all_folders = {}
-        json.dump(all_folders, file)
+    else:
+        folder_path = os.path.split(file_path)[0]
+        os.makedirs(folder_path, exist_ok=True)
+        with open(file_path, "w+") as file:
+            all_folders = {}
+            json.dump(all_folders, file)
 
 
 def get_folder_entry(abs_folder_path: NormalizedPath, data: dict = None) -> dict:

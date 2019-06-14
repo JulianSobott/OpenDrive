@@ -9,6 +9,7 @@
         size_hint_y: None
         height: self.minimum_height
         orientation: 'vertical'
+        spacing: 1
 
 <SynchronizationContainer>:
     orientation: "horizontal"
@@ -16,6 +17,13 @@
     lbl_local_path: lbl_local_path
     lbl_remote_path: lbl_remote_path
     btn_delete: btn_delete
+
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 0.8
+        Line:
+            points: self.pos[0], self.pos[1], self.width, self.pos[1]
+            width: 1
 
     Label:
         id: lbl_local_path
