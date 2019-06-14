@@ -7,7 +7,7 @@ with the server.
 Server setup
 ------------
 
-On the server you need python to be installed. You also need access to the servers commandline. Either directly or
+On the server you need python 3 to be installed. You also need access to the servers commandline. Either directly or
 via ssh.
 
 First we install OpenDrive.
@@ -17,6 +17,10 @@ The easiest way is to use `pip <https://pip.pypa.io/en/stable/quickstart/>`_:
 .. code-block:: console
 
    pip install open-drive
+
+.. warning::
+
+    The pip installation is currently not available, but will be added soon. For now you have to clone it from Github.
 
 It is also possible to clone the repository from `Github <https://github.com/JulianSobott/OpenDrive>`_:
 

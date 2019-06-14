@@ -51,6 +51,7 @@ def full_synchronize() -> None:
 
 
 def trigger_server_synchronization():
+    """Called from the server, when there were changes at the server."""
     c_file_changes.sync_waiter.sync()
 
 
@@ -66,8 +67,8 @@ def _get_client_changes() -> dict:
 
 
 def _merge_changes(server_changes: dict, client_changes: dict) -> tuple:
-    """pop items from the changes dicts, till both dicts are empty. All actions are instead distributed to the
-    proper lists.
+    """Merges the changes from both sides based on their paths/names. If both sides have a change in the same file,
+    these changes are added as conflict.
     """
     needed_client_actions = []
     needed_server_actions = []

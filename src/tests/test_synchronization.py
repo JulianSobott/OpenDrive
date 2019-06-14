@@ -41,5 +41,6 @@ class TestSynchronization(unittest.TestCase):
             f.write("Hello World")
         time.sleep(2)
         synchronization.full_synchronize()
+        time.sleep(1)
         expected_path = os.path.join(server_paths.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")

@@ -1,7 +1,7 @@
 OpenDrive
 ===========
 
-OpenDrive is an open source, self hosting alternative to Google Drive. You need an own server, that you have access to.
+OpenDrive is an open source, self hosting file synchronization service. You need an own server, that you have access to.
 For me a Raspberry-pi 3 with an external hard-drive just went fine.
 
 Features
@@ -16,7 +16,11 @@ Features
 Installation
 --------------
 
-Wait for it!
+Currently the only way to install it, is by cloning the repository and installing all the requirements. But we are
+working on a more user friendly way.
+
+A complete installation guide can be found at the
+`official documentation <https://opendrive.readthedocs.io/en/latest/installation.html>`_.
 
 Documentation
 --------------
