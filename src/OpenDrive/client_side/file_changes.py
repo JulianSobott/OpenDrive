@@ -145,11 +145,9 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         self._ignore = False
 
     def on_any_event(self, event):
-        """Known issue with watchdog: When a folder is created it checks after 1 second, if there are other files inside
-        this folder. If there are any files and folders (uses os.walk()) they are added 'manually' as creation events.
-        This is necessary, because when the folder is pasted, the inner files are not added. The issue occurs when a
-        folder and inner files/folders are created (e.g. from python). Then these files/folders are handled twice.
-        Once the manual and once the normal on create way. To solve this unique errors at insert are ignored in the DB.
+        """Known issue with watchdog: When a directory is deleted, it is dispatched as FileDeleteEvent. Because after it
+        is deleted it is not possible to check whether it was a directory or a file. So when handling a remove
+        change, it can be both a file or a directory.
         """
         # Metadata
         self._is_dir = event.is_directory
@@ -159,6 +157,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         # ignore
         self._ignore = False
         if event.is_directory and event.event_type == "modified":
+            # Only meta data of the directory is modified. This data is not tracked
             self._ignore = True
         if self._rel_path in self._single_ignore_paths.keys():
             ignore = self._single_ignore_paths[self._rel_path]

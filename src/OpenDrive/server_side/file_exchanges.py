@@ -49,14 +49,12 @@ def make_dirs(rel_path: str, exist_ok: bool = True):
     return gen_file_exchanges.make_dirs(abs_path, exist_ok)
 
 
-def remove_file(rel_src_path: str) -> None:
-    abs_src_path = server_paths.rel_user_path_to_abs(rel_src_path)
-    return gen_file_exchanges.remove_file(abs_src_path)
-
-
-def remove_dir(rel_path: str, only_empty: bool = False):
-    abs_src_path = server_paths.rel_user_path_to_abs(rel_path)
-    return gen_file_exchanges.remove_dir(abs_src_path, only_empty)
+def remove_file_dir(rel_path: str, only_empty: bool = False):
+    abs_path = server_paths.rel_user_path_to_abs(rel_path)
+    if os.path.isdir(abs_path):
+        gen_file_exchanges.remove_dir(abs_path, only_empty)
+    else:
+        gen_file_exchanges.remove_file(abs_path)
 
 
 @requires_authentication

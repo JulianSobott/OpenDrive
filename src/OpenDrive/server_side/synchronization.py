@@ -50,10 +50,9 @@ def execute_actions(actions: List[SyncAction]) -> None:
         else:
             dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
-            if action["is_directory"]:
-                file_exchanges.remove_dir(dest_path)
-            else:
-                file_exchanges.remove_file(dest_path)
+            # Because directory deletions are also handled as files, there is only one function, that tries what
+            # function fits
+            file_exchanges.remove_file_dir(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
             src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
             file_exchanges.move(src_path, dest_path)
