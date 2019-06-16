@@ -59,8 +59,8 @@ def start_observing() -> None:
     module are needed."""
     file_changes_json.init_file()
     all_folders = file_changes_json.get_all_data()
-    for folder in all_folders:
-        _add_watcher(folder["folder_path"], folder["include_regexes"], folder["exclude_regexes"])
+    for folder_path, folder in all_folders.items():
+        _add_watcher(folder_path, folder["include_regexes"], folder["exclude_regexes"])
     observer.start()
 
 
