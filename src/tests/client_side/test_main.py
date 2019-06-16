@@ -24,6 +24,7 @@ class TestMain(unittest.TestCase):
         main.MIN_UPDATE_PAUSE_TIME = 1
 
     def tearDown(self) -> None:
+        main.shutdown()
         h_stop_server_process(self._server_process)
 
     @h_client_routine(clear_folders=False)
@@ -43,4 +44,3 @@ class TestMain(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
         self.assertEqual(expected_content, c_json.get_all_data())
         time.sleep(1)   # wait till waiting...
-        main.shutdown()

@@ -5,15 +5,14 @@ Test1:
 - is file copied to server?
 
 """
-import unittest
 import os
 import time
+import unittest
 
 from OpenDrive.client_side import interface, file_changes, file_changes_json
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import synchronization
 from OpenDrive.server_side import paths as server_paths
-
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_client_routine, h_stop_server_process, h_start_server_process, h_create_empty, \
     h_clear_init_all_folders
@@ -22,6 +21,9 @@ from tests.helper_all import h_client_routine, h_stop_server_process, h_start_se
 class TestSynchronization(unittest.TestCase):
 
     def setUp(self) -> None:
+        if file_changes.observer.is_alive():
+            file_changes.stop_observing()
+        file_changes.observer.unschedule_all()
         h_clear_init_all_folders()
         self._server_process = h_start_server_process()
         file_changes_json.init_file(empty=True)
@@ -30,6 +32,7 @@ class TestSynchronization(unittest.TestCase):
         h_create_empty(self.folder1_abs_local_path)
 
     def tearDown(self) -> None:
+        file_changes.stop_observing()
         h_stop_server_process(self._server_process)
 
     @h_client_routine(clear_folders=False)
@@ -39,8 +42,9 @@ class TestSynchronization(unittest.TestCase):
         file_path = os.path.join(self.folder1_abs_local_path, "dummy.txt")
         with open(file_path, "w") as f:
             f.write("Hello World")
-        time.sleep(2)
-        synchronization.full_synchronize()
         time.sleep(1)
+        synchronization.full_synchronize()
+        time.sleep(2)
         expected_path = os.path.join(server_paths.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
+

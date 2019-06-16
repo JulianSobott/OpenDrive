@@ -47,7 +47,7 @@ def auto_login():
     main_thread.start()
 
     time.sleep(2)
-    interface.add_sync_folder(c_paths.normalize_path(c_paths.LOCAL_DATA, "folder1"), "folder1")
+    #interface.add_sync_folder(c_paths.normalize_path(c_paths.LOCAL_DATA, "folder1"), "folder1")
     main.main(screens.REGISTRATION, try_auto_login=True)
 
 

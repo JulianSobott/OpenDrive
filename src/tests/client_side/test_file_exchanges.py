@@ -1,14 +1,9 @@
 import unittest
-import os
-import pynetworking as net
 
 from OpenDrive import net_interface
 
-from tests.client_side.helper_client import h_create_client_dummy_file
-from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, \
+from tests.helper_all import h_start_server_process, h_stop_server_process, \
     h_clear_init_dummy_folders
-from tests.client_side.helper_client import h_register_dummy_user_device_client
-from tests.od_logging import logger
 
 
 class TestFileExchanges(unittest.TestCase):

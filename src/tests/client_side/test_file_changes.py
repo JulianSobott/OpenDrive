@@ -140,7 +140,7 @@ class TestFileChanges(unittest.TestCase):
         h_clear_init_all_folders()
 
     def setUp(self):
-        file_changes_json.init_file()
+        file_changes_json.init_file(empty=True)
         self.abs_folder_path = h_create_empty_dummy_folder()
         self.rel_file_path = "test.txt"
         self.abs_file_path = os.path.join(self.abs_folder_path, self.rel_file_path)
@@ -207,7 +207,8 @@ class TestFileChanges(unittest.TestCase):
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        file_changes_json.init_file()
+        file_changes_json.init_file(empty=True)
+        self.path = h_create_empty_dummy_folder()
 
     def tearDown(self):
         file_changes.stop_observing()
@@ -215,51 +216,48 @@ class TestAPI(unittest.TestCase):
     def test_start_observing(self):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
-        file_changes.add_folder(path, include, exclude)
+        file_changes.add_folder(self.path, include, exclude)
         file_changes.start_observing()
         self.assertEqual(1, len(file_changes.watchers))
 
     def test_add_single_ignores(self):
-        folder_path = h_create_empty_dummy_folder()
         file_changes.start_observing()
-        file_changes.add_folder(folder_path)
+        file_changes.add_folder(self.path)
         rel_path = paths.normalize_path("test.txt")
-        file_changes.add_single_ignores(folder_path, [rel_path])
-        with open(os.path.join(folder_path, rel_path), "w+") as f:
+        time.sleep(0.3)
+        file_changes.add_single_ignores(self.path, [rel_path])
+        with open(os.path.join(self.path, rel_path), "w+") as f:
             f.write("Hello" * 100)
 
-        folder = file_changes_json.get_folder_entry(folder_path)
+        folder = file_changes_json.get_folder_entry(self.path)
         self.assertEqual(0, len(folder["changes"]))
 
     def test_remove_single_ignores(self):
-        folder_path = h_create_empty_dummy_folder()
         file_changes.start_observing()
-        file_changes.add_folder(folder_path)
+        file_changes.add_folder(self.path)
         rel_path = paths.normalize_path("test.txt")
-        file_changes.add_single_ignores(folder_path, [rel_path])
-        file_changes.remove_single_ignore(folder_path, rel_path)
-        with open(os.path.join(folder_path, rel_path), "w+") as f:
+        file_changes.add_single_ignores(self.path, [rel_path])
+        file_changes.remove_single_ignore(self.path, rel_path)
+        with open(os.path.join(self.path, rel_path), "w+") as f:
             f.write("Hello" * 100)
 
         time.sleep(1)
-        folder = file_changes_json.get_folder_entry(folder_path)
+        folder = file_changes_json.get_folder_entry(self.path)
         self.assertEqual(1, len(folder["changes"]))
 
     def test_add_folder(self):
-        file_changes_json.init_file()
         file_changes.start_observing()
         path, include, exclude = h_get_dummy_folder_data()
-        file_changes.add_folder(path, include, exclude)
+        file_changes.add_folder(self.path, include, exclude)
 
         time.sleep(1)
         self.assertEqual(1, len(file_changes.watchers))
-        self.assertEqual([path], gen_json.get_all_synced_folders_paths())
+        self.assertEqual([self.path], gen_json.get_all_synced_folders_paths())
 
     def test_remove_folder(self):
         file_changes.start_observing()
-        path, _, _ = h_get_dummy_folder_data()
-        file_changes.add_folder(path)
-        file_changes.remove_folder_from_watching(path)
+        file_changes.add_folder(self.path)
+        file_changes.remove_folder_from_watching(self.path)
         self.assertEqual(0, len(file_changes.watchers))
 
 
