@@ -1,18 +1,17 @@
-import unittest
 import os
 import time
+import unittest
 
+from OpenDrive import net_interface
+from OpenDrive.client_side import file_changes_json as c_json
+from OpenDrive.client_side import interface
+from OpenDrive.client_side import merge_folders
+from OpenDrive.client_side import paths as c_paths
 from OpenDrive.general import merge_folders as gen_merge_folders
+from OpenDrive.general.paths import normalize_path
+from OpenDrive.server_side import paths as s_paths
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_stop_server_process, h_start_server_process, h_client_routine, h_create_empty
-
-from OpenDrive.client_side import merge_folders
-from OpenDrive.general.paths import normalize_path
-from OpenDrive.client_side import paths as c_paths
-from OpenDrive.server_side import paths as s_paths
-from OpenDrive.client_side import interface
-from OpenDrive.client_side import file_changes_json as c_json
-from OpenDrive import net_interface
 
 
 def h_create_files_folders(abs_dest_path: str, structure: dict, start_empty=False):

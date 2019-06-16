@@ -1,15 +1,14 @@
+import os
 import shutil
 import unittest
-import os
 
+from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import synchronization as c_sync
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import paths as gen_paths
 from OpenDrive.server_side import paths as server_paths
-from OpenDrive.client_side import paths as client_paths
-
-from tests.helper_all import h_create_empty, h_start_server_process, h_stop_server_process, h_client_routine
 from tests.client_side.helper_client import h_register_dummy_user_device_client
+from tests.helper_all import h_create_empty, h_start_server_process, h_stop_server_process, h_client_routine
 
 
 def h_create_dummy_server_change_file():

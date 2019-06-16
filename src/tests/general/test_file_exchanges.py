@@ -1,13 +1,12 @@
-import unittest
 import os
+import unittest
 from typing import Tuple
 
 import pynetworking as net
 
-from OpenDrive.general import paths as gen_paths
 from OpenDrive import net_interface
 from OpenDrive.general import file_exchanges
-
+from OpenDrive.general import paths as gen_paths
 from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, \
     h_clear_init_dummy_folders
 

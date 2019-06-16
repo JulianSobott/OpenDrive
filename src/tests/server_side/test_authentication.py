@@ -1,19 +1,15 @@
-import datetime
+import os
 import unittest
 import uuid
-import shutil
-from typing import Tuple
-import os
 
-from OpenDrive.server_side import database, paths, authentication
 from OpenDrive import net_interface
+from OpenDrive.server_side import database, authentication
 from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side.database import Token
-from helper_all import h_start_server_process, h_stop_server_process, h_client_routine
+from tests.helper_all import h_start_server_process, h_stop_server_process, h_client_routine
+from tests.server_side.database import h_setup_server_database
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
     h_register_dummy_user_device, h_clear_init_server_folders, h_register_dummy_user
-from tests.server_side.database import h_setup_server_database
-from tests.od_logging import logger
 
 
 class TestRegistration(unittest.TestCase):

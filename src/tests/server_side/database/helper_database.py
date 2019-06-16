@@ -1,8 +1,8 @@
-import uuid
 import datetime
+import uuid
 
-from OpenDrive.server_side import database, paths
 from OpenDrive.general.database import delete_db_file
+from OpenDrive.server_side import database, paths
 from OpenDrive.server_side.database import Token
 
 

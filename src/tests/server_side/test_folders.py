@@ -1,12 +1,10 @@
-import unittest
 import os
-import shutil
+import unittest
 
 import OpenDrive.server_side.folders as folders
-from OpenDrive.server_side import paths as server_paths
-from OpenDrive.server_side import database
 from OpenDrive import net_interface
-
+from OpenDrive.server_side import database
+from OpenDrive.server_side import paths as server_paths
 from tests.helper_all import h_clear_init_all_folders
 from tests.server_side.helper_server import h_register_dummy_user_device
 

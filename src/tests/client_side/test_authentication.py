@@ -2,10 +2,9 @@ import unittest
 from typing import Generator
 from unittest import mock
 
-from OpenDrive import client_side, server_side
-
-from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, h_client_routine
+from OpenDrive import client_side
 from tests.client_side.helper_client import h_register_dummy_user_device_client
+from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, h_client_routine
 
 
 def mock_input(inputs: Generator):

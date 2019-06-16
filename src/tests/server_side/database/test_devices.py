@@ -7,13 +7,10 @@
 import datetime
 import unittest
 import uuid
-import secrets
 
 from OpenDrive.server_side import database, paths
-from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side.database import Token
 from tests.server_side.database.helper_database import h_setup_server_database
-from tests.od_logging import logger
 
 
 class TestDatabaseDevices(unittest.TestCase):

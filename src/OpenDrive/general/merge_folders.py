@@ -19,7 +19,7 @@ private functions
 """
 import os
 
-from general.paths import NormalizedPath, normalize_path
+from OpenDrive.general.paths import NormalizedPath, normalize_path
 
 
 def generate_content_of_folder(abs_folder_path: str, only_files_list=False, top_folder_name: str = "") -> dict:

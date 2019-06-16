@@ -1,13 +1,12 @@
 import os
 import shutil
-from typing import Tuple
 import uuid
+from typing import Tuple
 
-from OpenDrive.server_side import database
+from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side import authentication
+from OpenDrive.server_side import database
 from OpenDrive.server_side import paths as server_paths
-from general.database import delete_db_file
-
 from tests.server_side.database import h_setup_server_database
 
 

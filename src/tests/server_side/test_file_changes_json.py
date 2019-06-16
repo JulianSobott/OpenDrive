@@ -1,14 +1,11 @@
-import unittest
-from unittest.mock import patch
 import json
+import unittest
 
+from OpenDrive.client_side import synchronization as c_sync
+from OpenDrive.general import file_changes_json as gen_json
+from OpenDrive.general import paths as gen_paths
 from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side import paths as server_paths
-from OpenDrive.general import paths as gen_paths
-from OpenDrive.general import file_changes_json as gen_json
-from OpenDrive.client_side import synchronization as c_sync
-
-from tests.client_side.helper_client import h_get_dummy_folder_data
 
 
 def h_mock_set_json(data):

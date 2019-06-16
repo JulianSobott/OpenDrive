@@ -1,13 +1,12 @@
-import unittest
-import threading
 import os
+import threading
 import time
+import unittest
 
+from OpenDrive.client_side import file_changes_json as c_json
+from OpenDrive.client_side import interface
 from OpenDrive.client_side import main
 from OpenDrive.client_side import paths as client_paths
-from OpenDrive.client_side import interface
-from OpenDrive.client_side import file_changes_json as c_json
-
 from OpenDrive.server_side import paths as server_paths
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, \

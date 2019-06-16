@@ -1,16 +1,13 @@
 import threading
 import time
 
-from OpenDrive.client_side.gui import main
-from OpenDrive.client_side import main as main_prog
-from OpenDrive.client_side.gui import screens
 from OpenDrive.client_side import file_changes_json
-from OpenDrive.client_side import interface
-from OpenDrive.client_side import paths as c_paths
-
+from OpenDrive.client_side import main as main_prog
+from OpenDrive.client_side.gui import main
+from OpenDrive.client_side.gui import screens
 from tests.client_side.gui.test_explorer import h_watch_dummy_folder
-from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, h_create_empty
 from tests.client_side.helper_client import h_register_dummy_user_device_client
+from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process
 
 
 def h_server_client(func):

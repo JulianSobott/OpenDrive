@@ -7,7 +7,6 @@ import unittest
 
 from OpenDrive.server_side import database, paths
 from tests.server_side.database.helper_database import h_setup_server_database, h_create_dummy_user
-from tests.od_logging import logger
 
 
 class TestDatabaseUsers(unittest.TestCase):

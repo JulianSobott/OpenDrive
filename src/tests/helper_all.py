@@ -22,15 +22,15 @@ private functions
 ------------------
 
 """
-import shutil
 import os
+import shutil
 from multiprocessing import Process, Queue
 from typing import Tuple
 
-import OpenDrive.server_side.net_start
 import OpenDrive.client_side.net_start
-from OpenDrive.server_side import paths as server_paths
+import OpenDrive.server_side.net_start
 from OpenDrive.client_side import paths as client_paths
+from OpenDrive.server_side import paths as server_paths
 
 server_stop_queue = Queue()
 

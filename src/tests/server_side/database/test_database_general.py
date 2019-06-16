@@ -4,8 +4,8 @@
 :author: Julian Sobott
 
 """
-import unittest
 import os
+import unittest
 
 from OpenDrive.server_side import database, paths as server_paths
 from tests.server_side.database.helper_database import h_setup_server_database

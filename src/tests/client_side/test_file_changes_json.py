@@ -1,10 +1,9 @@
-import unittest
 import json
+import unittest
 
 from OpenDrive.client_side import file_changes_json
-from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.client_side import paths as client_paths
-
+from OpenDrive.general import file_changes_json as gen_json
 from tests.client_side.helper_client import h_get_dummy_folder_data
 
 

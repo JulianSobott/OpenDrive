@@ -1,7 +1,6 @@
 import unittest
 
 from OpenDrive import net_interface
-
 from tests.helper_all import h_start_server_process, h_stop_server_process, \
     h_clear_init_dummy_folders
 

@@ -1,16 +1,14 @@
-import threading
-from unittest import TestCase
 import os
+import threading
 
+from OpenDrive import net_interface
 from OpenDrive.client_side import file_changes
 from OpenDrive.client_side import file_changes_json
-from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import gui
-from OpenDrive import net_interface
 from OpenDrive.client_side import main
-
-from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, h_create_empty
+from OpenDrive.client_side import paths as client_paths
 from tests.client_side.helper_client import h_register_dummy_user_device_client
+from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process, h_create_empty
 
 
 def h_watch_dummy_folder(folder_name: str):
