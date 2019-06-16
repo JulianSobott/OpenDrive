@@ -128,7 +128,7 @@ class PopupConfigFolder(Popup):
         if len(exclude_patterns.strip()) > 0:
             exclude_regexes = pattern_parser.parse_patterns(exclude_patterns)
         else:
-            exclude_regexes = [""]
+            exclude_regexes = []
         return include_regexes, exclude_regexes
 
     def get_valid_merge_method(self):
