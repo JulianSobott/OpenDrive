@@ -6,9 +6,6 @@ with open("README.rst", "r") as fh:
 
 def my_test_suite():
     import unittest
-    import sys
-    import OpenDrive.general.paths as paths
-    sys.path.insert(0, paths.PROJECT_PATH)
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('tests', pattern='test_*.py', top_level_dir="src")
     return test_suite

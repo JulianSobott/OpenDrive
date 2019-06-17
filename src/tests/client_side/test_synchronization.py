@@ -65,6 +65,13 @@ class TestMerging(unittest.TestCase):
 
     def h_check_merge(self, server_changes, client_changes, expected_server, expected_client, expected_conflicts):
         server_actions, client_actions, conflicts = c_sync._merge_changes(server_changes, client_changes)
+
+        for conflict in conflicts:
+            conflict["local_file"]["timestamp"] = 0
+            conflict["remote_file"]["timestamp"] = 0
+        for conflict in expected_conflicts:
+            conflict["local_file"]["timestamp"] = 0
+            conflict["remote_file"]["timestamp"] = 0
         self.assertEqual(expected_server, server_actions)
         self.assertEqual(expected_client, client_actions)
         self.assertEqual(expected_conflicts, conflicts)
@@ -182,7 +189,6 @@ class TestMerging(unittest.TestCase):
         server_changes = {**h_create_folder_entry(gen_paths.normalize_path("folder1"),
                                                   {**h_create_change(gen_paths.normalize_path("test1.txt"),
                                                                      gen_json.ACTION_PULL)})}
-
         client_changes = {**h_create_folder_entry(gen_paths.normalize_path(client_paths.LOCAL_CLIENT_DATA, "folder1"),
                                                   {**h_create_change(gen_paths.normalize_path("test1.txt"),
                                                                      gen_json.ACTION_PULL)},

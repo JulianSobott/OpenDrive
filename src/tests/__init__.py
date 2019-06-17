@@ -17,3 +17,5 @@ General
 
 
 """
+import pynetworking
+pynetworking.Logging.logger.setLevel(40)
