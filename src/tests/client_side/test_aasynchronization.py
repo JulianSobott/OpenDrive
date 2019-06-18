@@ -21,9 +21,10 @@ from tests.helper_all import h_client_routine, h_stop_server_process, h_start_se
 class TestSynchronization(unittest.TestCase):
 
     def setUp(self) -> None:
+        time.sleep(1)
         if file_changes.observer.is_alive():
             file_changes.stop_observing()
-        file_changes.observer.unschedule_all()
+        # file_changes.observer.unschedule_all()
         h_clear_init_all_folders()
         self._server_process = h_start_server_process()
         file_changes_json.init_file(empty=True)
@@ -37,6 +38,20 @@ class TestSynchronization(unittest.TestCase):
 
     @h_client_routine(clear_folders=False)
     def test_create_pull(self):
+        self.user = h_register_dummy_user_device_client()
+        time.sleep(1)
+        interface.add_sync_folder(self.folder1_abs_local_path, "folder1")
+        file_path = os.path.join(self.folder1_abs_local_path, "dummy.txt")
+        with open(file_path, "w") as f:
+            f.write("Hello World")
+        time.sleep(1)
+        synchronization.full_synchronize()
+        time.sleep(2)
+        expected_path = os.path.join(server_paths.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
+        self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
+
+    @h_client_routine(clear_folders=False)
+    def test_create_pull2(self):
         self.user = h_register_dummy_user_device_client()
         interface.add_sync_folder(self.folder1_abs_local_path, "folder1")
         file_path = os.path.join(self.folder1_abs_local_path, "dummy.txt")
