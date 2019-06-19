@@ -7,7 +7,7 @@ This program uses the `pynetworking <https://github.com/JulianSobott/pynetworkin
 over the network. This library enables an easy way
 of communication between multiple devices over a network. But to enable this some "complex" things must be setup first
 in this module. To understand what exactly is done here have a look at the
-`pynetworking documentation <https://networking.readthedocs.io/en/latest/>`_.
+`pynetworking documentation <https://pynetworking.readthedocs.io/en/latest/>`_.
 
 public module members
 ----------------------
