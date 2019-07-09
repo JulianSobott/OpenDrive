@@ -1,15 +1,25 @@
 import pynetworking as net
 
+import sys
+import os
+import multiprocessing
+
+sys.path.insert(0, os.path.abspath('../../'))
+
 from OpenDrive import net_interface
 from OpenDrive.server_side.od_logging import logger
-import multiprocessing
+from OpenDrive.server_side.database import general as db
 
 
 def start(queue: multiprocessing.Queue):
+    try:
+        db.create_database()
+    except FileExistsError:
+        pass
     address = ("0.0.0.0", 5000)
     client_manager = net.ClientManager(address, net_interface.ClientCommunicator)
     client_manager.start()
-    logger.debug("Server is now listening")
+    logger.debug(f"Server is now listening on {address}")
     try:
         while True:
             msg = queue.get()

@@ -40,8 +40,6 @@ def start():
     c_file_changes.sync_waiter.waiter.clear()
     c_net_start.connect()
     status = c_interface.login_auto()
-    if not status.was_successful():
-        pass    # TODO: open gui login window
     c_synchronization.full_synchronize()
     is_on_event.set()
     mainloop()
@@ -66,6 +64,4 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    c_file_changes.start_observing()
-    c_file_changes.add_folder(r"D:\Programmieren\OpenDrive\local\client_Side\DUMMY_FOLDER")
-    mainloop()
+    start()

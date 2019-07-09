@@ -56,7 +56,11 @@ class ClientFunctions(net.ClientFunctions):
     from OpenDrive.general.file_exchanges import get_file, make_dirs
     from OpenDrive.client_side.file_exchanges import get_dir, pull_file
     from OpenDrive.client_side.synchronization import trigger_server_synchronization
-    from OpenDrive.client_side.gui.main import open_authentication_window
+
+    @staticmethod
+    def open_authentication_window():
+        from OpenDrive.client_side.gui.main import open_authentication_window
+        open_authentication_window()
 
 
 class ServerCommunicator(net.ServerCommunicator):

@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+import os
+import sys
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
@@ -12,6 +14,11 @@ def my_test_suite():
 
 
 if __name__ == '__main__':
+    try:
+        os.makedirs("local/server_side/ROOT/", exist_ok=True)
+    except FileExistsError:
+        pass
+
     setup(name='OpenDrive',
           version='0.1a1',
           description='Open source, self hosting alternative to GoogleDrive',

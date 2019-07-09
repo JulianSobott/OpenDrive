@@ -21,6 +21,7 @@ private functions
 """
 import os
 import functools
+import time
 
 from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
@@ -125,10 +126,12 @@ def requires_authentication(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         user = net_interface.get_user()
-        if not user.is_authenticated:
+        while not user.is_authenticated:
+            # TODO: Maybe add max counter. Care to not crash the client program, because it expects a valid return
             net_interface.get_user().remote_functions.open_authentication_window()
             if not user.is_authenticated:
-                logger.error("User is still not authenticated!")
-                return
+                logger.debug("User is still not authenticated!")
+            time.sleep(1)  # Create all files and setup all users stuff
         return func(*args, **kwargs)
     return wrapper
+

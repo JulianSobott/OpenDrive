@@ -110,6 +110,7 @@ def _has_folder(folder_path: NormalizedPath) -> bool:
     return folder_path in data.keys()
 
 
+@_override_gen_functions
 def distribute_action(action: SyncAction, devices_ids: List[int]) -> None:
     for device_id in devices_ids:
         _get_file_path = lambda user_id, _: _get_file_path(user_id, device_id)
@@ -124,5 +125,6 @@ def distribute_action(action: SyncAction, devices_ids: List[int]) -> None:
                              action["is_directory"], new_file_path)
 
 
+@_override_gen_functions
 def remove_handled_changes(timestamp: float):
     gen_json.remove_handled_changes(timestamp)
