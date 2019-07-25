@@ -17,6 +17,8 @@ import shutil
 from typing import NewType, Callable
 import pynetworking as net
 
+from OpenDrive.general import paths as gen_paths
+
 
 def get_file(abs_file_src_path: str, abs_file_dest_path: str) -> net.File:
     if os.path.isfile(abs_file_src_path):
@@ -30,11 +32,11 @@ def get_dir(abs_src_path: str, abs_dest_path: str, pull_file_func: Callable, mak
     for dirpath, dirnames, filenames in os.walk(abs_src_path):
         rel_folder_name = os.path.relpath(dirpath, abs_src_path)
         for dir in dirnames:
-            dest_path = os.path.join(abs_dest_path, rel_folder_name, dir)
+            dest_path = gen_paths.normalize_path(abs_dest_path, rel_folder_name, dir)
             make_dirs_func(dest_path)
         for file in filenames:
-            abs_src_file_path = os.path.join(dirpath, file)
-            abs_dest_file_path = os.path.join(abs_dest_path, rel_folder_name, file)
+            abs_src_file_path = gen_paths.normalize_path(dirpath, file)
+            abs_dest_file_path = gen_paths.normalize_path(abs_dest_path, rel_folder_name, file)
             pull_file_func(abs_src_file_path, abs_dest_file_path)
 
 

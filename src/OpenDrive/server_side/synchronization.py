@@ -34,7 +34,7 @@ from OpenDrive.server_side.od_logging import logger
 def get_changes(dest_path: str) -> net.File:
     user = net_interface.get_user()
     user_path = server_paths.get_users_root_folder(user.user_id)
-    changes_path = os.path.join(user_path, f"changes_{user.device_id}.json")
+    changes_path = server_paths.normalize_path(user_path, f"changes_{user.device_id}.json")
     return net.File(changes_path, dest_path)
 
 
@@ -46,16 +46,16 @@ def execute_actions(actions: List[SyncAction]) -> None:
     device_ids.remove(user.device_id)
 
     for action in actions:
-        if action["rel_file_path"] in ["","."]:
+        if action["rel_file_path"] in ["", "."]:
             dest_path = action["local_folder_path"]
         else:
-            dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
+            dest_path = server_paths.normalize_path(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
             # Because directory deletions are also handled as files, there is only one function, that tries what
             # function fits
             file_exchanges.remove_file_dir(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
+            src_path = server_paths.normalize_path(action["local_folder_path"], action["rel_old_file_path"])
             file_exchanges.move(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]

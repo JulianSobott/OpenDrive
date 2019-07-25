@@ -21,8 +21,8 @@ private functions
 .. autofunction:: _execute_server_actions
 
 """
-import json
 import os
+import json
 from typing import List
 
 from OpenDrive import net_interface
@@ -33,7 +33,7 @@ from OpenDrive.client_side.od_logging import logger
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive.general.file_exchanges import SyncAction
-from OpenDrive.general.paths import NormalizedPath
+from OpenDrive.general.paths import NormalizedPath, normalize_path
 
 
 def full_synchronize() -> None:
@@ -56,7 +56,7 @@ def trigger_server_synchronization():
 
 
 def _get_server_changes() -> dict:
-    dest_path = os.path.join(client_paths.LOCAL_CLIENT_DATA, "server_changes.json")
+    dest_path = normalize_path(client_paths.LOCAL_CLIENT_DATA, "server_changes.json")
     changes_file = net_interface.server.get_changes(dest_path)
     with open(changes_file.dst_path, "r") as file:
         return json.load(file)
@@ -117,7 +117,7 @@ def _calculate_remote_actions(local_folder: dict, remote_folder: dict, local_fol
 
 def execute_client_actions(client_actions: List[SyncAction]) -> None:
     for action in client_actions:
-        dest_path = os.path.join(action["local_folder_path"], action["rel_file_path"])
+        dest_path = normalize_path(action["local_folder_path"], action["rel_file_path"])
         if action["action_type"] == gen_json.ACTION_DELETE[0]:
             # Because directory deletions are also handled as files, there is only one function, that tries what
             # function fits
@@ -126,7 +126,7 @@ def execute_client_actions(client_actions: List[SyncAction]) -> None:
             else:
                 gen_file_exchanges.remove_file(dest_path)
         elif action["action_type"] == gen_json.ACTION_MOVE[0]:
-            src_path = os.path.join(action["local_folder_path"], action["rel_old_file_path"])
+            src_path = normalize_path(action["local_folder_path"], action["rel_old_file_path"])
             gen_file_exchanges.move(src_path, dest_path)
         elif action["action_type"] == gen_json.ACTION_PULL[0]:
             src_path = action["remote_abs_path"]

@@ -32,4 +32,5 @@ def start(queue: multiprocessing.Queue):
 
 
 if __name__ == '__main__':
+    net.Logging.logger.setLevel(10)
     start(multiprocessing.Queue())

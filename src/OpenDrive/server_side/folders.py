@@ -83,6 +83,6 @@ def _add_folder_to_user(user_id: int, folder_name: str):
 def _create_physical_folder(user_id: int, folder_name: str):
     """Creates a new folder at the harddrive."""
     users_root = paths.get_users_root_folder(user_id)
-    new_folder_path = os.path.join(users_root, folder_name)
+    new_folder_path = paths.normalize_path(users_root, folder_name)
     os.mkdir(new_folder_path)
 

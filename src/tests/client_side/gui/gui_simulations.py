@@ -73,5 +73,10 @@ def simulate_many_folders():
     main.main(screens.REGISTRATION, try_auto_login=True)
 
 
+@h_client_routine(clear_folders=False)
+def client_only():
+    main.main(screens.REGISTRATION, try_auto_login=True)
+
+
 if __name__ == '__main__':
-    auto_login()
+    client_only()

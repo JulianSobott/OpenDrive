@@ -100,7 +100,7 @@ def _set_json_data(data: dict):
 @_override_gen_functions
 def _get_file_path(user_id: int, device_id: int) -> str:
     user_path = server_paths.get_users_root_folder(user_id)
-    file_path = os.path.join(user_path, get_file_name(device_id))
+    file_path = server_paths.normalize_path(user_path, get_file_name(device_id))
     return file_path
 
 

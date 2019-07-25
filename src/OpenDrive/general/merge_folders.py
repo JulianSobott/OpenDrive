@@ -65,12 +65,12 @@ def _recursive_generate_content_of_folder(abs_folder_path: str, folder_name: str
     }
     _, dir_list, file_list = next(os.walk(abs_folder_path))
     for file in sorted(file_list):
-        file_path = os.path.join(abs_folder_path, file)
+        file_path = normalize_path(abs_folder_path, file)
         if not only_files_list:
             content["files"].append({"file_name": file, "modified_timestamp": os.path.getmtime(file_path)})
         else:
             content["files"].append(file)
     for dir_name in dir_list:
-        abs_path = os.path.join(abs_folder_path, dir_name)
+        abs_path = normalize_path(abs_folder_path, dir_name)
         content["folders"].append(_recursive_generate_content_of_folder(abs_path, dir_name, only_files_list))
     return content
