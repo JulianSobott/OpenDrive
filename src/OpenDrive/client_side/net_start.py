@@ -17,6 +17,7 @@ from OpenDrive import net_interface
 def connect(blocking=True, timeout=float("inf")):
     """Connects to the server. Default is try infinity long till the connection is successful."""
     address = "192.168.178.26", 5000
+    # address = "127.0.0.1", 5000
     return net_interface.ServerCommunicator.connect(address, blocking=blocking, timeout=timeout)
 
 

@@ -48,7 +48,6 @@ def auto_login():
     main.main(screens.REGISTRATION, try_auto_login=True)
 
 
-
 @h_server_client
 def demonstration_example():
     user = h_register_dummy_user_device_client()
@@ -75,6 +74,9 @@ def simulate_many_folders():
 
 @h_client_routine(clear_folders=False)
 def client_only():
+    main_thread = threading.Thread(target=main_prog.start, daemon=True)
+    main_thread.start()
+    time.sleep(2)
     main.main(screens.REGISTRATION, try_auto_login=True)
 
 
