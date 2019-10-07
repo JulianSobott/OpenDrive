@@ -11,6 +11,7 @@ watchdog = "*"
 coverage = "*"
 passlib = "*"
 kivy = "*"
+pystray = "*"
 
 [requires]
 python_version = "3.7"
