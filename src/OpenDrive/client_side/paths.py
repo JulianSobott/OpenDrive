@@ -19,3 +19,5 @@ LOCAL_CLIENT_DATA = normalize_path(LOCAL_DATA, "client_side")
 LOCAL_DB_PATH = normalize_path(LOCAL_CLIENT_DATA, "local_data.db")
 LOCAL_JSON_PATH = normalize_path(LOCAL_CLIENT_DATA, "changes.json")
 AUTHENTICATION_PATH = normalize_path(LOCAL_CLIENT_DATA, "authentication.txt")
+
+ASSETS = normalize_path(CODE_PATH, "client_side/gui/assets")

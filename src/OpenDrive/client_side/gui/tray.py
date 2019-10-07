@@ -23,6 +23,7 @@ import PIL.Image
 
 from OpenDrive.client_side import gui
 from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side import paths as c_paths
 
 
 def _open_gui():
@@ -39,13 +40,13 @@ def start_tray(background_function):
     def background_wrapper(icon_):
         background_function()
 
-    image = PIL.Image.open("assets/Logo.png")
+    image = PIL.Image.open(c_paths.normalize_path(c_paths.ASSETS, "Logo.png"))
     menu = pystray.Menu(pystray.MenuItem("Open", _open_gui), pystray.MenuItem("Stop", _stop))
     icon = pystray.Icon("OpenDrive", image, "OpenDrive", menu)
     icon.icon = image
-    icon.run(background_wrapper)
     icon.visible = True
     logger.info("Tray started")
+    icon.run(background_wrapper)
 
 
 if __name__ == '__main__':
