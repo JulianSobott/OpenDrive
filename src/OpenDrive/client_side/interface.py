@@ -65,6 +65,9 @@ class Status:
     def get_error_code(self) -> int:
         return self._error_code
 
+    def __bool__(self):
+        return self._success
+
     def __repr__(self):
         return f"Status(success={self._success}, text='{self._text}', error_code={self._error_code}"
 
