@@ -3,6 +3,10 @@
 :synopsis: Main script, that defines the execution order.
 :author: Julian Sobott
 
+## TODO:
+- proper shutdown
+- possible to close gui
+- offline gui
 
 public functions
 ----------------
@@ -42,7 +46,7 @@ def start():
         c_json.init_file()
         c_file_changes.start_observing()
         c_file_changes.sync_waiter.waiter.clear()
-        while not c_net_start.connect(timeout=10):
+        while not c_net_start.connect(timeout=2):
             # TODO: Add server info (IP:PORT)
             sleep_time = 1
             logger.info(f"Could not connect to server. Trying again in {sleep_time} seconds")
