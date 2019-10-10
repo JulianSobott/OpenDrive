@@ -30,18 +30,13 @@ def _open_gui():
     gui.main.main()
 
 
-def _stop():
-    from OpenDrive.client_side.main import shutdown
-    shutdown()
-
-
-def start_tray(background_function):
+def start_tray(background_function, shutdown_function):
     """Add an tray icon and is blocking the program. Must be called from the main thread."""
     def background_wrapper(icon_):
         background_function()
 
     image = PIL.Image.open(c_paths.normalize_path(c_paths.ASSETS, "Logo.png"))
-    menu = pystray.Menu(pystray.MenuItem("Open", _open_gui), pystray.MenuItem("Stop", _stop))
+    menu = pystray.Menu(pystray.MenuItem("Open", _open_gui), pystray.MenuItem("Stop", shutdown_function))
     icon = pystray.Icon("OpenDrive", image, "OpenDrive", menu)
     icon.icon = image
     icon.visible = True
@@ -52,4 +47,4 @@ def start_tray(background_function):
 if __name__ == '__main__':
     def test():
         print("Hello world")
-    start_tray(test)
+    start_tray(test, test)

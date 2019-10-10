@@ -43,21 +43,25 @@ is_on_event = threading.Event()
 def start():
     """Function that setups everything."""
     def wrapper():
+        global is_on_event
+        is_on_event.set()
         c_json.init_file()
         c_file_changes.start_observing()
         c_file_changes.sync_waiter.waiter.clear()
-        while not c_net_start.connect(timeout=2):
+        logger.debug(id(is_on_event))
+        while is_on_event.is_set() and not c_net_start.connect(timeout=2):
             # TODO: Add server info (IP:PORT)
             sleep_time = 1
             logger.info(f"Could not connect to server. Trying again in {sleep_time} seconds")
             time.sleep(sleep_time)
-        logger.info("Successfully connected to server")
-        gui.main.main(authentication_only=True, try_auto_login=True)
-        c_synchronization.full_synchronize()
-
-        is_on_event.set()
-        mainloop()
-    tray.start_tray(wrapper)
+        if is_on_event.is_set():
+            logger.info("Successfully connected to server")
+            gui.main.main(authentication_only=True, try_auto_login=True)
+        if is_on_event.is_set():
+            c_synchronization.full_synchronize()
+        if is_on_event.is_set():
+            mainloop()
+    tray.start_tray(wrapper, shutdown)
 
 
 def mainloop():
@@ -72,10 +76,14 @@ def mainloop():
 
 
 def shutdown():
+    global is_on_event
     is_on_event.clear()
+    logger.debug(id(is_on_event))
     c_file_changes.sync_waiter.waiter.set()
     c_file_changes.stop_observing()
     c_net_start.close_connection()
+    gui.main.stop()
+    logger.info("Shutdown")
 
 
 if __name__ == '__main__':
