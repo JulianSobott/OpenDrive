@@ -35,6 +35,8 @@ from OpenDrive.client_side.gui.authentication import login_manual
 from OpenDrive.client_side.gui.authentication import registration
 from OpenDrive.client_side.gui.explorer import explorer
 
+app = None
+
 
 class OpenDriveApp(App):
 
@@ -63,11 +65,18 @@ class OpenDriveApp(App):
 
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
          try_auto_login: bool = True):
-    file_changes_json.init_file()
+    global app
+    file_changes_json.init_file()       # TODO: Needed?
     app = OpenDriveApp(start_screen, authentication_only, try_auto_login)
     screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
     app.run()
+
+
+def stop():
+    global app
+    if app:
+        app.stop()
 
 
 def open_authentication_window():
