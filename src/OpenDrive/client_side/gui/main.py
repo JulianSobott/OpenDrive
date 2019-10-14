@@ -23,6 +23,7 @@ private functions
 """
 import os
 from kivy.app import App
+import threading
 
 from OpenDrive.client_side.gui import screens
 from OpenDrive.client_side import paths as client_paths
@@ -70,7 +71,7 @@ def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication
     app = OpenDriveApp(start_screen, authentication_only, try_auto_login)
     screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
-    app.run()
+    threading.Thread(target=app.run).start()
 
 
 def stop():
