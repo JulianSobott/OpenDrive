@@ -11,7 +11,7 @@ from OpenDrive.server_side.od_logging import logger
 from OpenDrive.server_side.database import general as db
 
 
-def start(queue: multiprocessing.Queue):
+def start(queue: multiprocessing.Queue = multiprocessing.Queue()):
     try:
         db.create_database()
     except FileExistsError:
