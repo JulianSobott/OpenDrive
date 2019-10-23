@@ -11,7 +11,7 @@ necessary stuff for the `pynetworking` library.
 
 """
 
-# from OpenDrive import client_side
+from OpenDrive import client_side
 # from OpenDrive import server_side
 # from OpenDrive import general
 # from OpenDrive import net_interface
