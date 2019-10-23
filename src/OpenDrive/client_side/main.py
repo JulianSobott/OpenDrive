@@ -78,11 +78,19 @@ def mainloop():
 def shutdown():
     global is_on_event
     is_on_event.clear()
-    logger.debug(id(is_on_event))
     c_file_changes.sync_waiter.waiter.set()
-    c_file_changes.stop_observing()
-    c_net_start.close_connection()
-    gui.main.stop()
+    try:
+        c_file_changes.stop_observing()
+    except RuntimeError:
+        pass    # already stopped
+    try:
+        c_net_start.close_connection()
+    except RuntimeError:
+        pass    # already stopped
+    try:
+        gui.main.stop()
+    except RuntimeError:
+        pass    # already stopped
     logger.info("Shutdown")
 
 
