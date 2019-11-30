@@ -27,11 +27,11 @@ General:
 Network:
 ^^^^^^^^
 
-- Could not connect to server
-    - Trying again every x seconds till y seconds
-- Successfully connected to server (Address)
-- Closed connection to server
-- unexpectedly lost connection
+- Could not connect to server   (Not possible in OpenDrive)
+    - Trying again every x seconds till y seconds   (Not possible in OpenDrive)
+- Successfully connected to server (Address)     ✓
+- Closed connection to server   ✓
+- unexpectedly lost connection  (Not possible in OpenDrive)
 
 Synchronization:
 ^^^^^^^^^^^^^^^^
