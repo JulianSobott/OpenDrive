@@ -22,7 +22,6 @@ import pystray
 import PIL.Image
 
 from OpenDrive.client_side import gui
-from OpenDrive.client_side.od_logging import logger
 from OpenDrive.client_side import paths as c_paths
 
 tray = None
@@ -58,7 +57,6 @@ def start_tray(background_function, shutdown_function):
     tray = pystray.Icon("OpenDrive", image, "OpenDrive", menu)
     tray.icon = image
     tray.visible = True
-    logger.info("Tray started")
     tray.run(background_wrapper)
 
 
