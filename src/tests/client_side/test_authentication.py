@@ -68,4 +68,5 @@ class TestAuthentication(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    import pyprofiling
+    pyprofiling.profile(unittest.main, globals(), "OpenDrive", "authentication")

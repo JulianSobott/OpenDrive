@@ -23,6 +23,7 @@ private members
 """
 import time
 import threading
+import pyprofiling
 
 from OpenDrive.client_side import file_changes as c_file_changes
 from OpenDrive.client_side import net_start as c_net_start
@@ -64,6 +65,7 @@ def start():
     tray.start_tray(wrapper, shutdown)
 
 
+@pyprofiling.stop_in_seconds(5)
 def mainloop():
     while is_on_event.is_set():
         logger.info("Waiting... for changes")
