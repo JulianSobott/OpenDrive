@@ -6,12 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-pynetworking = ">=0.1.2"
 watchdog = "*"
 coverage = "*"
 passlib = "*"
 kivy = "*"
 pystray = "*"
+pynetworking = "==0.1.5"
+pipenv = "*"
 
 [requires]
 python_version = "3.7"
