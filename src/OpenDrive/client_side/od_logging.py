@@ -14,6 +14,7 @@ import logging
 
 def setup_logger(logger_name, log_file=None, level=logging.INFO):
     new_logger = logging.getLogger(logger_name)
+    new_logger.handlers = []
     formatter = logging.Formatter(
         '[%(levelname)-8s] [%(name)-7s] %(message)s \t\t [%(asctime)s] (%(filename)s %(lineno)d %(name)s) (%('
         'threadName)s)')
@@ -29,7 +30,6 @@ def setup_logger(logger_name, log_file=None, level=logging.INFO):
     return new_logger
 
 
-logger = setup_logger("Client")  # Deprecated: Replace with new ones
 logger_gui = setup_logger("GUI")
 logger_general = setup_logger("General")
 logger_network = setup_logger("Network")
