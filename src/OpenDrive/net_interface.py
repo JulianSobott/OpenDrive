@@ -41,7 +41,8 @@ private classes
 import pynetworking as net
 
 
-net.Logging.logger.setLevel(10)
+net.Logging.logger.setLevel(30)
+
 
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""

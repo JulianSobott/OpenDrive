@@ -29,7 +29,7 @@ from OpenDrive import net_interface
 from OpenDrive.client_side import file_changes as c_file_changes
 from OpenDrive.client_side import file_changes_json as client_json
 from OpenDrive.client_side import paths as client_paths
-from OpenDrive.client_side.od_logging import logger, logger_sync
+from OpenDrive.client_side.od_logging import logger_sync
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive.general.file_exchanges import SyncAction

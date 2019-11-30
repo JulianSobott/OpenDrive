@@ -43,7 +43,7 @@ from watchdog.observers.api import ObservedWatch
 import datetime
 import threading
 
-from OpenDrive.client_side.od_logging import logger, logger_sync
+from OpenDrive.client_side.od_logging import logger_sync
 from OpenDrive.client_side import paths, file_changes_json
 from OpenDrive.general import file_changes_json as gen_json
 
@@ -116,7 +116,6 @@ def _add_watcher(abs_folder_path: NormalizedPath, include_regexes: List[str] = (
     event_handler = FileSystemEventHandler(abs_folder_path, include_regexes, exclude_regexes)
     watch = observer.schedule(event_handler, abs_folder_path, recursive=True)
     watchers[abs_folder_path] = event_handler, watch
-    logger.debug(f"Start watching at: {abs_folder_path}")
 
 
 def _remove_watcher(abs_folder_path: NormalizedPath):
@@ -176,7 +175,7 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
                     self._single_ignore_paths.pop(self._rel_path)
         if not self._ignore:
             sync_waiter.sync()
-            logger.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
+            logger_sync.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
 
     def on_created(self, event):
         if self._ignore:
