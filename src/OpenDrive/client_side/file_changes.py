@@ -43,7 +43,7 @@ from watchdog.observers.api import ObservedWatch
 import datetime
 import threading
 
-from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side.od_logging import logger, logger_sync
 from OpenDrive.client_side import paths, file_changes_json
 from OpenDrive.general import file_changes_json as gen_json
 
@@ -59,6 +59,7 @@ def start_observing() -> None:
     module are needed."""
     file_changes_json.init_file()
     all_folders = file_changes_json.get_all_data()
+    logger_sync.info(f"Watching at folders for changes: {all_folders}")
     for folder_path, folder in all_folders.items():
         _add_watcher(folder_path, folder["include_regexes"], folder["exclude_regexes"])
     observer.start()
@@ -84,6 +85,8 @@ def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",),
     if not added:
         return False
     _add_watcher(abs_folder_path, include_regexes, exclude_regexes)
+    logger_sync.info(f"Start watching at new folder: {abs_folder_path}, include_regexes={include_regexes}, "
+                     f"exclude_regexes={exclude_regexes}")
     return True
 
 
@@ -92,6 +95,7 @@ def remove_folder_from_watching(abs_folder_path: str) -> None:
     norm_folder_path = normalize_path(abs_folder_path)
     _remove_watcher(norm_folder_path)
     file_changes_json.remove_folder(norm_folder_path)
+    logger_sync.info(f"Stop watching at folder: {abs_folder_path}")
 
 
 def add_single_ignores(abs_folder_path: str, rel_paths: List[NormalizedPath]) -> None:

@@ -36,10 +36,10 @@ Network:
 Synchronization:
 ^^^^^^^^^^^^^^^^
 
-- Watching at folders: folders_list
-- Make general sync
-- Receive files: files_list (compress/only folders if to much)
-- Send files: files_list (compress/only folders if to much)
+- Watching at folders: folders_list     ✓
+- Make general sync     (already in General)
+- Receive files: files_list (compress/only folders if to much)     ✓
+- Send files: files_list (compress/only folders if to much)     ✓
 
 
 Server side

@@ -29,7 +29,7 @@ from OpenDrive import net_interface
 from OpenDrive.client_side import file_changes as c_file_changes
 from OpenDrive.client_side import file_changes_json as client_json
 from OpenDrive.client_side import paths as client_paths
-from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side.od_logging import logger, logger_sync
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive.general.file_exchanges import SyncAction
@@ -42,12 +42,14 @@ def full_synchronize() -> None:
     client_changes = _get_client_changes()
     start_synchronization = gen_json.get_current_timestamp()
     server_actions, client_actions, conflicts = _merge_changes(server_changes, client_changes)
+    logger_sync.info(f"Execute server actions {str(server_actions)[:1000]}")
     _execute_server_actions(server_actions)
+    logger_sync.info(f"Execute client actions {str(client_actions)[:1000]}")
     execute_client_actions(client_actions)
     gen_json.remove_handled_changes(start_synchronization)
     net_interface.server.remove_handled_changes(start_synchronization)
     if len(conflicts) > 0:
-        logger.error(f"Unhandled conflicts: {conflicts}")
+        logger_sync.error(f"Unhandled conflicts: {conflicts}")
 
 
 def trigger_server_synchronization():
