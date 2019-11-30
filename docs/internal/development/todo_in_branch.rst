@@ -16,12 +16,12 @@ Client side
 General:
 ^^^^^^^^
 
-- start tray
-- start synchronization
-- start connection to server
-- open gui
-    - manual/automatic
-- stop program
+- start tray    ✓
+- start synchronization     ✓
+- start connection to server    ✓
+- open gui  ✓
+    - manual/automatic  ✓
+- stop program  ✓
 
 
 Network:
