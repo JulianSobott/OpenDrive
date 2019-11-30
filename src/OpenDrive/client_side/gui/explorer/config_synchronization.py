@@ -40,7 +40,7 @@ from OpenDrive.client_side.gui.explorer.desktop_file_dialogs import Desktop_Fold
 from OpenDrive.client_side.gui.explorer import synchronizations
 from OpenDrive.client_side.gui.explorer import pattern_parser
 from OpenDrive.general.paths import NormalizedPath, normalize_path
-from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side.od_logging import logger_gui
 from OpenDrive.client_side import merge_folders
 
 
@@ -84,16 +84,18 @@ class PopupConfigFolder(Popup):
         client_path, server_path = self.get_valid_paths()
         include_regexes, exclude_regexes = self.get_valid_patterns()
         merge_method = self.get_valid_merge_method()
-        logger.debug(merge_method.NAME)
         if self._is_valid_data:
             status = interface.add_sync_folder(client_path, server_path, include_regexes, exclude_regexes,
                                                merge_method)
             if status.was_successful():
+                logger_gui.info("Successfully added new synchronization")
                 self.dismiss()
                 self._synchronizations_container.update_folders_on_added(client_path)
             else:
+                logger_gui.info(f"Failed to add new synchronization: {status.get_text()}")
                 self.show_error_message(status.get_text())
         else:
+            logger_gui.info(f"Invalid data entered (Add sync to folder): {self._error_message}")
             self.show_error_message(self._error_message)
 
     def btn_release_cancel(self):
@@ -141,8 +143,7 @@ class PopupConfigFolder(Popup):
         return self.tf_server_path in interface.get_all_remote_folders()
 
     def show_error_message(self, message: str):
-        logger.debug(f"ERROR message: {message}")
-        return
+        # TODO: check if it works
         self.lbl_user_hints.color[3] = 1
         self.lbl_user_hints.text = message
 
@@ -170,7 +171,7 @@ class Path(BoxLayout):
             popup_server_folders.foldersView.set_folders(all_server_folders)
             popup_server_folders.open()
         else:
-            logger.warning(status.get_text())
+            logger_gui.warning(status.get_text())
             # TODO: transmit message to user
 
 
@@ -244,7 +245,6 @@ class MergeMethods(BoxLayout):
     def set_method(self, merge_method_item: 'MergeMethodItem'):
         self.dropdown.select(merge_method_item.text)
         self.selected_merge_method = self.names_methods[merge_method_item.text]
-
 
 
 class MergeMethodItem(Button):

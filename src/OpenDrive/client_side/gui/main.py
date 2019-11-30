@@ -29,7 +29,7 @@ from OpenDrive.client_side.gui import screens
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import interface
-from OpenDrive.client_side.od_logging import logger_general
+from OpenDrive.client_side.od_logging import logger_general, logger_gui
 
 # DO NOT DELETE UNUSED IMPORTS!
 # They are needed inside the OpenDriveApp
@@ -44,6 +44,8 @@ class OpenDriveApp(App):
 
     def __init__(self, start_screen: screens.ScreenName, authentication_only: bool, try_auto_login: bool, **kwargs):
         super().__init__(**kwargs)
+        logger_gui.info(f"Open app: start_screen={start_screen}, authentication_only={authentication_only}, "
+                        f"try_auto_login={try_auto_login}")
         self.start_screen = start_screen
         self.authentication_only = authentication_only
         self.close_on_run = False

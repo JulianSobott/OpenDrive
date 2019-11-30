@@ -7,6 +7,7 @@ Available loggers:
 - **logger_general:** Logging the program flow
 - **logger_network:** Logging network stuff
 - **logger_sync:** Logging synchronization stuff
+- **logger_gui:** Logging gui stuff
 """
 import logging
 
@@ -28,7 +29,8 @@ def setup_logger(logger_name, log_file=None, level=logging.INFO):
     return new_logger
 
 
-logger = setup_logger("Client")     # Deprecated: Replace with new ones
+logger = setup_logger("Client")  # Deprecated: Replace with new ones
+logger_gui = setup_logger("GUI")
 logger_general = setup_logger("General")
 logger_network = setup_logger("Network")
 logger_sync = setup_logger("Sync")
