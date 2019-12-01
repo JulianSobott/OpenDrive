@@ -21,18 +21,25 @@ from OpenDrive.general.od_logging import setup_logger
 pynetworking.Logging.logger.setLevel(logging.WARNING)
 
 
-def client_logger_sync(client_name):
+def client_logger_sync():
+    from OpenDrive.net_interface import get_client_id
+    client_name = get_client_id()
     return setup_logger(f"[{client_name}] Sync")
 
 
-def client_logger_security(client_name):
+def client_logger_security():
+    from OpenDrive.net_interface import get_client_id
+    client_name = get_client_id()
     return setup_logger(f"[{client_name}] Security")
 
 
-def client_logger_network(client_name):
+def client_logger_network():
+    from OpenDrive.net_interface import get_client_id
+    client_name = get_client_id()
     return setup_logger(f"[{client_name}] Network")
 
 
 logger = setup_logger("Server")         # Deprecated: Replace with new ones
 logger_general = setup_logger("General")
 logger_network = setup_logger("Network")
+

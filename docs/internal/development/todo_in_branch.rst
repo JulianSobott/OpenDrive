@@ -47,6 +47,11 @@ Authentications
 
 - authentication status: login, register, logout    ✓
 
+System
+^^^^^^
+
+- OS
+- installation paths
 
 Server side
 ############
@@ -79,3 +84,8 @@ Synchronization
 - Receive files: files_list (compress/only folders if to much)
 - Send files: files_list (compress/only folders if to much)
 
+System
+^^^^^^
+
+- OS
+- installation paths

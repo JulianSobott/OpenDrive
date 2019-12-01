@@ -107,3 +107,7 @@ def get_device_id() -> int:
 
 def get_user() -> ClientCommunicator:
     return net.ClientManager().get()
+
+
+def get_client_id() -> int:
+    return net.ClientManager().get().id
