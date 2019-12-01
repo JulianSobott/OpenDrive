@@ -1,21 +1,38 @@
 """
 @author: Julian Sobott
 @created: 13.11.2018
-@brief:
-@description:
 
-@external_use:
+Available loggers:
 
-@internal_use:
+- **logger_general:** Logging the program flow
+- **logger_network:** Logging network stuff
 
+Available loggers per client:
+
+- **logger_sync:** Logging synchronization stuff
+- **logger_security:** Logging security relevant stuff like authentication
+- **logger_network:** Logging network stuff
 """
 import logging
+import pynetworking
 
-logger = logging.getLogger("Server")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-        '%(levelname)-8s %(message)s \t\t(%(filename)s %(lineno)d %(name)s)')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+from OpenDrive.general.od_logging import setup_logger
 
+pynetworking.Logging.logger.setLevel(logging.WARNING)
+
+
+def client_logger_sync(client_name):
+    return setup_logger(f"[{client_name}] Sync")
+
+
+def client_logger_security(client_name):
+    return setup_logger(f"[{client_name}] Security")
+
+
+def client_logger_network(client_name):
+    return setup_logger(f"[{client_name}] Network")
+
+
+logger = setup_logger("Server")         # Deprecated: Replace with new ones
+logger_general = setup_logger("General")
+logger_network = setup_logger("Network")
