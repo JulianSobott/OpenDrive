@@ -65,7 +65,7 @@ General
 Authentication
 ^^^^^^^^^^^^^^
 
-- authentication status: login, register, logout
+- authentication status: login, register, logout     ✓
 
 
 Network

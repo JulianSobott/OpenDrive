@@ -91,6 +91,10 @@ class ClientCommunicator(net.ClientCommunicator):
     def is_authenticated(self, val: bool) -> None:
         self._is_authenticated = val
 
+    def __repr__(self):
+        return f"ClientCommunicator(id={self.id}, user_id={self.user_id}, device_id={self.device_id}, " \
+               f"is_authenticated={self.is_authenticated})"
+
 
 server = ServerCommunicator.remote_functions
 
