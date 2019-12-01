@@ -37,9 +37,10 @@ private classes
     :show-inheritance:
 
 """
-
 import pynetworking as net
 
+
+from OpenDrive.server_side.od_logging import logger_network
 
 net.Logging.logger.setLevel(30)
 
@@ -77,6 +78,7 @@ class ClientCommunicator(net.ClientCommunicator):
 
     def __init__(self, id_, address, connection, on_close):
         super().__init__(id_, address, connection, on_close)
+        logger_network.info(f"New client connected: ID={id_}, address={address}")
         self._is_authenticated = False
         self.user_id = -1
         self.device_id = -1

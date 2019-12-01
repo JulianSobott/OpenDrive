@@ -66,8 +66,8 @@ Authentication
 Network
 ^^^^^^^^
 
-- client connected
-- client disconnected
+- client connected     ✓
+- client disconnected   (interface from pynetworking needed)
 
 
 Synchronization
