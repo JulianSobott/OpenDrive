@@ -1,12 +1,7 @@
 """
 @author: Julian Sobott
 @created: 13.11.2018
-@brief:
-@description:
 
-@external_use:
-
-@internal_use:
 
 """
 import logging
@@ -15,7 +10,8 @@ MAX_MESSAGE_LEN = 1000
 MIN_MESSAGE_LEN = 50
 
 
-def setup_logger(logger_name, log_file=None, level=logging.INFO):
+def setup_logger(logger_name: str, log_file: str = None, level: int = logging.INFO):
+    """Setup a new logger"""
     new_logger = logging.getLogger(logger_name)
     new_logger.handlers = []
     formatter = logging.Formatter(
@@ -33,4 +29,4 @@ def setup_logger(logger_name, log_file=None, level=logging.INFO):
     return new_logger
 
 
-logger = setup_logger("GeneralDep")     # Deprecated: Replace with new ones
+logger_database = setup_logger("Database")

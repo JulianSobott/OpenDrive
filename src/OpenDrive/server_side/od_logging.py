@@ -39,7 +39,6 @@ def client_logger_network():
     return setup_logger(f"[{client_name}] Network")
 
 
-logger = setup_logger("Server")         # Deprecated: Replace with new ones
 logger_general = setup_logger("General")
 logger_network = setup_logger("Network")
 
