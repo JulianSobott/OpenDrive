@@ -31,4 +31,12 @@ def setup_logger(logger_name: str, log_file: str = None, level: int = logging.IN
     return new_logger
 
 
+def log_system(log_file):
+    import sys
+    import platform
+    logger_system = setup_logger("System", log_file)
+    logger_system.info(f"Python version: {sys.version}")
+    logger_system.info(f"OS Info: platform={platform.platform()}, architecture={platform.architecture()}")
+
+
 logger_database = setup_logger("Database")

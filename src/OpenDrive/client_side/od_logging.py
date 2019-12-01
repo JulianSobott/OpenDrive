@@ -14,7 +14,7 @@ import logging
 import pynetworking
 import os
 
-from OpenDrive.general.od_logging import setup_logger
+from OpenDrive.general.od_logging import setup_logger, log_system
 from OpenDrive.general import paths as gen_paths
 
 pynetworking.Logging.logger.setLevel(logging.WARNING)
@@ -41,3 +41,4 @@ def init_logging():
     logger_network = setup_logger("Network", log_file)
     logger_sync = setup_logger("Sync", log_file)
     logger_security = setup_logger("Security", log_file)
+    log_system(log_file)
