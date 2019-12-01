@@ -27,7 +27,7 @@ from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side import database as db
 from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.server_side.authentication import requires_authentication
-from OpenDrive.server_side.od_logging import logger
+from OpenDrive.server_side.od_logging import client_logger_sync
 
 
 @requires_authentication
@@ -40,6 +40,7 @@ def get_changes(dest_path: str) -> net.File:
 
 @requires_authentication
 def execute_actions(actions: List[SyncAction]) -> None:
+    client_logger_sync().info(f"Executing actions: {actions}")
     user = net_interface.get_user()
     devices = db.Device.get_by_user_id(user.user_id)
     device_ids = [device.device_id for device in devices]
@@ -78,4 +79,5 @@ def notify_other_devices(user: 'net_interface.ClientCommunicator'):
     clients: Dict[int, net_interface.ClientCommunicator] = net.ClientManager().clients
     for client in clients.values():
         if client.user_id == user.user_id and client.device_id != user.device_id:
+            client_logger_sync().info(f"Trigger server synchronization: client={client}")
             client.remote_functions.trigger_server_synchronization()

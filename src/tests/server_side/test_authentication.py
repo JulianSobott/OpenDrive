@@ -104,9 +104,13 @@ class TestRequiresAuthentication(unittest.TestCase):
 
         def h_mock_open_authentication_window():
             self.opened = True
+            print("Open")
 
         net_interface.ClientFunctions.open_authentication_window = h_mock_open_authentication_window
-        net_interface.server.execute_actions([])
+        import time
+        net_interface.ServerFunctions.execute_actions([])
+
+        time.sleep(1)
         self.assertTrue(self.opened)
 
 

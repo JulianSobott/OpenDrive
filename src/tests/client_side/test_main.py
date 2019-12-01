@@ -27,7 +27,7 @@ class TestMain(unittest.TestCase):
         h_stop_server_process(self._server_process)
 
     @h_client_routine(clear_folders=False)
-    def test_start_logged_in(self):
+    def putest_start_logged_in(self):
         user = h_register_dummy_user_device_client()
         main_thread = threading.Thread(target=main.start, daemon=True)
         main_thread.start()

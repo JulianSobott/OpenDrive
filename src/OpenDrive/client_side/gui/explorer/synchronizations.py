@@ -30,7 +30,7 @@ from kivy.uix.recycleview import RecycleView
 
 from OpenDrive.client_side import interface
 from OpenDrive.general.paths import NormalizedPath, normalize_path
-from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side.od_logging import logger_gui
 
 
 class Synchronizations(RecycleView):
@@ -43,12 +43,12 @@ class Synchronizations(RecycleView):
                      for path, folder in self.folders.items()]
 
     def remove_synchronization(self, local_path: NormalizedPath):
-        for i in range(len(self.data)):
+        for i in range(len(self.data)):     # TODO: enumerate
             if self.data[i]['local_path'] == local_path:
+                logger_gui.info(f"Remove synchronization: {local_path}")
                 interface.remove_synchronization(local_path)
                 self.data.pop(i)
                 break
-        print(self.data)
 
     def update_folders_on_added(self, abs_local_path: NormalizedPath):
         all_folders = interface.get_sync_data()

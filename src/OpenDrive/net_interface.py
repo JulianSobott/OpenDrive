@@ -37,11 +37,13 @@ private classes
     :show-inheritance:
 
 """
-
 import pynetworking as net
 
 
-net.Logging.logger.setLevel(10)
+from OpenDrive.server_side.od_logging import logger_network
+
+net.Logging.logger.setLevel(30)
+
 
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
@@ -76,6 +78,7 @@ class ClientCommunicator(net.ClientCommunicator):
 
     def __init__(self, id_, address, connection, on_close):
         super().__init__(id_, address, connection, on_close)
+        logger_network.info(f"New client connected: ID={id_}, address={address}")
         self._is_authenticated = False
         self.user_id = -1
         self.device_id = -1
@@ -87,6 +90,10 @@ class ClientCommunicator(net.ClientCommunicator):
     @is_authenticated.setter
     def is_authenticated(self, val: bool) -> None:
         self._is_authenticated = val
+
+    def __repr__(self):
+        return f"ClientCommunicator(id={self.id}, user_id={self.user_id}, device_id={self.device_id}, " \
+               f"is_authenticated={self.is_authenticated})"
 
 
 server = ServerCommunicator.remote_functions
@@ -104,3 +111,7 @@ def get_device_id() -> int:
 
 def get_user() -> ClientCommunicator:
     return net.ClientManager().get()
+
+
+def get_client_id() -> int:
+    return net.ClientManager().get().id

@@ -32,7 +32,7 @@ from OpenDrive import net_interface
 from OpenDrive.general.device_data import get_mac
 from OpenDrive.server_side.database import Token
 from OpenDrive.client_side import paths
-from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side.od_logging import logger_security, logger_network
 from OpenDrive.client_side.interface import Status
 
 
@@ -41,6 +41,8 @@ def connection_needed(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if not net_interface.ServerCommunicator.is_connected():
+            logger_network.info(f"Function {func.__name__} can not be executed, because the device is not connected "
+                                f"to the server.")
             return Status.fail("Can not connect to server. Please try again later.")
         ret_value = func(*args, **kwargs)
         return ret_value
@@ -52,8 +54,10 @@ def register_user_device(username: str, password: str, email: str = None) -> Sta
     mac_address = get_mac()
     ret = net_interface.server.register_user_device(username, password, mac_address, email)
     if isinstance(ret, str):
+        logger_security.info(f"Failed to register: {ret}")
         return Status.fail(ret)
     else:
+        logger_security.info(f"Successfully registered")
         _save_received_token(ret)
         return Status.success("Successfully registered")
 
@@ -63,11 +67,12 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
     mac_address = get_mac()
     ret = net_interface.server.login_manual_user_device(username, password, mac_address)
     if isinstance(ret, str):
+        logger_security.info(f"Failed to login manually: {ret}")
         return Status.fail(ret)
     else:
-        print("Successfully logged in")
         if allow_auto_login:
             _save_received_token(ret)
+        logger_security.info(f"Successfully logged in manually")
         return Status.success("Successfully logged in")
 
 
@@ -75,6 +80,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
 def logout() -> Status:
     net_interface.server.logout()
     net_interface.ServerCommunicator.close_connection()
+    logger_security.info(f"Successfully logged out")
     return Status.success("Successfully logged out.")
 
 
@@ -85,12 +91,14 @@ def login_auto() -> Status:
         mac = get_mac()
         success = net_interface.server.login_auto(token, mac)
         if not success:
+            logger_security.info(f"Failed to login automatically: Wrong token")
             return Status.fail("Failed to automatically log in.")
         else:
-            logger.info("Successfully auto logged in")
+            logger_security.info(f"Successfully logged in automatically")
             return Status.success("Successfully auto logged in")
 
     else:
+        logger_security.info(f"Failed to login automatically: Token not exists")
         return Status.fail("Failed to automatically log in.")
 
 
@@ -129,6 +137,7 @@ def login_manual_user_device_cli() -> Status:
 def _save_received_token(token: Token) -> None:
     with open(paths.AUTHENTICATION_PATH, "w+") as file:
         file.write(token.token)
+    logger_security.info("Successfully saved token")
 
 
 def _get_token() -> Optional[Token]:

@@ -24,6 +24,12 @@ import sys
 import os
 
 sys.path.insert(0, os.path.abspath("../"))
-from OpenDrive.client_side import main
+from OpenDrive import client_side
 
-main.start()
+
+def main():
+    client_side.main.start()
+
+
+if __name__ == '__main__':
+    main()
