@@ -17,7 +17,7 @@ import sqlite3
 from typing import List
 import os
 
-from OpenDrive.general.od_logging import logger
+from OpenDrive.general.od_logging import logger_database
 
 
 UniqueError = sqlite3.IntegrityError
@@ -54,10 +54,11 @@ class DBConnection:
         self.cursor.execute(sql, args)
 
     def insert(self, sql: str, args: tuple = ()) -> int:
-        """INSERT (raises sqlite3.IntegrityError, when a existing unique field is inserted"""
+        """INSERT (raises sqlite3.IntegrityError, when an existing unique field is inserted"""
         try:
             self.cursor.execute(sql, args)
         except sqlite3.IntegrityError as e:
+            logger_database.warning(f"A value that is marked as unique was inserted again: sql={sql}, args={args}")
             raise UniqueError()
         return self.cursor.lastrowid
 
@@ -66,7 +67,7 @@ class DBConnection:
         try:
             self.cursor.execute(sql, args)
         except Exception as e:
-            logger.error(e)
+            logger_database.error(f"Error at update: {e}")
             raise e
 
     def delete(self, sql: str, args: tuple = ()) -> None:
@@ -107,7 +108,7 @@ class TableEntry(object):
         if len(ret) == 0:
             raise KeyError(f"No change entry in 'ignores' with id {self.id}!")
         if len(ret) > 1:
-            raise KeyError(f"To many entries in '{self.TABLE_NAME}({self.PRIMARY_KEY_NAME})' with value {self.id}! ")
+            raise KeyError(f"Too many entries in '{self.TABLE_NAME}({self.PRIMARY_KEY_NAME})' with value {self.id}! ")
         self.__init__(*ret[0])
         return self
 
@@ -176,7 +177,7 @@ class TableEntry(object):
             diffs = [(key, self.__dict__[key], other.__dict__[key])
                      for key in self.__dict__.keys() if self.__dict__[key] != other.__dict__[key]]
             if len(diffs) > 0:
-                logger.debug(f"Difference (self, other): {diffs}")
+                logger_database.debug(f"Difference (self, other): {diffs}")
             return len(diffs) == 0
         except KeyError:
             return False
@@ -188,7 +189,8 @@ def delete_db_file(path):
         if extension != ".db":
             raise Exception(f"Cannot delete non .db file! {path}")
         os.remove(path)
+        logger_database.info(f"Deleted database file: {path}")
     except FileNotFoundError:
-        logger.debug(f"Could not delete non existing db file. {path}")
+        logger_database.info(f"Could not delete non existing db file. {path}")
         pass
 

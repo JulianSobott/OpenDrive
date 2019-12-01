@@ -28,7 +28,7 @@ from typing import Optional, Tuple, Union
 
 from OpenDrive import net_interface
 from OpenDrive.server_side.database import User, Device, Token
-from OpenDrive.server_side.od_logging import logger
+from OpenDrive.server_side.od_logging import client_logger_security
 from OpenDrive.server_side import folders
 from OpenDrive.server_side import paths as server_paths
 from OpenDrive.server_side import file_changes_json as server_json
@@ -44,6 +44,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     else:
         user_id = ret
     token, device_id = _add_update_device(user_id, mac_address)
+    client_logger_security().info(f"Successfully added new device: user_id={user_id}, device_id={device_id}")
     _set_user_authenticated(user_id, device_id)
     return token
 
@@ -51,47 +52,68 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
 def register_user(username: str, password: str, email: Optional[str] = None) -> Union[str, int]:
     """Registers a new user. On success the user_id  is returned. On any failure a string with the error message
     is returned. No device is added or registered."""
+    fail_msg = ""
     if len(username) <= 3:
-        return "Username must be at least 4 characters long!"
+        fail_msg = "Username must be at least 4 characters long!"
     if len(password) <= 4:
-        return "Password must be at least 5 characters long!"
+        fail_msg = "Password must be at least 5 characters long!"
     possible_user = User.get_by_username(username)
     if possible_user is not None:
-        return "Username is already taken"
-    hashed_password = pwd_context.hash(password)
-    user_id = User.create(username, hashed_password, email)
-    folders.create_folder_for_new_user(User.from_id(user_id))
-    return user_id
+        fail_msg = "Username is already taken"
+    if fail_msg:
+        client_logger_security().info(f"Failed to register: {fail_msg}")
+        return fail_msg
+    else:
+        hashed_password = pwd_context.hash(password)
+        user_id = User.create(username, hashed_password, email)
+        folders.create_folder_for_new_user(User.from_id(user_id))
+        client_logger_security().info(f"Successfully registered user: user_id={user_id}")
+        return user_id
 
 
 def login_manual_user_device(username: str, password: str, mac_address: str) -> Union[str, Token]:
     """Try to login by username and password. A token for auto-login is returned"""
     possible_user = User.get_by_username(username)
+    fail_msg = ""
     if possible_user is None:
-        return f"No user with username: {username}."
+        fail_msg = f"No user with username: {username}."
     user = possible_user
     if not pwd_context.verify(password, user.password):
-        return "Entered wrong password."
-    token, device_id = _add_update_device(user.id, mac_address)
-    _set_user_authenticated(user.id, device_id)
-    return token
+        fail_msg = f"Wrong password"
+    if fail_msg:
+        client_logger_security().info(f"Failed to login manual: {fail_msg}")
+        return "Wrong username or password"
+    else:
+        token, device_id = _add_update_device(user.id, mac_address)
+        _set_user_authenticated(user.id, device_id)
+        client_logger_security().info(f"Successfully logged in manual: device_id={device_id}, user_id={user.user_id}, "
+                                      f"token={token}")
+        return token
 
 
 def login_auto(token: Token, mac_address: str) -> bool:
     """Login by the token and mac_address. Returns, whether it was successful or not."""
     device = Device.get_by_mac(mac_address)
+    fail_msg = ""
     if device is None:
+        fail_msg = "No device with mac address exist"
+    elif Token.is_token_expired(device.token_expires):
+        fail_msg = "Token is expired"
+    elif token != device.token:
+        fail_msg = "Wrong token"
+    if fail_msg:
+        client_logger_security().info(f"Failed to login automatically: {fail_msg}")
         return False
-    if Token.is_token_expired(device.token_expires):
-        return False
-    if token != device.token:
-        return False
-    _set_user_authenticated(device.user_id, device.device_id)
-    return True
+    else:
+        _set_user_authenticated(device.user_id, device.device_id)
+        client_logger_security().info(f"Successfully logged in automatically:  device_id={device.device_id}, "
+                                      f"user_id={device.user_id}")
+        return True
 
 
 def logout() -> None:
     _set_user_authenticated(-1, -1, False)
+    client_logger_security().info("Successfully logged out")
     # TODO: remove client from ClientManager
 
 
@@ -126,12 +148,16 @@ def requires_authentication(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         user = net_interface.get_user()
+        if not user.is_authenticated:
+            client_logger_security().info(f"User is not authenticated to execute this function: "
+                                          f"user={user}, function={func.__name__}")
         while not user.is_authenticated:
             # TODO: Maybe add max counter. Care to not crash the client program, because it expects a valid return
             net_interface.get_user().remote_functions.open_authentication_window()
             if not user.is_authenticated:
-                logger.debug("User is still not authenticated!")
-            time.sleep(1)  # Create all files and setup all users stuff
+                client_logger_security().debug(f"User is still not authenticated! user={user}, "
+                                               f"function={func.__name__}")
+            time.sleep(1)  # TODO: add better way instead of sleep for create all files and setup all users stuff
         return func(*args, **kwargs)
     return wrapper
 

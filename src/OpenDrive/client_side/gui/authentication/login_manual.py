@@ -2,7 +2,7 @@ from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen
 
 from OpenDrive.client_side import interface
-from OpenDrive.client_side.od_logging import logger
+from OpenDrive.client_side.od_logging import logger_gui
 from OpenDrive.client_side.gui import screens
 
 
@@ -17,7 +17,7 @@ class ScreenLoginManual(Screen):
         password = self.tf_password.text
         status = interface.login_manual(username, password)
         if status.was_successful():
-            logger.debug("Successfully logged in")
+            logger_gui.debug("Successfully logged in")
             screens.screen_manager.do_login()
         else:
             self.lbl_user_hints.color[3] = 1

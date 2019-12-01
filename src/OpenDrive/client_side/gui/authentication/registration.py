@@ -5,6 +5,7 @@ from kivy.uix.screenmanager import Screen
 
 from OpenDrive.client_side import interface
 from OpenDrive.client_side.gui import screens
+from OpenDrive.client_side.od_logging import logger_gui
 
 
 class ScreenRegistration(Screen):
@@ -38,8 +39,10 @@ class ScreenRegistration(Screen):
 
         status = interface.register(username, password, email)
         if status.was_successful():
+            logger_gui.info("Successfully registered")
             screens.screen_manager.do_login()
         else:
+            logger_gui.info(f"Failed to register: {status.get_text()}")
             self.show_error_message(status.get_text())
 
     def btn_release_login(self):
