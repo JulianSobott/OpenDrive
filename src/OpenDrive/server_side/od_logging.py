@@ -43,7 +43,11 @@ def _client_logger(name):
     from OpenDrive.net_interface import get_client_id
     client_name = get_client_id()
     logger_name = f"[{client_name}] {name}"
-    return client_loggers.setdefault(logger_name, setup_logger(logger_name, get_client_file_path(client_name)))
+    if logger_name in client_loggers:
+        return client_loggers[logger_name]
+    else:
+        client_loggers[logger_name] = setup_logger(logger_name, get_client_file_path(client_name))
+        return client_loggers[logger_name]
 
 
 def client_logger_sync():
