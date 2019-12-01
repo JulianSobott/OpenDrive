@@ -42,6 +42,12 @@ Synchronization:
 - Send files: files_list (compress/only folders if to much)     ✓
 
 
+Authentications
+^^^^^^^^^^^^^^^
+
+- authentication status: login, register, logout    ✓
+
+
 Server side
 ############
 
@@ -49,6 +55,12 @@ General
 ^^^^^^^
 
 - Start server
+
+Authentication
+^^^^^^^^^^^^^^
+
+- authentication status: login, register, logout
+
 
 Network
 ^^^^^^^^
