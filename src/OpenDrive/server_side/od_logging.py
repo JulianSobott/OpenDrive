@@ -22,14 +22,11 @@ from OpenDrive.general import paths as gen_paths
 
 pynetworking.Logging.logger.setLevel(logging.WARNING)
 
-log_to_file = True
-if log_to_file:
-    os.makedirs(gen_paths.SERVER_LOGS, exist_ok=True)
-    log_file = gen_paths.normalize_path(gen_paths.SERVER_LOGS, "all.log")
-else:
-    log_file = None
+logger_general: logging.Logger = logging.getLogger("General")
+logger_network: logging.Logger = logging.getLogger("Network")
 
 client_loggers = {}
+log_to_file = True
 
 
 def get_client_file_path(client_name):
@@ -62,5 +59,12 @@ def client_logger_network():
     return _client_logger("Network")
 
 
-logger_general = setup_logger("General", log_file)
-logger_network = setup_logger("Network", log_file)
+def init_logging():
+    global logger_network, logger_general
+    if log_to_file:
+        os.makedirs(gen_paths.SERVER_LOGS, exist_ok=True)
+        log_file = gen_paths.normalize_path(gen_paths.SERVER_LOGS, "all.log")
+    else:
+        log_file = None
+    logger_general = setup_logger("General", log_file)
+    logger_network = setup_logger("Network", log_file)

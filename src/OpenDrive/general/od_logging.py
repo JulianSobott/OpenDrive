@@ -17,7 +17,7 @@ def setup_logger(logger_name: str, log_file: str = None, level: int = logging.IN
     new_logger = logging.getLogger(logger_name)
     new_logger.handlers = []
     formatter = logging.Formatter(
-            f'[%(levelname)-8s] [%(name)-7s] [%(asctime)s] %(message)-{MIN_MESSAGE_LEN}.{MAX_MESSAGE_LEN}s \t\t '
+            f'[%(levelname)-8s] [%(name)-8s] [%(asctime)s] %(message)-{MIN_MESSAGE_LEN}.{MAX_MESSAGE_LEN}s \t\t '
             f'(%(filename)s %(funcName)s %(lineno)d) (%('f'threadName)s)')
     if log_file:
         file_handler = log_files_handlers.setdefault(log_file, logging.FileHandler(log_file, mode="w"))

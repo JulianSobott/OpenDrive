@@ -7,11 +7,12 @@ import multiprocessing
 sys.path.insert(0, os.path.abspath('../../'))
 
 from OpenDrive import net_interface
-from OpenDrive.server_side.od_logging import logger_general, logger_network
+from OpenDrive.server_side.od_logging import logger_general, logger_network, init_logging
 from OpenDrive.server_side.database import general as db
 
 
 def start(queue: multiprocessing.Queue = multiprocessing.Queue()):
+    init_logging()
     logger_general.info("Start server")
     try:
         db.create_database()

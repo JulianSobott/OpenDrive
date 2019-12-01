@@ -26,4 +26,6 @@ import os
 sys.path.insert(0, os.path.abspath("../"))
 from OpenDrive.server_side import net_start
 
-net_start.start()
+
+if __name__ == '__main__':
+    net_start.start()

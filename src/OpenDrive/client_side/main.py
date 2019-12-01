@@ -30,7 +30,7 @@ from OpenDrive.client_side import net_start as c_net_start
 from OpenDrive.client_side import interface as c_interface
 from OpenDrive.client_side import synchronization as c_synchronization
 from OpenDrive.client_side import file_changes_json as c_json
-from OpenDrive.client_side.od_logging import logger_general, logger_network
+from OpenDrive.client_side.od_logging import logger_general, init_logging
 from OpenDrive.client_side.gui import tray
 from OpenDrive.client_side import gui
 
@@ -43,6 +43,7 @@ is_on_event = threading.Event()
 
 def start():
     """Function that setups everything."""
+    init_logging()
     logger_general.info("Start main application")
 
     def wrapper():
