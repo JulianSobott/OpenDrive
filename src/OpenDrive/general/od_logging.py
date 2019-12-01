@@ -11,12 +11,16 @@
 """
 import logging
 
+MAX_MESSAGE_LEN = 1000
+MIN_MESSAGE_LEN = 50
+
 
 def setup_logger(logger_name, log_file=None, level=logging.INFO):
     new_logger = logging.getLogger(logger_name)
     new_logger.handlers = []
     formatter = logging.Formatter(
-            '[%(levelname)-8s] [%(name)-7s] [%(asctime)s] %(message)s \t\t (%(filename)s %(lineno)d) (%(threadName)s)')
+            f'[%(levelname)-8s] [%(name)-7s] [%(asctime)s] %(message)-{MIN_MESSAGE_LEN}.{MAX_MESSAGE_LEN}s \t\t '
+            f'(%(filename)s %(lineno)d) (%('f'threadName)s)')
     if log_file:
         file_handler = logging.FileHandler(log_file, mode="w")
         file_handler.setFormatter(formatter)
