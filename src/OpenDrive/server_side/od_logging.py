@@ -22,30 +22,40 @@ from OpenDrive.general import paths as gen_paths
 
 pynetworking.Logging.logger.setLevel(logging.WARNING)
 
-log_to_file = False
+log_to_file = True
 if log_to_file:
     os.makedirs(gen_paths.SERVER_LOGS, exist_ok=True)
     log_file = gen_paths.normalize_path(gen_paths.SERVER_LOGS, "all.log")
 else:
     log_file = None
 
+client_loggers = {}
 
-def client_logger_sync():
+
+def get_client_file_path(client_name):
+    if log_to_file:
+        return gen_paths.normalize_path(gen_paths.SERVER_LOGS, f"client_{client_name}.log")
+    else:
+        return None
+
+
+def _client_logger(name):
     from OpenDrive.net_interface import get_client_id
     client_name = get_client_id()
-    return setup_logger(f"[{client_name}] Sync")
+    logger_name = f"[{client_name}] {name}"
+    return client_loggers.setdefault(logger_name, setup_logger(logger_name, get_client_file_path(client_name)))
+
+
+def client_logger_sync():
+    return _client_logger("Sync")
 
 
 def client_logger_security():
-    from OpenDrive.net_interface import get_client_id
-    client_name = get_client_id()
-    return setup_logger(f"[{client_name}] Security")
+    return _client_logger("Security")
 
 
 def client_logger_network():
-    from OpenDrive.net_interface import get_client_id
-    client_name = get_client_id()
-    return setup_logger(f"[{client_name}] Network")
+    return _client_logger("Network")
 
 
 logger_general = setup_logger("General", log_file)
