@@ -97,9 +97,9 @@ def login_auto(token: Token, mac_address: str) -> bool:
     fail_msg = ""
     if device is None:
         fail_msg = "No device with mac address exist"
-    if Token.is_token_expired(device.token_expires):
+    elif Token.is_token_expired(device.token_expires):
         fail_msg = "Token is expired"
-    if token != device.token:
+    elif token != device.token:
         fail_msg = "Wrong token"
     if fail_msg:
         client_logger_security().info(f"Failed to login automatically: {fail_msg}")
