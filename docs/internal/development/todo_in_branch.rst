@@ -54,7 +54,8 @@ Server side
 General
 ^^^^^^^
 
-- Start server
+- Start server     ✓
+- Stopped server     ✓
 
 Authentication
 ^^^^^^^^^^^^^^
