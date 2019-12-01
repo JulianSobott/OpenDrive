@@ -17,6 +17,10 @@ PROJECT_PATH = os.path.abspath(os.path.join(paths_PATH, "../../../.."))
 CODE_PATH = os.path.join(PROJECT_PATH, "src/OpenDrive/")
 
 LOCAL_DATA = os.path.join(PROJECT_PATH, "local/")
+TEMP = os.path.join(PROJECT_PATH, "tmp")
+LOGS = os.path.join(TEMP, "logs")
+CLIENT_LOGS = os.path.join(LOGS, "client")
+SERVER_LOGS = os.path.join(LOGS, "server")
 
 
 def normalize_path(path: str, *paths: str) -> NormalizedPath:

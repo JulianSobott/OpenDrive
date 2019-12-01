@@ -12,13 +12,22 @@ Available loggers:
 """
 import logging
 import pynetworking
+import os
+
 from OpenDrive.general.od_logging import setup_logger
+from OpenDrive.general import paths as gen_paths
 
 pynetworking.Logging.logger.setLevel(logging.WARNING)
 
+log_to_file = False
+if log_to_file:
+    os.makedirs(gen_paths.CLIENT_LOGS, exist_ok=True)
+    log_file = gen_paths.normalize_path(gen_paths.CLIENT_LOGS, "all.log")
+else:
+    log_file = None
 
-logger_gui = setup_logger("GUI")
-logger_general = setup_logger("General")
-logger_network = setup_logger("Network")
-logger_sync = setup_logger("Sync")
-logger_security = setup_logger("Security")
+logger_gui = setup_logger("GUI", log_file)
+logger_general = setup_logger("General", log_file)
+logger_network = setup_logger("Network", log_file)
+logger_sync = setup_logger("Sync", log_file)
+logger_security = setup_logger("Security", log_file)

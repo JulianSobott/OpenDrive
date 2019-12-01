@@ -9,6 +9,8 @@ import logging
 MAX_MESSAGE_LEN = 1000
 MIN_MESSAGE_LEN = 50
 
+log_files_handlers = {}
+
 
 def setup_logger(logger_name: str, log_file: str = None, level: int = logging.INFO):
     """Setup a new logger"""
@@ -16,9 +18,9 @@ def setup_logger(logger_name: str, log_file: str = None, level: int = logging.IN
     new_logger.handlers = []
     formatter = logging.Formatter(
             f'[%(levelname)-8s] [%(name)-7s] [%(asctime)s] %(message)-{MIN_MESSAGE_LEN}.{MAX_MESSAGE_LEN}s \t\t '
-            f'(%(filename)s %(lineno)d) (%('f'threadName)s)')
+            f'(%(filename)s %(funcName)s %(lineno)d) (%('f'threadName)s)')
     if log_file:
-        file_handler = logging.FileHandler(log_file, mode="w")
+        file_handler = log_files_handlers.setdefault(log_file, logging.FileHandler(log_file, mode="w"))
         file_handler.setFormatter(formatter)
         new_logger.addHandler(file_handler)
     stream_handler = logging.StreamHandler()

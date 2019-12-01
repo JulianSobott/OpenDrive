@@ -15,10 +15,19 @@ Available loggers per client:
 """
 import logging
 import pynetworking
+import os
 
 from OpenDrive.general.od_logging import setup_logger
+from OpenDrive.general import paths as gen_paths
 
 pynetworking.Logging.logger.setLevel(logging.WARNING)
+
+log_to_file = False
+if log_to_file:
+    os.makedirs(gen_paths.SERVER_LOGS, exist_ok=True)
+    log_file = gen_paths.normalize_path(gen_paths.SERVER_LOGS, "all.log")
+else:
+    log_file = None
 
 
 def client_logger_sync():
@@ -39,6 +48,5 @@ def client_logger_network():
     return setup_logger(f"[{client_name}] Network")
 
 
-logger_general = setup_logger("General")
-logger_network = setup_logger("Network")
-
+logger_general = setup_logger("General", log_file)
+logger_network = setup_logger("Network", log_file)
