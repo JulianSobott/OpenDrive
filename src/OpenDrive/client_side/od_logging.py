@@ -10,6 +10,9 @@ Available loggers:
 - **logger_gui:** Logging gui stuff
 """
 import logging
+import pynetworking
+
+pynetworking.Logging.logger.setLevel(logging.WARNING)
 
 
 def setup_logger(logger_name, log_file=None, level=logging.INFO):
