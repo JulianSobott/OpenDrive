@@ -9,9 +9,7 @@ There are following problems (sorted after priority):
     - which threads are dependent from another
     - does any thread block the application
 
-- **Logging:**
-    - logging is not consistent
-    - log into a file
+- Server opens GUI although it was opened by client
 
 - **Stable run:**
     - Make common procedures stable
