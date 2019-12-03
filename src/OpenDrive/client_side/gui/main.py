@@ -31,6 +31,7 @@ from OpenDrive.client_side import paths as client_paths
 from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import interface
 from OpenDrive.client_side.od_logging import logger_general, logger_gui
+from OpenDrive.client_side import program_state
 
 # DO NOT DELETE UNUSED IMPORTS!
 # They are needed inside the OpenDriveApp
@@ -76,6 +77,15 @@ class OpenDriveApp(App):
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
          try_auto_login: bool = True, opened_by: Opener = CLIENT):
     global app
+    # TODO: do not open gui, when auto_login succeeds. Maybe create new authenticate function
+    if program_state.is_authenticated_at_server:
+        if authentication_only:
+            return
+        else:
+            start_screen = screens.EXPLORER
+            try_auto_login = False
+    else:
+        pass
     logger_general.info(f"Open GUI by {opened_by}")
     file_changes_json.init_file()       # TODO: Needed?
     app = OpenDriveApp(start_screen, authentication_only, try_auto_login)

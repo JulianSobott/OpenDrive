@@ -28,7 +28,6 @@ tray = None
 
 
 def _open_gui():
-    # TODO: prevent login, when already logged in
     gui.main.main(opened_by=gui.main.USER)
 
 
