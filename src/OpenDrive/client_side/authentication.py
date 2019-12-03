@@ -34,6 +34,7 @@ from OpenDrive.server_side.database import Token
 from OpenDrive.client_side import paths
 from OpenDrive.client_side.od_logging import logger_security, logger_network
 from OpenDrive.client_side.interface import Status
+from OpenDrive.client_side import program_state
 
 
 def connection_needed(func):
@@ -57,6 +58,7 @@ def register_user_device(username: str, password: str, email: str = None) -> Sta
         logger_security.info(f"Failed to register: {ret}")
         return Status.fail(ret)
     else:
+        program_state.is_authenticated_at_server = True
         logger_security.info(f"Successfully registered")
         _save_received_token(ret)
         return Status.success("Successfully registered")
@@ -72,6 +74,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
     else:
         if allow_auto_login:
             _save_received_token(ret)
+        program_state.is_authenticated_at_server = True
         logger_security.info(f"Successfully logged in manually")
         return Status.success("Successfully logged in")
 
@@ -80,6 +83,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
 def logout() -> Status:
     net_interface.server.logout()
     net_interface.ServerCommunicator.close_connection()
+    program_state.is_authenticated_at_server = False
     logger_security.info(f"Successfully logged out")
     return Status.success("Successfully logged out.")
 
@@ -94,6 +98,7 @@ def login_auto() -> Status:
             logger_security.info(f"Failed to login automatically: Wrong token")
             return Status.fail("Failed to automatically log in.")
         else:
+            program_state.is_authenticated_at_server = True
             logger_security.info(f"Successfully logged in automatically")
             return Status.success("Successfully auto logged in")
 

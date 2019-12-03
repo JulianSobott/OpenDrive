@@ -30,10 +30,10 @@ from OpenDrive.client_side import net_start as c_net_start
 from OpenDrive.client_side import interface as c_interface
 from OpenDrive.client_side import synchronization as c_synchronization
 from OpenDrive.client_side import file_changes_json as c_json
-from OpenDrive.client_side.od_logging import logger_general, init_logging
+from OpenDrive.client_side.od_logging import logger_general, init_logging, logger_security
 from OpenDrive.client_side.gui import tray
 from OpenDrive.client_side import gui
-
+from OpenDrive.client_side import program_state
 
 MIN_UPDATE_PAUSE_TIME = 5
 """After a call to sync appears the program waits for this time, to prevent too frequent update rates."""
@@ -58,7 +58,10 @@ def start():
             sleep_time = 1
             time.sleep(sleep_time)
         if is_on_event.is_set():
+            logger_general.info("Start authentication at server: Trying `auto login` fallback `manual login`")
             gui.main.main(authentication_only=True, try_auto_login=True)
+        while not program_state.is_authenticated_at_server:
+            time.sleep(1)
         if is_on_event.is_set():
             c_synchronization.full_synchronize()
         if is_on_event.is_set():
