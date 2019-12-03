@@ -28,7 +28,8 @@ tray = None
 
 
 def _open_gui():
-    gui.main.main()
+    # TODO: prevent login, when already logged in
+    gui.main.main(opened_by=gui.main.USER)
 
 
 def start_tray(background_function, shutdown_function):

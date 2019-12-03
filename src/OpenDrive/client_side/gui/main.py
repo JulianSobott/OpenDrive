@@ -24,6 +24,7 @@ private functions
 import os
 from kivy.app import App
 import threading
+from typing import NewType
 
 from OpenDrive.client_side.gui import screens
 from OpenDrive.client_side import paths as client_paths
@@ -38,6 +39,11 @@ from OpenDrive.client_side.gui.authentication import registration
 from OpenDrive.client_side.gui.explorer import explorer
 
 app = None
+
+Opener = NewType("Opener", str)
+SERVER = Opener("server")
+CLIENT = Opener("client")
+USER = Opener("user")
 
 
 class OpenDriveApp(App):
@@ -68,9 +74,9 @@ class OpenDriveApp(App):
 
 
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
-         try_auto_login: bool = True, opened_by_server: bool = False):
+         try_auto_login: bool = True, opened_by: Opener = CLIENT):
     global app
-    logger_general.info(f"Open GUI by {'Server' if opened_by_server else 'User'}")
+    logger_general.info(f"Open GUI by {opened_by}")
     file_changes_json.init_file()       # TODO: Needed?
     app = OpenDriveApp(start_screen, authentication_only, try_auto_login)
     screens.screen_manager = screens.ScreenManager(app)
@@ -87,7 +93,7 @@ def stop():
 
 def open_authentication_window():
     """Opens a window where the user can log in. After successful login the window is closed"""
-    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True, try_auto_login=True, opened_by_server=True)
+    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True, try_auto_login=True, opened_by=SERVER)
 
 
 if __name__ == '__main__':
