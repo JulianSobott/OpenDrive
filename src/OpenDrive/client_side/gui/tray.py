@@ -22,13 +22,14 @@ import pystray
 import PIL.Image
 
 from OpenDrive.client_side import gui
+from OpenDrive.client_side.gui.main import USER
 from OpenDrive.client_side import paths as c_paths
 
 tray = None
 
 
 def _open_gui():
-    gui.main.main(opened_by=gui.main.USER)
+    gui.open_gui(opened_by=USER)
 
 
 def start_tray(background_function, shutdown_function):

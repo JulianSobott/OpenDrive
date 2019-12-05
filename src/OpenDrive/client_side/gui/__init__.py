@@ -1,3 +1,1 @@
-from OpenDrive.client_side.gui import main
-from OpenDrive.client_side.gui import explorer
-from OpenDrive.client_side.gui.authentication import login_manual
+from OpenDrive.client_side.gui.controller import close_gui, open_gui, start_gui_thread, stop

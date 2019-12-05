@@ -78,7 +78,7 @@ def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication
     app = OpenDriveApp(start_screen, authentication_only)
     screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
-    threading.Thread(target=app.run).start()
+    app.run()
 
 
 def stop():

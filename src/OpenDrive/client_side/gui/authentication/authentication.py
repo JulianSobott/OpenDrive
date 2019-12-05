@@ -21,6 +21,6 @@ def authenticate_only():
     """Try every possible options to authenticate the user at the server."""
     status = login_auto()
     if not status.was_successful():
-        gui.main.main(authentication_only=True)
+        gui.open_gui(authentication_only=True)
     else:
         pass

@@ -46,6 +46,7 @@ def start():
     """Function that setups everything."""
     init_logging()
     logger_general.info("Start main application")
+    gui.start_gui_thread()
 
     def wrapper():
         global is_on_event
@@ -97,10 +98,7 @@ def shutdown():
         c_net_start.close_connection()
     except RuntimeError:
         pass    # already stopped
-    try:
-        gui.main.stop()
-    except RuntimeError:
-        pass    # already stopped
+    gui.stop()
     logger_general.info("Finished shutdown main program")
 
 
