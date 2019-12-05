@@ -74,21 +74,20 @@ def register_user(username: str, password: str, email: Optional[str] = None) -> 
 def login_manual_user_device(username: str, password: str, mac_address: str) -> Union[str, Token]:
     """Try to login by username and password. A token for auto-login is returned"""
     possible_user = User.get_by_username(username)
-    fail_msg = ""
     if possible_user is None:
         fail_msg = f"No user with username: {username}."
-    user = possible_user
-    if not pwd_context.verify(password, user.password):
-        fail_msg = f"Wrong password"
-    if fail_msg:
-        client_logger_security().info(f"Failed to login manual: {fail_msg}")
-        return "Wrong username or password"
     else:
-        token, device_id = _add_update_device(user.id, mac_address)
-        _set_user_authenticated(user.id, device_id)
-        client_logger_security().info(f"Successfully logged in manual: device_id={device_id}, user_id={user.user_id}, "
-                                      f"token={token}")
-        return token
+        user = possible_user
+        if not pwd_context.verify(password, user.password):
+            fail_msg = f"Wrong password"
+        else:
+            token, device_id = _add_update_device(user.id, mac_address)
+            _set_user_authenticated(user.id, device_id)
+            client_logger_security().info(f"Successfully logged in manual: device_id={device_id}, user_id={user.user_id}, "
+                                          f"token={token}")
+            return token
+    client_logger_security().info(f"Failed to login manual: {fail_msg}")
+    return "Wrong username or password"
 
 
 def login_auto(token: Token, mac_address: str) -> bool:
