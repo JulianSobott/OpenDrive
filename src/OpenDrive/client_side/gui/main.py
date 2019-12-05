@@ -49,46 +49,33 @@ USER = Opener("user")
 
 class OpenDriveApp(App):
 
-    def __init__(self, start_screen: screens.ScreenName, authentication_only: bool, try_auto_login: bool, **kwargs):
+    def __init__(self, start_screen: screens.ScreenName, authentication_only: bool, **kwargs):
         super().__init__(**kwargs)
-        logger_gui.info(f"Open app: start_screen={start_screen}, authentication_only={authentication_only}, "
-                        f"try_auto_login={try_auto_login}")
+        logger_gui.info(f"Open app: start_screen={start_screen}, authentication_only={authentication_only}")
+        assert (authentication_only and not program_state.is_authenticated_at_server) or not authentication_only, \
+            "GUI called with authentication only but user is already authenticated"
+        assert not authentication_only or (authentication_only and start_screen == screens.LOGIN_MANUAL), \
+            "Argument combination is not allowed: authentication_only and start_screen != LOGIN_MANUAL"
         self.start_screen = start_screen
         self.authentication_only = authentication_only
-        self.close_on_run = False
-        if try_auto_login:
-            status = interface.login_auto()
-            if status.was_successful():
-                if authentication_only:
-                    self.close_on_run = True
-                else:
-                    self.start_screen = screens.EXPLORER
 
     def build(self):
         screens.screen_manager.set_screen(self.start_screen)
 
-    def run(self):
-        if self.close_on_run:
-            self.stop()
-        else:
-            super().run()
-
 
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
-         try_auto_login: bool = True, opened_by: Opener = CLIENT):
+         opened_by: Opener = CLIENT):
     global app
-    # TODO: do not open gui, when auto_login succeeds. Maybe create new authenticate function
     if program_state.is_authenticated_at_server:
         if authentication_only:
             return
         else:
             start_screen = screens.EXPLORER
-            try_auto_login = False
     else:
         pass
     logger_general.info(f"Open GUI by {opened_by}")
     file_changes_json.init_file()       # TODO: Needed?
-    app = OpenDriveApp(start_screen, authentication_only, try_auto_login)
+    app = OpenDriveApp(start_screen, authentication_only)
     screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))
     threading.Thread(target=app.run).start()
@@ -103,7 +90,7 @@ def stop():
 
 def open_authentication_window():
     """Opens a window where the user can log in. After successful login the window is closed"""
-    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True, try_auto_login=True, opened_by=SERVER)
+    main(start_screen=screens.LOGIN_MANUAL, authentication_only=True, opened_by=SERVER)
 
 
 if __name__ == '__main__':
