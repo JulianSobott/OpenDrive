@@ -6,12 +6,9 @@
 """
 
 #: Requests should only be made when this is True
+import threading
+
 is_authenticated_at_server = False
 
-def set_authenticated_at_server(value: bool):
-    global is_authenticated_at_server
-    is_authenticated_at_server = value
-
-def wait_till_authenticated_at_server():
-    pass
-
+program_is_running = threading.Event()
+program_is_running.set()

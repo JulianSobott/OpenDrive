@@ -12,7 +12,7 @@ MIN_MESSAGE_LEN = 50
 log_files_handlers = {}
 
 
-def setup_logger(logger_name: str, log_file: str = None, level: int = logging.INFO):
+def setup_logger(logger_name: str, log_file: str = None, level: int = logging.DEBUG):
     """Setup a new logger"""
     new_logger = logging.getLogger(logger_name)
     new_logger.handlers = []
