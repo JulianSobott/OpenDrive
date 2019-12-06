@@ -36,12 +36,12 @@ from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.textinput import TextInput
 
 from OpenDrive.client_side import interface
-from OpenDrive.client_side.gui.explorer.desktop_file_dialogs import Desktop_FolderDialog
 from OpenDrive.client_side.gui.explorer import synchronizations
 from OpenDrive.client_side.gui.explorer import pattern_parser
 from OpenDrive.general.paths import NormalizedPath, normalize_path
 from OpenDrive.client_side.od_logging import logger_gui
 from OpenDrive.client_side import merge_folders
+from OpenDrive.client_side.gui.explorer import desktop_file_dialogs
 
 
 class PopupConfigFolder(Popup):
@@ -154,12 +154,9 @@ class Path(BoxLayout):
     browse = ObjectProperty(None)
 
     def browse_client_path(self):
-        Desktop_FolderDialog(
-            title="Select Folder",
-            initial_directory="",
-            on_accept=lambda folder_path: self.set_path(folder_path),
-            on_cancel=lambda: -1,
-        ).show()
+        path = desktop_file_dialogs.get_directory_path("Please select a directory for synchronization")
+        logger_gui.debug(f"User selected path for synchronization: path={path}")
+        self.set_path(path)
 
     def set_path(self, path: str):
         self.tf_path.text = normalize_path(path)
