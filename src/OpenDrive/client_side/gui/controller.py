@@ -33,6 +33,7 @@ def start_gui_thread():
     This function ensures, that the GUI always runs in the same thread. otherwise there are issues, when the GUI was
     opened and is opened again.
     """
+    program_state.gui.started()
     thread = threading.Thread(target=_gui_thread, name="GUI")
     thread.start()
 
@@ -42,7 +43,8 @@ def stop():
 
     WARNING: After this call, the GUI can never be opened again while the program is running.
     """
-    # TODO
+    close_gui()
+    program_state.gui.stopped()
 
 
 def open_gui(authentication_only=False, opened_by: gui_main.Opener = gui_main.CLIENT):
@@ -90,9 +92,10 @@ def _cleanup_kivy():
 
 def _gui_thread():
     """Every time the GUI shall be opened it is opened here"""
-    while program_state.program_is_running.is_set():
+    program_state.gui.add_on_stop(lambda: _open_gui_event.set())    # Wake up when GUI stops
+    while program_state.gui.is_running():
         _open_gui_event.wait()      # Wait until the GUI is requested to be opened
-        if program_state.program_is_running.is_set():
+        if program_state.gui.is_running():
             _open_gui_from_thread()
             _after_close_gui()
         else:
@@ -114,7 +117,6 @@ if __name__ == '__main__':
     start_gui_thread()
     open_gui()
     import time
-    time.sleep(2)
+    time.sleep(3)
     close_gui()
-    program_state.program_is_running.clear()
-    _open_gui_event.set()
+    program_state.program.stopped()

@@ -82,23 +82,20 @@ def synchronization_started() -> None:
 #
 class T:
 
-    _EVENT = 0
-    _ON_STARTED = 1
-    _ON_STOPPED = 2
-
     def __init__(self):
         self._event = threading.Event()
-        self._sub_events = []
+        self._on_stop = []
+        self._on_start = []
 
     def started(self):
         self._event.set()
-        for event_tup in self._sub_events:
-            event_tup[self._ON_STARTED]()
+        for fun in self._on_start:
+            fun()
 
     def stopped(self):
         self._event.clear()
-        for event_tup in self._sub_events:
-            event_tup[self._ON_STOPPED]()
+        for fun in self._on_stop:
+            fun()
 
     def is_running(self):
         return self._event.is_set()
@@ -106,11 +103,18 @@ class T:
     def wait_till_running(self, timeout=None):
         self._event.wait(timeout)
 
-    def add_sub_event(self, event, on_started, on_stopped):
-        self._sub_events.append((event, on_started, on_stopped))
+    def add_on_start(self, function):
+        self._on_start.append(function)
+
+    def add_on_stop(self, function):
+        self._on_stop.append(function)
 
 
 program = T()
 gui = T()
 synchronization = T()
 watching = T()
+
+program.add_on_stop(gui.stopped)
+program.add_on_stop(synchronization.stopped)
+program.add_on_stop(watching.stopped)
