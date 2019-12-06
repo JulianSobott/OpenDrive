@@ -25,62 +25,10 @@ Store global bool states
 """
 import threading
 
-#: Requests should only be made when this is True
-is_authenticated_at_server = False
-#: Not implemented yet.
-is_authenticated_at_client = False
-
-#
-# APPROACH 1: For every thread functions
-#
-
-_is_program_running = threading.Event()
-_is_synchronization_running = threading.Event()
-_is_watching_running = threading.Event()
-
-inner_thread_events = {}
+__all__ = ["program", "gui", "synchronization", "watching", "is_authenticated_at_server"]
 
 
-def add_inner_thread_event(inner_event: threading.Event, global_event: threading.Event, on_clear, on_set):
-    """Handles the inner_event when global_event is changed: set, clear
-    """
-    if global_event not in inner_thread_events:
-        inner_thread_events[global_event] = []
-    inner_thread_events[global_event].append({"inner_event": inner_event,
-                                              "on_clear": on_clear,
-                                              "on_set": on_set})
-
-
-# =============== Program ====================
-def program_started() -> None:
-    _is_program_running.set()
-    for inner_event_dict in inner_thread_events[_is_program_running]:
-        inner_event_dict["on_set"](inner_event_dict["inner_event"])
-
-
-def program_stopped() -> None:
-    _is_program_running.clear()
-    for inner_event_dict in inner_thread_events[_is_program_running]:
-        inner_event_dict["on_clear"](inner_event_dict["inner_event"])
-
-
-def is_program_running() -> bool:
-    return _is_program_running.is_set()
-
-
-def wait_till_program_is_running(timeout):
-    _is_program_running.wait(timeout)
-
-
-# =============== Synchronization ====================
-def synchronization_started() -> None:
-    _is_synchronization_running.set()
-
-
-#
-# APPROACH 2: One class: Every thread gets an instance
-#
-class T:
+class _ThreadEventHandler:
 
     def __init__(self):
         self._event = threading.Event()
@@ -110,10 +58,11 @@ class T:
         self._on_stop.append(function)
 
 
-program = T()
-gui = T()
-synchronization = T()
-watching = T()
+program = _ThreadEventHandler()
+gui = _ThreadEventHandler()
+synchronization = _ThreadEventHandler()
+watching = _ThreadEventHandler()
+is_authenticated_at_server = _ThreadEventHandler()
 
 program.add_on_stop(gui.stopped)
 program.add_on_stop(synchronization.stopped)

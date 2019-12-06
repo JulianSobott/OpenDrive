@@ -58,7 +58,7 @@ def register_user_device(username: str, password: str, email: str = None) -> Sta
         logger_security.info(f"Failed to register: {ret}")
         return Status.fail(ret)
     else:
-        program_state.is_authenticated_at_server = True
+        program_state.is_authenticated_at_server.started()
         logger_security.info(f"Successfully registered")
         _save_received_token(ret)
         return Status.success("Successfully registered")
@@ -74,7 +74,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
     else:
         if allow_auto_login:
             _save_received_token(ret)
-        program_state.is_authenticated_at_server = True
+        program_state.is_authenticated_at_server.started()
         logger_security.info(f"Successfully logged in manually")
         return Status.success("Successfully logged in")
 
@@ -83,7 +83,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
 def logout() -> Status:
     net_interface.server.logout()
     net_interface.ServerCommunicator.close_connection()
-    program_state.is_authenticated_at_server = False
+    program_state.is_authenticated_at_server.stopped()
     logger_security.info(f"Successfully logged out")
     return Status.success("Successfully logged out.")
 
@@ -98,7 +98,7 @@ def login_auto() -> Status:
             logger_security.info(f"Failed to login automatically: Wrong token")
             return Status.fail("Failed to automatically log in.")
         else:
-            program_state.is_authenticated_at_server = True
+            program_state.is_authenticated_at_server.started()
             logger_security.info(f"Successfully logged in automatically")
             return Status.success("Successfully auto logged in")
 

@@ -62,8 +62,7 @@ def start():
         if is_on_event.is_set():
             logger_general.info("Start authentication at server: Trying `auto login` fallback `manual login`")
             authentication.authenticate_only()
-        while not program_state.is_authenticated_at_server:
-            time.sleep(1)
+        program_state.is_authenticated_at_server.wait_till_running()
         if is_on_event.is_set():
             c_synchronization.full_synchronize()
         if is_on_event.is_set():
@@ -99,6 +98,7 @@ def shutdown():
     except RuntimeError:
         pass    # already stopped
     gui.stop()
+    program_state.program.stopped()
     logger_general.info("Finished shutdown main program")
 
 
