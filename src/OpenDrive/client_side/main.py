@@ -39,33 +39,31 @@ from OpenDrive.client_side import program_state
 MIN_UPDATE_PAUSE_TIME = 5
 """After a call to sync appears the program waits for this time, to prevent too frequent update rates."""
 
-is_on_event = threading.Event()
-
 
 def start():
     """Function that setups everything."""
     init_logging()
     logger_general.info("Start main application")
+    program_state.program.started()
     gui.start_gui_thread()
 
     def wrapper():
-        global is_on_event
-        is_on_event.set()
         c_json.init_file()
         c_file_changes.start_observing()
         c_file_changes.sync_waiter.waiter.clear()
         logger_general.info("Start connecting to server")
-        while is_on_event.is_set() and not c_net_start.connect(timeout=60):
+        while program_state.program.is_running() and not c_net_start.connect(timeout=60):
+            # connect till connected
             # TODO: Add server info (IP:PORT)
             sleep_time = 1
             time.sleep(sleep_time)
-        if is_on_event.is_set():
+        if program_state.program.is_running():
             logger_general.info("Start authentication at server: Trying `auto login` fallback `manual login`")
             authentication.authenticate_only()
         program_state.is_authenticated_at_server.wait_till_running()
-        if is_on_event.is_set():
+        if program_state.program.is_running():
             c_synchronization.full_synchronize()
-        if is_on_event.is_set():
+        if program_state.program.is_running():
             mainloop()
     logger_general.info("Start tray")
     tray.start_tray(wrapper, shutdown)
@@ -74,10 +72,10 @@ def start():
 @pyprofiling.stop_in_seconds(5)
 def mainloop():
     logger_general.info("Start mainloop")
-    while is_on_event.is_set():
+    while program_state.program.is_running():
         logger_general.info("Waiting for changes")
         c_file_changes.sync_waiter.waiter.wait()
-        if is_on_event.is_set():
+        if program_state.program.is_running():
             time.sleep(MIN_UPDATE_PAUSE_TIME)
             c_file_changes.sync_waiter.waiter.clear()
             logger_general.info("Full synchronize")
@@ -85,9 +83,7 @@ def mainloop():
 
 
 def shutdown():
-    global is_on_event
     logger_general.info("Start shutdown main program")
-    is_on_event.clear()
     c_file_changes.sync_waiter.waiter.set()
     try:
         c_file_changes.stop_observing()

@@ -52,9 +52,11 @@ class _ThreadEventHandler:
         self._event.wait(timeout)
 
     def add_on_start(self, function):
+        assert function, "Function must be an actual function"
         self._on_start.append(function)
 
     def add_on_stop(self, function):
+        assert function, "Function must be an actual function"
         self._on_stop.append(function)
 
 

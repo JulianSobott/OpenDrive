@@ -48,7 +48,7 @@ from OpenDrive.client_side import paths, file_changes_json
 from OpenDrive.general import file_changes_json as gen_json
 
 from OpenDrive.general.paths import normalize_path, NormalizedPath
-
+from OpenDrive.client_side import program_state
 
 observer = watchdog_observers.Observer()
 watchers: Dict[NormalizedPath, Tuple['FileSystemEventHandler', ObservedWatch]] = {}
@@ -63,6 +63,7 @@ def start_observing() -> None:
     for folder_path, folder in all_folders.items():
         _add_watcher(folder_path, folder["include_regexes"], folder["exclude_regexes"])
     observer.start()
+    program_state.watching.add_on_stop(sync_waiter.waiter.set)
 
 
 def stop_observing():
