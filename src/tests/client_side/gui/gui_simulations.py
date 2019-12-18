@@ -5,6 +5,7 @@ from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import main as main_prog
 from OpenDrive.client_side.gui import main
 from OpenDrive.client_side.gui import screens
+from OpenDrive.client_side import gui
 from tests.client_side.gui.test_explorer import h_watch_dummy_folder
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_client_routine, h_start_server_process, h_stop_server_process
@@ -69,7 +70,7 @@ def simulate_many_folders():
         h_watch_dummy_folder(f"folder {i}")
         time.sleep(0.1)
     time.sleep(2)
-    main.main(screens.REGISTRATION, try_auto_login=True)
+    gui.open_gui()
 
 
 @h_client_routine(clear_folders=False)
@@ -81,4 +82,4 @@ def client_only():
 
 
 if __name__ == '__main__':
-    client_only()
+    gui.open_gui()

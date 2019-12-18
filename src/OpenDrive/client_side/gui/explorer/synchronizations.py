@@ -23,6 +23,7 @@ private functions
 from functools import partial
 
 from kivy.properties import ObjectProperty
+from kivy.uix.image import Image
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -70,6 +71,14 @@ class SynchronizationContainer(BoxLayout):
     lbl_local_path: Label = ObjectProperty(None)
     lbl_remote_path: Label = ObjectProperty(None)
     btn_delete: Button = ObjectProperty(None)
+    img_status: Image = ObjectProperty(None)
+
+    def release_btn_edit(self):
+        self.set_status_img('assets/delete_button.png')
+
+    def set_status_img(self, file_path):
+        self.img_status.source = file_path
+        self.img_status.reload()
 
     def release_btn_delete(self):
         self.synchronizations_container.remove_synchronization(self.local_path)

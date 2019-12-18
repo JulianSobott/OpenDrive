@@ -17,6 +17,7 @@
     lbl_local_path: lbl_local_path
     lbl_remote_path: lbl_remote_path
     btn_delete: btn_delete
+    img_status: img_status
 
     canvas:
         Color:
@@ -37,13 +38,15 @@
 
 
 
-    Label:
-        id: lbl_status
+    Image:
+        id: img_status
+        source: 'assets/edit_button.png'
 
     Button:
         id: btn_edit
         size_hint: None, 1
         width: 50
+        on_release: root.release_btn_edit()
 
         canvas.after:
             Rectangle:
