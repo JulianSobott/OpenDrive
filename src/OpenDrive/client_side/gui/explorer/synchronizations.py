@@ -32,6 +32,7 @@ from kivy.uix.recycleview import RecycleView
 from OpenDrive.client_side import interface
 from OpenDrive.general.paths import NormalizedPath, normalize_path
 from OpenDrive.client_side.od_logging import logger_gui
+from OpenDrive.client_side.gui import assets_manager
 
 
 class Synchronizations(RecycleView):
@@ -74,7 +75,10 @@ class SynchronizationContainer(BoxLayout):
     img_status: Image = ObjectProperty(None)
 
     def release_btn_edit(self):
-        self.set_status_img('assets/delete_button.png')
+        status = ["status_synced", "status_syncing", "status_not_synced_local_changes",
+                  "status_not_synced_remote_changes", "status_merge_conflicts"]
+        import random
+        self.set_status_img(assets_manager.get_image_path(random.choice(status) + ".png"))
 
     def set_status_img(self, file_path):
         self.img_status.source = file_path
