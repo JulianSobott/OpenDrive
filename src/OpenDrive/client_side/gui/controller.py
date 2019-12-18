@@ -3,6 +3,8 @@
 :synopsis: Controlling the opening and closing of the gui
 :author: Julian Sobott
 
+Modules outside of this package should only use this module to access the gui!
+
 
 public functions
 ----------------
@@ -48,7 +50,8 @@ def stop():
 
 
 def open_gui(authentication_only=False, opened_by: gui_main.Opener = gui_main.CLIENT):
-    """Opens the GUI window."""
+    """Opens the GUI window.
+    """
     global _app_is_running
     if not _app_is_running:
         logger_gui.info(f"Requests to open GUI: authentication_only={authentication_only}, opened_by={opened_by}")

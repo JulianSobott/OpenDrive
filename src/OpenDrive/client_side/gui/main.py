@@ -12,7 +12,9 @@ public classes
 public functions
 -----------------
 
-.. autofunction:: XXX
+.. autofunction:: main
+.. autofunction:: stop
+.. autofunction:: open_authentication_window
 
 private classes
 ----------------
@@ -61,6 +63,9 @@ class OpenDriveApp(App):
 
     def build(self):
         screens.screen_manager.set_screen(self.start_screen)
+
+    def on_stop(self):
+        logger_gui.info("Closed gui")
 
 
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
