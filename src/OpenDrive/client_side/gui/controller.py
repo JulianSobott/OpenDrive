@@ -51,8 +51,12 @@ def stop():
 
 def open_gui(authentication_only=False, opened_by: gui_main.Opener = gui_main.CLIENT):
     """Opens the GUI window.
+
+    If the thread for the gui is not already running it is started here.
     """
     global _app_is_running
+    if not program_state.gui.is_running():
+        start_gui_thread()
     if not _app_is_running:
         logger_gui.info(f"Requests to open GUI: authentication_only={authentication_only}, opened_by={opened_by}")
         _open_gui_event.set()
