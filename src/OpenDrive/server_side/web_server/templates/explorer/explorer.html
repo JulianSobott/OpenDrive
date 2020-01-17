@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block header %}
+    <h1>{% block title %}Explorer{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <ul>
+{% for file in explorer_data.files %}
+        <li>name:{{ file.name }}, path: {{ file.path }}, date: {{ file.create_date }}</li>
+{% endfor %}
+    </ul>
+{% endblock %}

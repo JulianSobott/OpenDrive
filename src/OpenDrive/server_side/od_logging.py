@@ -20,10 +20,11 @@ import os
 from OpenDrive.general.od_logging import setup_logger, log_system
 from OpenDrive.general import paths as gen_paths
 
-pynetworking.Logging.logger.setLevel(logging.WARNING)
+pynetworking.Logging.logger.setLevel(logging.INFO)
 
 logger_general: logging.Logger = logging.getLogger("General")
 logger_network: logging.Logger = logging.getLogger("Network")
+logger_web: logging.Logger = logging.getLogger("Web")
 
 client_loggers = {}
 log_to_file = True
@@ -60,7 +61,7 @@ def client_logger_network():
 
 
 def init_logging():
-    global logger_network, logger_general
+    global logger_network, logger_general, logger_web
     if log_to_file:
         os.makedirs(gen_paths.SERVER_LOGS, exist_ok=True)
         log_file = gen_paths.normalize_path(gen_paths.SERVER_LOGS, "all.log")
@@ -68,4 +69,5 @@ def init_logging():
         log_file = None
     logger_general = setup_logger("General", log_file)
     logger_network = setup_logger("Network", log_file)
+    logger_web = setup_logger("Web", log_file)
     log_system(log_file)
