@@ -23,7 +23,8 @@ private functions
 from OpenDrive.server_side.od_logging import init_logging
 
 from flask import Flask, render_template
-import os
+from flask_pymongo import PyMongo
+
 
 from OpenDrive.server_side.web_server.explorer import build_explorer
 
@@ -31,6 +32,8 @@ from OpenDrive.server_side.web_server.explorer import build_explorer
 init_logging()
 
 app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb://localhost:27017/OpenDrive"
+mongo = PyMongo(app)
 
 
 @app.route("/")
@@ -40,7 +43,7 @@ def index():
 
 @app.route("/explorer")
 def explorer():
-    return build_explorer()
+    return build_explorer(mongo)
 
 
 if __name__ == '__main__':
