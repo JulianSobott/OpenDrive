@@ -38,7 +38,7 @@ if __name__ == '__main__':
             "Source Code": "https://github.com/JulianSobott/OpenDrive",
           },
           classifiers=[
-            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
             "License :: OSI Approved :: Apache Software License",
             "Operating System :: OS Independent",
             ],

@@ -12,10 +12,9 @@ passlib = "*"
 kivy = "*"
 pystray = "*"
 pynetworking = "==0.1.5"
-pipenv = "*"
 flask = "*"
 flask-pymongo = "*"
 mongoengine = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
