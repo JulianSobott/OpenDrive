@@ -58,8 +58,16 @@ class ServerFunctions(net.ServerFunctions):
 class ClientFunctions(net.ClientFunctions):
     """All client functions, that can be called by the server"""
     from OpenDrive.general.file_exchanges import get_file, make_dirs
-    from OpenDrive.client_side.file_exchanges import get_dir, pull_file
-    from OpenDrive.client_side.synchronization import trigger_server_synchronization
+
+    @staticmethod
+    def get_dir(abs_src_path: str, abs_dest_path: str) -> None:
+        from OpenDrive.client_side.file_exchanges import get_dir
+        return get_dir(abs_src_path, abs_dest_path)
+
+    @staticmethod
+    def pull_file(rel_server_path: str, abs_client_path: str) -> None:
+        from OpenDrive.client_side.file_exchanges import pull_file
+        return pull_file(rel_server_path, abs_client_path)
 
     @staticmethod
     def open_authentication_window():
