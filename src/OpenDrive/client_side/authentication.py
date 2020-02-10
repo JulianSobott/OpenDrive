@@ -30,7 +30,7 @@ import functools
 
 from OpenDrive import net_interface
 from OpenDrive.general.device_data import get_mac
-from OpenDrive.server_side.database import Token
+from OpenDrive.general.database import Token
 from OpenDrive.client_side import paths
 from OpenDrive.client_side.od_logging import logger_security, logger_network
 from OpenDrive.client_side.interface import Status

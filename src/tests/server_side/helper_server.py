@@ -3,6 +3,7 @@ import shutil
 import uuid
 from typing import Tuple
 
+import general.database
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side import authentication
 from OpenDrive.server_side import database
@@ -22,7 +23,7 @@ def h_deactivate_set_user_authenticated(func):
 
 
 @h_deactivate_set_user_authenticated
-def h_register_dummy_user_device() -> Tuple[database.User, database.Device, database.Token]:
+def h_register_dummy_user_device() -> Tuple[database.User, database.Device, general.database.Token]:
     h_setup_server_database()
 
     username = "Anne"

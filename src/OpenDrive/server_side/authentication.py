@@ -27,7 +27,8 @@ from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
 
 from OpenDrive import net_interface
-from OpenDrive.server_side.database import User, Device, Token
+from OpenDrive.server_side.database import User, Device
+from general.database import Token
 from OpenDrive.server_side.od_logging import client_logger_security
 from OpenDrive.server_side import folders
 from OpenDrive.server_side import paths as server_paths

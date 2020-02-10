@@ -5,7 +5,7 @@ import uuid
 from OpenDrive import net_interface
 from OpenDrive.server_side import database, authentication
 from OpenDrive.server_side import file_changes_json as server_json
-from OpenDrive.server_side.database import Token
+from general.database import Token
 from tests.helper_all import h_start_server_process, h_stop_server_process, h_client_routine
 from tests.server_side.database import h_setup_server_database
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \

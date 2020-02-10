@@ -15,11 +15,11 @@ public classes
 
 """
 import datetime
-import secrets
-from typing import Optional, Union, List
+from typing import Union, List
 
 from OpenDrive.general.database import TableEntry, DBConnection
 from OpenDrive.server_side import paths
+from OpenDrive.general.database import Token
 
 
 class Device(TableEntry):
@@ -123,32 +123,3 @@ class Device(TableEntry):
         return f"Device({self._id}, {self._user_id}, {self._mac_address}, {self._token}, {self._token_expires})"
 
 
-class Token:
-
-    def __init__(self, length: Optional[int] = None):
-        self.token = secrets.token_hex(length)
-
-    @staticmethod
-    def from_string(token: str) -> 'Token':
-        ret_token = Token()
-        ret_token.token = token
-        return ret_token
-
-    @staticmethod
-    def is_token_expired(date: datetime.datetime):
-        pass
-
-    @staticmethod
-    def get_next_expired(days=31) -> datetime.datetime:
-        return datetime.datetime.now() + datetime.timedelta(days=days)
-
-    def __eq__(self, other):
-        if isinstance(other, Token):
-            return other.token == self.token
-        return False
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __repr__(self):
-        return self.token

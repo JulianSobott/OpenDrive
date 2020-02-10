@@ -13,8 +13,10 @@ classes:
 
 @internal_use:
 """
+import datetime
+import secrets
 import sqlite3
-from typing import List
+from typing import List, Optional
 import os
 
 from OpenDrive.general.od_logging import logger_database
@@ -194,3 +196,33 @@ def delete_db_file(path):
         logger_database.info(f"Could not delete non existing db file. {path}")
         pass
 
+
+class Token:
+
+    def __init__(self, length: Optional[int] = None):
+        self.token = secrets.token_hex(length)
+
+    @staticmethod
+    def from_string(token: str) -> 'Token':
+        ret_token = Token()
+        ret_token.token = token
+        return ret_token
+
+    @staticmethod
+    def is_token_expired(date: datetime.datetime):
+        pass
+
+    @staticmethod
+    def get_next_expired(days=31) -> datetime.datetime:
+        return datetime.datetime.now() + datetime.timedelta(days=days)
+
+    def __eq__(self, other):
+        if isinstance(other, Token):
+            return other.token == self.token
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return self.token

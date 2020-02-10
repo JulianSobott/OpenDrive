@@ -1,4 +1,6 @@
-import pynetworking as net
+from pynetworking import server as net
+
+net.Logging.logger.setLevel(0)
 
 import sys
 import os

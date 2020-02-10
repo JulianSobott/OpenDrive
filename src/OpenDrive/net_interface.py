@@ -40,24 +40,24 @@ private classes
 import pynetworking as net
 
 
-from OpenDrive.server_side.od_logging import logger_network
-
 net.Logging.logger.setLevel(30)
 
 
 class ServerFunctions(net.ServerFunctions):
     """All server functions, that can be called by the client"""
-    from OpenDrive.server_side.authentication import register_user_device, login_manual_user_device, login_auto, \
-        logout
-    from OpenDrive.server_side.file_exchanges import get_file, pull_file, make_dirs, get_dir
-    from OpenDrive.server_side.synchronization import get_changes, execute_actions
-    from OpenDrive.server_side.folders import add_folder, generate_content_of_folder, get_all_available_folders
-    from OpenDrive.server_side.file_changes_json import remove_handled_changes
+    if net.global_data.IS_SERVER:
+        from OpenDrive.server_side.authentication import register_user_device, login_manual_user_device, login_auto, \
+            logout
+        from OpenDrive.server_side.file_exchanges import get_file, pull_file, make_dirs, get_dir
+        from OpenDrive.server_side.synchronization import get_changes, execute_actions
+        from OpenDrive.server_side.folders import add_folder, generate_content_of_folder, get_all_available_folders
+        from OpenDrive.server_side.file_changes_json import remove_handled_changes
 
 
 class ClientFunctions(net.ClientFunctions):
     """All client functions, that can be called by the server"""
-    from OpenDrive.general.file_exchanges import get_file, make_dirs
+    if net.global_data.IS_CLIENT:
+        from OpenDrive.general.file_exchanges import get_file, make_dirs
 
     @staticmethod
     def get_dir(abs_src_path: str, abs_dest_path: str) -> None:
@@ -86,7 +86,7 @@ class ClientCommunicator(net.ClientCommunicator):
 
     def __init__(self, id_, address, connection, on_close):
         super().__init__(id_, address, connection, on_close)
-        logger_network.info(f"New client connected: ID={id_}, address={address}")
+        # logger_network.info(f"New client connected: ID={id_}, address={address}")
         self._is_authenticated = False
         self.user_id = -1
         self.device_id = -1

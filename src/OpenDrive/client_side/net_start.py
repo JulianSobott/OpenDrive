@@ -11,6 +11,7 @@ public functions
 .. autofunction:: close_connection
 
 """
+from pynetworking import client
 from OpenDrive import net_interface
 from OpenDrive.client_side.od_logging import logger_network
 

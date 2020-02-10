@@ -3,7 +3,7 @@ import uuid
 
 from OpenDrive.general.database import delete_db_file
 from OpenDrive.server_side import database, paths
-from OpenDrive.server_side.database import Token
+from general.database import Token
 
 
 def h_setup_server_database() -> None:
