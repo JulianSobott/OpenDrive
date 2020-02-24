@@ -5,11 +5,11 @@ import uuid
 from OpenDrive import net_interface
 from OpenDrive.server_side import database, authentication
 from OpenDrive.server_side import file_changes_json as server_json
-from general.database import Token
+from OpenDrive.general.database import Token
 from tests.helper_all import h_start_server_process, h_stop_server_process, h_client_routine
 from tests.server_side.database import h_setup_server_database
 from tests.server_side.helper_server import h_deactivate_set_user_authenticated, \
-    h_register_dummy_user_device, h_clear_init_server_folders, h_register_dummy_user
+    h_register_dummy_user_device, h_clear_init_server_folders, h_register_dummy_user, h_mock_get_client_id
 
 
 class TestRegistration(unittest.TestCase):
@@ -17,6 +17,7 @@ class TestRegistration(unittest.TestCase):
     def setUp(self):
         h_clear_init_server_folders()
         h_setup_server_database()
+        h_mock_get_client_id()
 
     def tearDown(self) -> None:
         pass
@@ -73,6 +74,7 @@ class TestLogin(unittest.TestCase):
 
     def setUp(self):
         h_clear_init_server_folders()
+        h_mock_get_client_id()
         self.user, self.device, self.token = h_register_dummy_user_device()
 
     @h_deactivate_set_user_authenticated

@@ -54,8 +54,8 @@ class OpenDriveApp(App):
     def __init__(self, start_screen: screens.ScreenName, authentication_only: bool, **kwargs):
         super().__init__(**kwargs)
         logger_gui.info(f"Open app: start_screen={start_screen}, authentication_only={authentication_only}")
-        assert (authentication_only and not program_state.is_authenticated_at_server) or not authentication_only, \
-            "GUI called with authentication only but user is already authenticated"
+        assert (authentication_only and not program_state.is_authenticated_at_server.is_running()) \
+            or not authentication_only, "GUI called with authentication only but user is already authenticated"
         assert not authentication_only or (authentication_only and start_screen == screens.LOGIN_MANUAL), \
             "Argument combination is not allowed: authentication_only and start_screen != LOGIN_MANUAL"
         self.start_screen = start_screen
@@ -79,7 +79,7 @@ def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication
     else:
         start_screen = screens.LOGIN_MANUAL
     logger_general.info(f"Open GUI by {opened_by}")
-    file_changes_json.init_file()       # TODO: Needed?
+    file_changes_json.init_file()  # TODO: Needed?
     app = OpenDriveApp(start_screen, authentication_only)
     screens.screen_manager = screens.ScreenManager(app)
     os.chdir(os.path.join(client_paths.CODE_PATH, "client_side/gui/"))

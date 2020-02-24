@@ -40,3 +40,4 @@ def log_system(log_file):
 
 
 logger_database = setup_logger("Database")
+logger_file_system = setup_logger("FileSystem")

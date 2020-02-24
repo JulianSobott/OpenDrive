@@ -30,6 +30,7 @@ import copy
 
 from OpenDrive.general.paths import NormalizedPath
 from OpenDrive.general.file_exchanges import SyncAction
+from OpenDrive.general.od_logging import logger_file_system
 
 __all__ = ["init_file", "get_folder_entry", "add_change_entry", "remove_change_entry"]
 
@@ -48,12 +49,16 @@ def init_file(file_path: str, empty: bool = False) -> None:
             with open(file_path, "w+") as file:
                 all_folders = {}
                 json.dump(all_folders, file)
+                logger_file_system.info(f"Empty changes file: {file_path}")
+        else:
+            logger_file_system.debug(f"Changes file already exists and is not changed: {file_path}")
     else:
         folder_path = os.path.split(file_path)[0]
         os.makedirs(folder_path, exist_ok=True)
         with open(file_path, "w+") as file:
             all_folders = {}
             json.dump(all_folders, file)
+            logger_file_system.info(f"Created empty changes file: {file_path}")
 
 
 def get_folder_entry(abs_folder_path: NormalizedPath, data: dict = None) -> dict:

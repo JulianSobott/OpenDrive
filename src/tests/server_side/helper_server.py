@@ -22,6 +22,11 @@ def h_deactivate_set_user_authenticated(func):
     return wrapper
 
 
+def h_mock_get_client_id():
+    from OpenDrive import net_interface
+    net_interface.get_client_id = lambda: 0
+
+
 @h_deactivate_set_user_authenticated
 def h_register_dummy_user_device() -> Tuple[database.User, database.Device, general.database.Token]:
     h_setup_server_database()
