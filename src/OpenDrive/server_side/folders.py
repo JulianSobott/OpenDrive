@@ -29,7 +29,7 @@ from OpenDrive.server_side.database import User
 from OpenDrive.server_side import file_changes_json
 from OpenDrive.general import merge_folders as gen_merge_folders
 from OpenDrive import net_interface
-from OpenDrive.server_side.authentication import requires_authentication
+from OpenDrive.server_side.decorators import requires_authentication
 
 
 @requires_authentication

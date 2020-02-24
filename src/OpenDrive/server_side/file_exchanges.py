@@ -18,7 +18,7 @@ import pynetworking as net
 from OpenDrive.general import file_exchanges as gen_file_exchanges
 from OpenDrive import net_interface
 from OpenDrive.server_side import paths as server_paths
-from OpenDrive.server_side.authentication import requires_authentication
+from OpenDrive.server_side.decorators import requires_authentication
 from OpenDrive.server_side.od_logging import client_logger_sync
 
 
