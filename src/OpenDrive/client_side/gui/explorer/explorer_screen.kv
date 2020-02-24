@@ -1,0 +1,33 @@
+#:kivy 1.10.1
+
+#:import assets_manager OpenDrive.client_side.gui.assets_manager
+
+#:include explorer/synchronizations.kv
+#:include explorer/config_synchronization.kv
+
+<ScreenExplorer>:
+    name: 'screen_explorer'
+
+    btn_add_synchronization: btn_float.btn_add_synchronization
+    synchronizations_container: synchronizations_container
+
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: assets_manager.get_image_path('explorer_background.jpg')
+
+
+    ScreenContainer:
+
+        # TopBar:
+
+        Synchronizations:
+            id: synchronizations_container
+
+        FloatAddButton:
+            id: btn_float
+
+
+<ScreenContainer@BoxLayout>:
+    orientation: "vertical"

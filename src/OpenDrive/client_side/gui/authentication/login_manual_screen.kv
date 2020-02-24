@@ -1,0 +1,38 @@
+#:kivy 1.10.1
+
+#:import assets_manager OpenDrive.client_side.gui.assets_manager
+
+<ScreenLoginManual>:
+    name: 'screen_login_manual'
+    tf_username_email: tf_username_email
+    tf_password: tf_password
+    lbl_user_hints: lbl_user_hints
+
+    # Screen background
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: assets_manager.get_image_path('login_background_blurred.jpg')
+
+    AuthenticationContainer:
+        HeaderContainer:
+            LabelHeader:
+                text: "Login"
+
+        InputContainer:
+            InputUsernameEmail:
+                id: tf_username_email
+            InputPassword:
+                id: tf_password
+
+        ButtonsContainer:
+            ButtonRegister:
+                on_release: root.btn_release_register()
+            ButtonLogin:
+                on_release: root.btn_release_login()
+
+        UserHints:
+            id: lbl_user_hints
+
+    BoxLayout:

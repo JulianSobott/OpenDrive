@@ -1,0 +1,98 @@
+#:kivy 1.10.1
+
+#:import assets_manager OpenDrive.client_side.gui.assets_manager
+
+
+<Synchronizations>:
+    viewclass: 'SynchronizationContainer'
+    RecycleBoxLayout:
+        default_size: None, dp(45)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        spacing: 1
+
+<SynchronizationContainer>:
+    orientation: "horizontal"
+
+    lbl_local_path: lbl_local_path
+    lbl_remote_path: lbl_remote_path
+    btn_delete: btn_delete
+    img_status: img_status
+
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 0.8
+        Line:
+            points: self.pos[0], self.pos[1], self.width, self.pos[1]
+            width: 1
+
+    Label:
+        id: lbl_local_path
+        text: root.local_path
+        size: self.texture_size
+        size_hint: None, 1
+
+    Label:
+        id: lbl_remote_path
+        text: root.remote_path
+
+
+
+    Image:
+        id: img_status
+        source: assets_manager.get_image_path('edit_button.png')
+
+    Button:
+        id: btn_edit
+        size_hint: None, 1
+        width: 50
+        on_release: root.release_btn_edit()
+
+        canvas.after:
+            Rectangle:
+                pos: self.pos[0] + 10, self.pos[1] + 10
+                size: self.size[0] - 20, self.size[1] - 20
+                source: assets_manager.get_image_path('edit_button.png')
+
+
+    Button:
+        id: btn_delete
+        size_hint: None, 1
+        width: 50
+        on_release: root.release_btn_delete()
+
+        canvas.after:
+            Rectangle:
+                pos: self.pos[0] + 10, self.pos[1] + 10
+                size: self.size[0] - 20, self.size[1] - 20
+                source: assets_manager.get_image_path('delete_button.png')
+
+<FloatAddButton@FloatLayout>:
+    id: float_root
+
+    btn_add_synchronization: btn_add_synchronization
+
+    size_hint: None, None
+    size: 70, 70
+    pos_hint: {'x': .8}
+    btn2_size: 70, 70
+
+    Button:
+        id: btn_add_synchronization
+        size_hint: None, None
+        size: 70, 70
+        pos_hint: {'x': .8, 'y': .2}
+        background_color: (0,0,0,0)
+        canvas.after:
+            Rectangle:
+                pos: self.pos[0] + 10, self.pos[1] + 10
+                size: self.size[0] - 20, self.size[1] - 20
+                source: assets_manager.get_image_path('add_button.png')
+
+
+
+# Icon made by https://www.flaticon.com/authors/google from www.flaticon.com
+# Icon made by https://www.flaticon.com/authors/gregor-cresnar from www.flaticon.com
+# Icon made by https://www.flaticon.com/authors/smashicons from www.flaticon.com

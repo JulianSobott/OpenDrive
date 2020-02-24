@@ -1,0 +1,81 @@
+#:kivy 1.10.1
+
+
+<AuthenticationContainer@BoxLayout>:
+    space_x: self.size[0]/5
+    orientation: "vertical"
+    padding: self.size[0]/5, 50
+
+    canvas.before:
+        Color:
+            rgba: (.0, .0, .0, 0.6)
+        RoundedRectangle:
+            size: self.size[0] - 2*self.padding[0], self.size[1] - 2*self.padding[1]
+            pos: self.pos[0] + self.padding[0], self.pos[1] + self.padding[1]
+            radius: [20,]
+
+<HeaderContainer@BoxLayout>:
+
+<LabelHeader@Label>:
+    font_size: "64sp"
+    color: (1,1,1, 1)
+
+<InputContainer@StackLayout>:
+    spacing: 10
+    padding: 20, 20
+
+<InputGeneral@TextInput>:
+    multiline: False
+    write_tab: False
+    height: 32
+    size_hint: 1, None
+
+<InputUsername@InputGeneral>:
+    hint_text: "Username"
+    multiline: False
+    write_tab: False
+    focus: True
+
+<InputUsernameEmail@InputGeneral>:
+    hint_text: "Username or email"
+
+<InputEmail@InputGeneral>:
+    hint_text: "Email"
+
+<InputPassword@InputGeneral>:
+    hint_text: "Password"
+    multiline: False
+    write_tab: False
+    password: True
+
+<ButtonsContainer@BoxLayout>:
+    orientation: "horizontal"
+    height: 50
+    padding: 200, 0, 0, 0
+    size_hint_y: None
+
+<ButtonGeneral@Button>:
+    height: 40
+    size_hint_y: None
+
+<ButtonRegister@ButtonGeneral>:
+    text: "Register"
+    background_color: 0, 0, 0, .7
+
+<ButtonLogin@ButtonGeneral>:
+    text: "Login"
+    background_color: .06, .45, .45, .7
+
+
+<UserHints@Label>:
+    color: 1, 0, 0, 0
+    font_size: "18sp"
+    height: 36
+    size_hint_y: None
+
+    canvas.before:
+        Color:
+            rgba: (.9, .9, .9, 0)
+        Rectangle:
+            size: self.size
+            pos: self.pos

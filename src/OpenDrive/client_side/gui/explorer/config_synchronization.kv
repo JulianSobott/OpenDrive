@@ -1,0 +1,231 @@
+#:kivy 1.10.1
+
+#:include authentication/widgets.kv # Maybe some widgets in new general file
+
+<PopupConfigFolder>:
+    title: "Config folder"
+
+    tf_client_path: paths_container.tf_client_path
+    tf_server_path: paths_container.tf_server_path
+
+    tf_include: patterns_container.tf_include_patterns
+    tf_exclude: patterns_container.tf_exclude_patterns
+
+    merge_methods: merge_methods_container.merge_methods
+
+    lbl_user_hints: lbl_user_hints
+
+
+    WidgetsContainer:
+        PathsContainer:
+            id: paths_container
+            size_hint: 1, 0.1
+
+        PatternsContainer:
+            id: patterns_container
+            size_hint: 1, 0.1
+
+        MergeMethodsContainer:
+            id: merge_methods_container
+            size_hint: 1, 0.6
+
+        UserHints:
+            id: lbl_user_hints
+            size_hint: 1, 0.1
+
+        ConfigButtonsContainer:
+            add: root.btn_release_add
+            cancel: root.btn_release_cancel
+            size_hint: 1, 0.1
+
+
+<WidgetsContainer@StackLayout>:
+    #orientation: "vertical"
+
+
+<PathsContainer@StackLayout>:
+
+    tf_client_path: client_path.tf_path
+    tf_server_path: server_path.tf_path
+    # size_hint: 1, None
+
+    Path:
+        id: client_path
+        text: "Local path: "
+        browse: self.browse_client_path
+        size_hint_x: 1
+
+    Path:
+        id: server_path
+        text: "Remote path: "
+        browse: self.browse_server_path
+        size_hint_x: 1
+
+<Path>:
+    id: root_path
+    text: ""
+    browse: None
+    height: 32
+    size_hint: 1, None
+
+    tf_path: tf_path
+
+    Label:
+        text: root_path.text
+        size_hint: 0.2, 1
+
+    TextInput:
+        id: tf_path
+        size_hint: 0.7, 1
+
+    Button:
+        text: "Browse"
+        size_hint: 0.1, 1
+        on_release: root.browse()
+
+<ConfigButtonsContainer@ButtonsContainer>:
+
+    add: None
+    cancel: None
+
+    ButtonGeneral:
+        text: "Cancel"
+        on_release: root.cancel()
+
+    ButtonGeneral:
+        text: "Add"
+        on_release: root.add()
+
+<PatternsContainer@StackLayout>:
+    #orientation: "vertical"
+    # size_hint: 1, None
+
+    tf_include_patterns: include_patterns.tf_patterns
+    tf_exclude_patterns: exclude_patterns.tf_patterns
+
+    Patterns:
+        id: include_patterns
+        title: "Include filters: "
+
+    Patterns:
+        id: exclude_patterns
+        title: "Exclude filters: "
+
+
+<Patterns@BoxLayout>:
+    orientation: "vertical"
+    title: ""
+    tf_patterns: tf_patterns
+    size_hint: 1, 1
+
+
+    BoxLayout:
+        padding: 20, 0, 0, 0
+
+        Label:
+            text: root.title
+            size_hint: 0.2, None
+            height: 30
+            text_size:self.size
+            halign:'left'
+            valign:'middle'
+
+        InputGeneral:
+            id: tf_patterns
+            size_hint: 0.75, None
+            hint_text: root.hint_text
+            hint_text: "e.g. *.txt, /folder/, *tmp*"
+
+
+
+<PatternsLine@BoxLayout>:
+    label: ""
+    hint_text: ""
+    tf_patterns: tf_patterns
+    size_hint: 1, None
+    height: 32
+
+    Label:
+        text: root.label
+        size_hint: 0.3, 1
+
+    InputGeneral:
+        id: tf_patterns
+        hint_text: root.hint_text
+        size_hint: 0.7, 1
+
+<MergeMethodsContainer@StackLayout>:
+    height: 30
+    padding: 50, 100, 0, 0
+    merge_methods: merge_methods
+
+    MergeMethods:
+        id: merge_methods
+        size_hint: 0.5, 0.25
+
+<MergeMethods>:
+    #size_hint: 0.4, 0.25
+    dropdown: dropdown
+
+    Button:
+        id: btn
+        text: 'Merge Method'
+        on_parent: dropdown.dismiss()
+        on_release: dropdown.open(self)
+        height: 35
+        width: 200
+        size_hint: 0.4, None
+
+    DropDown:
+        id: dropdown
+        on_select: btn.text = '{}'.format(args[1])
+
+<MergeMethodItem>:
+    size_hint_y: None
+    height: 35
+    size_hint: 0.4, None
+
+
+<PopupBrowseServerFolder>
+    title: "Browse server folder"
+    auto_dismiss: False
+
+    foldersView: foldersView
+
+    BoxLayout:
+        orientation: "vertical"
+
+        FoldersView:
+            id: foldersView
+
+        ButtonsContainer:
+            Button:
+                text: "Select"
+                on_release: root.set_server_path()
+
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+
+<FoldersView>:
+    viewclass: 'SelectableLabel'
+    SelectableRecycleBoxLayout:
+        default_size: None, dp(36)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        multiselect: False
+        touch_multiselect: False
+
+
+<SelectableLabel>:
+
+    canvas.before:
+        Color:
+            rgba: (.05, 0.5, .9, .8) if self.selected else (.5, .5, .5, 1)
+        Rectangle:
+            pos: self.pos[0], self.pos[1] + 2
+            size: self.size[0], self.size[1] - 4
+
