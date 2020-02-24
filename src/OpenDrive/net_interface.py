@@ -37,7 +37,7 @@ private classes
     :show-inheritance:
 
 """
-import pynetworking as net
+from pynetworking import interface as net
 
 
 net.Logging.logger.setLevel(30)
