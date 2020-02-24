@@ -18,4 +18,5 @@ General
 
 """
 import pynetworking
+from pynetworking import server, client
 pynetworking.Logging.logger.setLevel(40)

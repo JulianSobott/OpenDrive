@@ -9,7 +9,7 @@ import unittest
 import uuid
 
 from OpenDrive.server_side import database, paths
-from general.database import Token
+from OpenDrive.general.database import Token
 from tests.server_side.database.helper_database import h_setup_server_database
 
 

@@ -24,7 +24,6 @@ private functions
 import os
 import json
 from typing import List
-from threading import Lock
 
 from OpenDrive import net_interface
 from OpenDrive.client_side import file_changes as c_file_changes

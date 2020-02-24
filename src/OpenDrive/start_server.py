@@ -1,24 +1,7 @@
 """
-:module: OpenDrive.
-:synopsis: 
+:module: OpenDrive.start_server
+:synopsis: Entry point for the server
 :author: Julian Sobott
-
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
-
-
-public functions
-----------------
-
-.. autofunction:: XXX
-
-private functions
------------------
-
-
 """
 import sys
 import os

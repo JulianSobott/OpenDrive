@@ -100,6 +100,7 @@ class TestRequiresAuthentication(unittest.TestCase):
     def tearDown(self) -> None:
         h_stop_server_process(self._server_process)
 
+    @unittest.skip
     @h_client_routine(clear_folders=False)
     def test_requires_authentication(self):
         self.opened = False

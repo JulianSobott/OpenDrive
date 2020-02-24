@@ -10,6 +10,7 @@ from OpenDrive.client_side import paths as c_paths
 from OpenDrive.general import merge_folders as gen_merge_folders
 from OpenDrive.general.paths import normalize_path
 from OpenDrive.server_side import paths as s_paths
+from OpenDrive.server_side import path_utils
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from tests.helper_all import h_stop_server_process, h_start_server_process, h_client_routine, h_create_empty
 
@@ -84,7 +85,7 @@ class TestMergeMethods(unittest.TestCase):
         abs_local_path = normalize_path(c_paths.LOCAL_CLIENT_DATA, "folder1")
         h_create_empty(abs_local_path)
         f1_path = os.path.join(c_paths.LOCAL_CLIENT_DATA, "folder1")
-        f2_path = s_paths.rel_user_path_to_abs("folder1", 1)
+        f2_path = path_utils.rel_user_path_to_abs("folder1", 1)
         net_interface.server.add_folder(f2_init_content["folder_name"])
 
         h_create_files_folders(f1_path, f1_init_content)
@@ -131,7 +132,7 @@ class TestMergeMethods(unittest.TestCase):
         f1_content = {"folder_name": "folder1", "files": ["f1.txt", "f2.txt"], "folders": []}
         f2_content = {"folder_name": "folder1", "files": ["f1.txt", "f2.txt", "f3.txt"], "folders": []}
         f1_path = os.path.join(c_paths.LOCAL_CLIENT_DATA, "folder1")
-        f2_path = s_paths.rel_user_path_to_abs("folder1", 1)
+        f2_path = path_utils.rel_user_path_to_abs("folder1", 1)
 
         generator = self.h_test_merge_method(merge_folders.MergeMethods.PRIORITIZE_LATEST, f1_content, f2_content,
                                              f2_content)
@@ -178,7 +179,7 @@ class TestMerge(unittest.TestCase):
 
         interface.add_sync_folder(abs_local_path, "folder1")
 
-        server_path = s_paths.rel_user_path_to_abs("folder1", 1)
+        server_path = path_utils.rel_user_path_to_abs("folder1", 1)
         current_structure = gen_merge_folders.generate_content_of_folder(server_path, only_files_list=True,
                                                                          top_folder_name="folder1")
         expected_structure = dummy_content

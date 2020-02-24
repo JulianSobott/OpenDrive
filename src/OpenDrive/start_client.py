@@ -1,23 +1,12 @@
 """
-:module: OpenDrive.
-:synopsis: 
+:module: OpenDrive.start_client
+:synopsis: Entry point for the client
 :author: Julian Sobott
-
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
-
 
 public functions
 ----------------
 
-.. autofunction:: XXX
-
-private functions
------------------
-
+.. autofunction:: main
 
 """
 import sys

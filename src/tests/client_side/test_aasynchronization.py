@@ -8,9 +8,11 @@ Test1:
 import os
 import time
 import unittest
+from pynetworking import client, server
 
 from OpenDrive.client_side import interface, file_changes, file_changes_json
 from OpenDrive.client_side import paths as client_paths
+from OpenDrive.server_side import path_utils
 from OpenDrive.client_side import synchronization
 from OpenDrive.server_side import paths as server_paths
 from tests.client_side.helper_client import h_register_dummy_user_device_client
@@ -21,7 +23,7 @@ from tests.helper_all import h_client_routine, h_stop_server_process, h_start_se
 class TestSynchronization(unittest.TestCase):
 
     def setUp(self) -> None:
-        time.sleep(1)
+        time.sleep(0.2)
         if file_changes.observer.is_alive():
             file_changes.stop_observing()
         # file_changes.observer.unschedule_all()
@@ -47,7 +49,7 @@ class TestSynchronization(unittest.TestCase):
         time.sleep(1)
         synchronization.full_synchronize()
         time.sleep(2)
-        expected_path = os.path.join(server_paths.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
+        expected_path = os.path.join(path_utils.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
 
     @h_client_routine(clear_folders=False)
@@ -60,6 +62,6 @@ class TestSynchronization(unittest.TestCase):
         time.sleep(1)
         synchronization.full_synchronize()
         time.sleep(2)
-        expected_path = os.path.join(server_paths.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
+        expected_path = os.path.join(path_utils.get_users_root_folder(self.user.user_id), "folder1/dummy.txt")
         self.assertTrue(os.path.exists(expected_path), "dummy file is not pulled to server!")
 
