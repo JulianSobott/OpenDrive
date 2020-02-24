@@ -28,6 +28,7 @@ import os
 from typing import List
 
 from OpenDrive.server_side import paths as server_paths
+from OpenDrive.server_side import path_utils
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.general.file_exchanges import SyncAction
 from OpenDrive.general.paths import NormalizedPath
@@ -99,7 +100,7 @@ def _set_json_data(data: dict):
 
 @_override_gen_functions
 def _get_file_path(user_id: int, device_id: int) -> str:
-    user_path = server_paths.get_users_root_folder(user_id)
+    user_path = path_utils.get_users_root_folder(user_id)
     file_path = server_paths.normalize_path(user_path, get_file_name(device_id))
     return file_path
 

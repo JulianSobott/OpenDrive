@@ -1,23 +1,13 @@
 """
-:module: OpenDrive.
-:synopsis: 
+:module: OpenDrive.server_side.path_utils
+:synopsis: Path util functions
 :author: Julian Sobott
-
-public classes
----------------
-
-.. autoclass:: XXX
-    :members:
-
 
 public functions
 ----------------
 
-.. autofunction:: XXX
-
-private functions
------------------
-
+.. autofunction:: rel_user_path_to_abs
+.. autofunction:: get_users_root_folder
 
 """
 from OpenDrive import net_interface

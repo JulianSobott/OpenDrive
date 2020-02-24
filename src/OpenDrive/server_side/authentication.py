@@ -29,7 +29,7 @@ from OpenDrive.server_side.database import User, Device
 from OpenDrive.general.database import Token
 from OpenDrive.server_side.od_logging import client_logger_security
 from OpenDrive.server_side import folders
-from OpenDrive.server_side import paths as server_paths
+from OpenDrive.server_side import path_utils
 from OpenDrive.server_side import file_changes_json as server_json
 
 
@@ -129,7 +129,7 @@ def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
             return possible_device.token, possible_device.device_id
     device_id = Device.create(user_id, mac_address, Token(), Token.get_next_expired())
     device_token = Device.from_id(device_id).token
-    assert os.path.exists(server_paths.get_users_root_folder(user_id))
+    assert os.path.exists(path_utils.get_users_root_folder(user_id))
     server_json.create_changes_file_for_new_device(user_id, device_id, empty=True)
     return device_token, device_id
 

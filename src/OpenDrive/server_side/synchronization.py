@@ -22,6 +22,7 @@ import os
 from OpenDrive import net_interface
 from OpenDrive.general import file_changes_json as gen_json
 from OpenDrive.server_side import paths as server_paths
+from OpenDrive.server_side import path_utils
 from OpenDrive.server_side import file_exchanges
 from OpenDrive.server_side import file_changes_json as server_json
 from OpenDrive.server_side import database as db
@@ -33,7 +34,7 @@ from OpenDrive.server_side.od_logging import client_logger_sync
 @requires_authentication
 def get_changes(dest_path: str) -> net.File:
     user = net_interface.get_user()
-    user_path = server_paths.get_users_root_folder(user.user_id)
+    user_path = path_utils.get_users_root_folder(user.user_id)
     changes_path = server_paths.normalize_path(user_path, f"changes_{user.device_id}.json")
     return net.File(changes_path, dest_path)
 
