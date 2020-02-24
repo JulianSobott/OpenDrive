@@ -169,7 +169,6 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         if event.is_directory and event.event_type == "modified":
             # Only meta data of the directory is modified. This data is not tracked
             self._ignore = True
-        logger_sync.debug(f"{event.src_path} in {ignore_on_synchronize.ignore_paths}")
         if normalize_path(event.src_path) in ignore_on_synchronize.ignore_paths:
             self._ignore = True
             ignore_on_synchronize.ignore_paths.remove(normalize_path(event.src_path))
