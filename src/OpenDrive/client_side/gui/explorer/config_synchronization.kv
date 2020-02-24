@@ -13,6 +13,8 @@
 
     merge_methods: merge_methods_container.merge_methods
 
+    lbl_user_hints: lbl_user_hints
+
 
     WidgetsContainer:
         PathsContainer:
@@ -25,7 +27,11 @@
 
         MergeMethodsContainer:
             id: merge_methods_container
-            size_hint: 1, 0.7
+            size_hint: 1, 0.6
+
+        UserHints:
+            id: lbl_user_hints
+            size_hint: 1, 0.1
 
         ConfigButtonsContainer:
             add: root.btn_release_add

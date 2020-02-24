@@ -69,3 +69,5 @@ is_authenticated_at_server = _ThreadEventHandler()
 program.add_on_stop(gui.stopped)
 program.add_on_stop(synchronization.stopped)
 program.add_on_stop(watching.stopped)
+
+sync_lock = threading.Lock()

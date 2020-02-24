@@ -29,3 +29,10 @@ Client
                             GUI.main()
                                 *
                                 *
+
+
+Mutex
+-----
+
+- synchronization
+    - server + client

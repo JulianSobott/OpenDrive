@@ -69,6 +69,7 @@ from OpenDrive.client_side import synchronization as client_sync
 from OpenDrive.client_side import interface
 from OpenDrive import net_interface
 from OpenDrive.client_side.merge_folders import take_1, take_2, prioritize_latest
+from OpenDrive.client_side import program_state
 
 MergeMethod = NewType("MergeMethod", Any)
 
@@ -104,18 +105,19 @@ ALL_METHODS = [MergeMethods.TAKE_1, MergeMethods.TAKE_2, MergeMethods.PRIORITIZE
 
 
 def merge_folders(abs_local_path: str, remote_name: str, merge_method: MergeMethod) -> 'interface.Status':
-    try:
-        server_content = net_interface.server.generate_content_of_folder(remote_name)
-    except FileNotFoundError:
-        return interface.Status.fail(f"Server folder ({remote_name}) does not exist!")
-    try:
-        client_content = gen_merge_folders.generate_content_of_folder(abs_local_path)
-    except FileNotFoundError:
-        return interface.Status.fail(f"Client folder ({abs_local_path}) does not exist!")
-    client_actions, server_actions = generate_merge_actions(client_content, server_content, merge_method)
-    net_interface.server.execute_actions(server_actions)
-    client_sync.execute_client_actions(client_actions)
-    return interface.Status.success("Successfully merged folders")
+    with program_state.sync_lock:
+        try:
+            server_content = net_interface.server.generate_content_of_folder(remote_name)
+        except FileNotFoundError:
+            return interface.Status.fail(f"Server folder ({remote_name}) does not exist!")
+        try:
+            client_content = gen_merge_folders.generate_content_of_folder(abs_local_path)
+        except FileNotFoundError:
+            return interface.Status.fail(f"Client folder ({abs_local_path}) does not exist!")
+        client_actions, server_actions = generate_merge_actions(client_content, server_content, merge_method)
+        net_interface.server.execute_actions(server_actions)
+        client_sync.execute_client_actions(client_actions)
+        return interface.Status.success("Successfully merged folders")
 
 
 def generate_merge_actions(folder_1_content: dict, folder_2_content: dict, merge_method: MergeMethod):
