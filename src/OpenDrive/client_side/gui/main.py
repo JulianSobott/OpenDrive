@@ -71,13 +71,13 @@ class OpenDriveApp(App):
 def main(start_screen: screens.ScreenName = screens.LOGIN_MANUAL, authentication_only: bool = False,
          opened_by: Opener = CLIENT):
     global app
-    if program_state.is_authenticated_at_server:
+    if program_state.is_authenticated_at_server.is_running():
         if authentication_only:
             return
         else:
             start_screen = screens.EXPLORER
     else:
-        pass
+        start_screen = screens.LOGIN_MANUAL
     logger_general.info(f"Open GUI by {opened_by}")
     file_changes_json.init_file()       # TODO: Needed?
     app = OpenDriveApp(start_screen, authentication_only)

@@ -1,5 +1,7 @@
 #:kivy 1.10.1
 
+#:import assets_manager OpenDrive.client_side.gui.assets_manager
+
 <ScreenLoginManual>:
     name: 'screen_login_manual'
     tf_username_email: tf_username_email
@@ -11,7 +13,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'assets/login_background_blurred.jpg'
+            source: assets_manager.get_image_path('login_background_blurred.jpg')
 
     AuthenticationContainer:
         HeaderContainer:
