@@ -19,6 +19,11 @@ public members
 .. autodata:: sync_waiter
     :annotation: = Singleton of the SyncWaiter
 
+public classes
+--------------
+
+.. autoclass:: ignore_on_synchronize
+
 private functions
 -----------------
 
@@ -159,21 +164,26 @@ class FileSystemEventHandler(watchdog_events.RegexMatchingEventHandler):
         self._rel_path = normalize_path(os.path.relpath(src_path, self.folder_path))
 
         # ignore
+        # TODO: Better handling of ignore. Remove magic 0.1 number
         self._ignore = False
         if event.is_directory and event.event_type == "modified":
             # Only meta data of the directory is modified. This data is not tracked
             self._ignore = True
-        if self._rel_path in self._single_ignore_paths.keys():
-            ignore = self._single_ignore_paths[self._rel_path]
-            if not ignore[1]:  # not changed
-                self._single_ignore_paths[self._rel_path] = (datetime.datetime.now(), True)
-                self._ignore = True
-            else:
-                enter_time = self._single_ignore_paths[self._rel_path][0]
-                if datetime.datetime.now() - enter_time < datetime.timedelta(seconds=0.1):
-                    self._ignore = True
-                else:
-                    self._single_ignore_paths.pop(self._rel_path)
+        logger_sync.debug(f"{event.src_path} in {ignore_on_synchronize.ignore_paths}")
+        if normalize_path(event.src_path) in ignore_on_synchronize.ignore_paths:
+            self._ignore = True
+            ignore_on_synchronize.ignore_paths.remove(normalize_path(event.src_path))
+        # if self._rel_path in self._single_ignore_paths.keys():
+        #     ignore = self._single_ignore_paths[self._rel_path]
+        #     if not ignore[1]:  # not changed
+        #         self._single_ignore_paths[self._rel_path] = (datetime.datetime.now(), True)
+        #         self._ignore = True
+        #     else:
+        #         enter_time = self._single_ignore_paths[self._rel_path][0]
+        #         if datetime.datetime.now() - enter_time < datetime.timedelta(seconds=0.1):
+        #             self._ignore = True
+        #         else:
+        #             self._single_ignore_paths.pop(self._rel_path)
         if not self._ignore:
             sync_waiter.sync()
             logger_sync.debug(f"{event.event_type}: {os.path.relpath(event.src_path, self.folder_path)}")
@@ -232,3 +242,18 @@ class SyncWaiter:
 
 
 sync_waiter = SyncWaiter()
+
+
+class ignore_on_synchronize:
+
+    ignore_paths = set()
+
+    def __init__(self, abs_path: NormalizedPath):
+        self.abs_path = abs_path
+
+    def __enter__(self):
+        ignore_on_synchronize.ignore_paths.add(self.abs_path)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+        # ignore_on_synchronize.ignore_paths.remove(self.abs_path)

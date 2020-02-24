@@ -57,7 +57,8 @@ class ServerFunctions(net.ServerFunctions):
 class ClientFunctions(net.ClientFunctions):
     """All client functions, that can be called by the server"""
     if net.global_data.IS_CLIENT:
-        from OpenDrive.general.file_exchanges import get_file, make_dirs
+        from OpenDrive.client_side.file_exchanges import get_file
+        from OpenDrive.general.file_exchanges import make_dirs
 
     @staticmethod
     def get_dir(abs_src_path: str, abs_dest_path: str) -> None:
