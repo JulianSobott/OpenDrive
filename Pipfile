@@ -14,7 +14,7 @@ flask = "*"
 flask-pymongo = "*"
 mongoengine = "*"
 kivy = "*"
-pynetworking = {path = "D:/Programmieren/Python/pynetworking/dist/pynetworking-0.1.10-py3-none-any.whl"}
+pynetworking = "*"
 
 [requires]
 python_version = "3.7"
