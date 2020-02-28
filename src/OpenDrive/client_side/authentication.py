@@ -40,7 +40,7 @@ from OpenDrive.client_side import program_state
 def connection_needed(func):
     """Decorator that ensures that a function is only executed, when the device is connected to the server."""
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Status:
         if not net_interface.ServerCommunicator.is_connected():
             logger_network.info(f"Function {func.__name__} can not be executed, because the device is not connected "
                                 f"to the server.")
@@ -58,7 +58,7 @@ def register_user_device(username: str, password: str, email: str = None) -> Sta
         logger_security.info(f"Failed to register: {ret}")
         return Status.fail(ret)
     else:
-        program_state.is_authenticated_at_server.started()
+        program_state.set_authenticated_at_server(True)
         logger_security.info(f"Successfully registered")
         _save_received_token(ret)
         return Status.success("Successfully registered")
@@ -74,7 +74,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
     else:
         if allow_auto_login:
             _save_received_token(ret)
-        program_state.is_authenticated_at_server.started()
+        program_state.set_authenticated_at_server(True)
         logger_security.info(f"Successfully logged in manually")
         return Status.success("Successfully logged in")
 
@@ -82,8 +82,7 @@ def login_manual(username: str, password: str, allow_auto_login=True) -> Status:
 @connection_needed
 def logout() -> Status:
     net_interface.server.logout()
-    net_interface.ServerCommunicator.close_connection()
-    program_state.is_authenticated_at_server.stopped()
+    program_state.set_authenticated_at_server(False)
     logger_security.info(f"Successfully logged out")
     return Status.success("Successfully logged out.")
 
@@ -98,7 +97,7 @@ def login_auto() -> Status:
             logger_security.info(f"Failed to login automatically: Wrong token")
             return Status.fail("Failed to automatically log in.")
         else:
-            program_state.is_authenticated_at_server.started()
+            program_state.set_authenticated_at_server(True)
             logger_security.info(f"Successfully logged in automatically")
             return Status.success("Successfully auto logged in")
 

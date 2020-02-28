@@ -9,4 +9,15 @@ In tests often a special setup is needed. Because some setups are needed in mult
 may be written as separate helper functions. These helper functions may be located in the test file or in separate
 modules. A helper function should be located in a higher level, the more general it is and the more often it is used.
 
-Helper functions are prepended with ``h_`` to signal, that this is not executed in the real program, but nly in tests.
+Helper functions are prepended with ``h_`` to signal, that this is not executed in the real program, but only in tests.
+
+Network vs normal tests
+-----------------------
+
+Some functions call functions over the network. For them a server/client process needs to be running.
+
+Rules
+*****
+
+- functions that would make a call over the network are always mocked. The other side implementation is out of scope
+- functions that are called over the network can be mocked depending on the config

@@ -25,7 +25,7 @@ Store global bool states
 """
 import threading
 
-__all__ = ["program", "gui", "synchronization", "watching", "is_authenticated_at_server"]
+__all__ = ["program", "gui", "synchronization", "watching", "is_authenticated_at_server", "set_authenticated_at_server"]
 
 
 class _ThreadEventHandler:
@@ -64,10 +64,21 @@ program = _ThreadEventHandler()
 gui = _ThreadEventHandler()
 synchronization = _ThreadEventHandler()
 watching = _ThreadEventHandler()
-is_authenticated_at_server = _ThreadEventHandler()
 
 program.add_on_stop(gui.stopped)
 program.add_on_stop(synchronization.stopped)
 program.add_on_stop(watching.stopped)
 
 sync_lock = threading.Lock()
+
+
+class Flags:
+    is_authenticated_at_server = False
+
+
+def set_authenticated_at_server(flag: bool):
+    Flags.is_authenticated_at_server = flag
+
+
+def is_authenticated_at_server() -> bool:
+    return Flags.is_authenticated_at_server
