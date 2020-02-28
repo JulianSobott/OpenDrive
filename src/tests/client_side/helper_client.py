@@ -5,8 +5,11 @@ from OpenDrive.client_side import authentication
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.server_side import database
 from tests.server_side.database import h_setup_server_database
+from tests.helper_all import has_resource_access
+from tests import config
 
 
+@has_resource_access(config.NETWORK)
 def h_register_dummy_user_device_client() -> database.User:
     h_setup_server_database()
 
@@ -19,6 +22,7 @@ def h_register_dummy_user_device_client() -> database.User:
     return user
 
 
+@has_resource_access(config.FILE_SYSTEM)
 def h_create_client_dummy_file():
     """OpenDrive/local/client_side/DUMMY/dummy.txt"""
     file_name = "dummy.txt"

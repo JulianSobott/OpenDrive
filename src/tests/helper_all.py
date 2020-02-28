@@ -25,6 +25,7 @@ private functions
 import os
 import shutil
 from multiprocessing import Process, Queue
+from functools import wraps
 from typing import Tuple
 from pynetworking import server
 
@@ -33,9 +34,26 @@ import OpenDrive.server_side.net_start
 from OpenDrive.client_side import paths as client_paths
 from OpenDrive.server_side import paths as server_paths
 
+from tests import config
+from tests.od_logging import logger
+
 server_stop_queue = Queue()
 
 
+def has_resource_access(resource):
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            if config.is_resource_mocked(resource):
+                logger.info(f"Ignore function: {function.__name__}, because {config.log_names[resource]} is mocked")
+                return None
+            return function(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+@has_resource_access(config.NETWORK)
 def h_start_server_process() -> Process:
     server_process = None
     try:
@@ -45,6 +63,7 @@ def h_start_server_process() -> Process:
         server_process.start()
 
 
+@has_resource_access(config.NETWORK)
 def h_stop_server_process(process: Process):
     server_stop_queue.put("Stop")
     process.join()
@@ -54,6 +73,7 @@ def h_client_routine(clear_server_db: bool = False, clear_folders: bool = True):
     from tests.server_side.helper_server import h_delete_recreate_server_db
 
     def decorator(func):
+        @has_resource_access(config.NETWORK)
         def wrapper(*args, **kwargs):
             if clear_folders:
                 h_clear_init_all_folders()
@@ -71,6 +91,7 @@ def h_client_routine(clear_server_db: bool = False, clear_folders: bool = True):
     return decorator
 
 
+@has_resource_access(config.FILE_SYSTEM)
 def h_clear_init_all_folders(client=True, server=True):
     """
     server: OpenDrive/local/server_side/ROOT/
@@ -84,6 +105,7 @@ def h_clear_init_all_folders(client=True, server=True):
         os.makedirs(client_paths.LOCAL_CLIENT_DATA, exist_ok=True)
 
 
+@has_resource_access(config.FILE_SYSTEM)
 def h_clear_init_dummy_folders() -> Tuple[str, str]:
     """
     client: OpenDrive/local/client_side/DUMMY_FOLDER/
@@ -98,6 +120,7 @@ def h_clear_init_dummy_folders() -> Tuple[str, str]:
     return dummy_client_folder, dummy_server_folder
 
 
+@has_resource_access(config.FILE_SYSTEM)
 def h_create_empty(abs_path: str):
     shutil.rmtree(abs_path, ignore_errors=True)
     os.makedirs(abs_path, exist_ok=True)
