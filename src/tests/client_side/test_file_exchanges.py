@@ -1,4 +1,5 @@
 import unittest
+from pynetworking import client, server
 
 from OpenDrive import net_interface
 from tests.helper_all import h_start_server_process, h_stop_server_process, \

@@ -2,6 +2,7 @@ import os
 import shutil
 import time
 import unittest
+from pynetworking import client, server
 
 from OpenDrive.client_side import paths, file_changes, file_changes_json
 from OpenDrive.client_side.gui.explorer import pattern_parser

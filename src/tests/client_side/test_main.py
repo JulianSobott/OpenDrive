@@ -2,6 +2,7 @@ import os
 import threading
 import time
 import unittest
+from pynetworking import client, server
 
 from OpenDrive.client_side import file_changes_json as c_json
 from OpenDrive.client_side import interface

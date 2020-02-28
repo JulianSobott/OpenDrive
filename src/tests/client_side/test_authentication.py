@@ -1,6 +1,7 @@
 import unittest
 from typing import Generator
 from unittest import mock
+from pynetworking import client, server
 
 from OpenDrive import client_side
 from tests.client_side.helper_client import h_register_dummy_user_device_client

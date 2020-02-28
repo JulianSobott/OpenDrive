@@ -1,5 +1,6 @@
 import json
 import unittest
+from pynetworking import client, server
 
 from OpenDrive.client_side import file_changes_json
 from OpenDrive.client_side import paths as client_paths

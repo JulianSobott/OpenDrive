@@ -1,6 +1,7 @@
 import os
 import time
 import unittest
+from pynetworking import client, server
 
 from OpenDrive import net_interface
 from OpenDrive.client_side import file_changes_json as c_json

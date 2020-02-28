@@ -1,5 +1,6 @@
 import unittest
 import time
+from pynetworking import client, server
 
 from OpenDrive.client_side import gui
 
