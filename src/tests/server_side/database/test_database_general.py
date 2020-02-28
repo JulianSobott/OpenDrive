@@ -28,4 +28,4 @@ class TestDatabaseConnections(unittest.TestCase):
         self.assertTrue("users" in tables)
         self.assertTrue("devices" in tables)
         self.assertTrue("folders" in tables)
-
+        self.assertTrue("user_device" in tables)

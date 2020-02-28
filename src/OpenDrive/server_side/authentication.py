@@ -25,7 +25,7 @@ from passlib.apps import custom_app_context as pwd_context
 from typing import Optional, Tuple, Union
 
 from OpenDrive import net_interface
-from OpenDrive.server_side.database import User, Device
+from OpenDrive.server_side.database import User, Device, UserDevice
 from OpenDrive.general.database import Token
 from OpenDrive.server_side.od_logging import client_logger_security
 from OpenDrive.server_side import folders
@@ -43,6 +43,7 @@ def register_user_device(username: str, password: str, mac_address: str, email: 
     else:
         user_id = ret
     token, device_id = _add_update_device(user_id, mac_address)
+    server_json.create_changes_file_for_new_device(user_id, device_id, empty=True)
     client_logger_security().info(f"Successfully added new device: user_id={user_id}, device_id={device_id}")
     _set_user_authenticated(user_id, device_id)
     return token
@@ -118,7 +119,7 @@ def logout() -> None:
 def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
     """Adds a new device to the db. If the device already exists no device is added. A proper Token that isn't
     expired and the device_id is returned."""
-    possible_device = Device.get_by_mac(mac_address)
+    possible_device = UserDevice.get_device_by_mac_user_id(mac_address, user_id)
     if possible_device is not None:
         if Token.is_token_expired(possible_device.token_expires):
             new_token = Token()
@@ -130,7 +131,6 @@ def _add_update_device(user_id: int, mac_address: str) -> Tuple[Token, int]:
     device_id = Device.create(user_id, mac_address, Token(), Token.get_next_expired())
     device_token = Device.from_id(device_id).token
     assert os.path.exists(path_utils.get_users_root_folder(user_id))
-    server_json.create_changes_file_for_new_device(user_id, device_id, empty=True)
     return device_token, device_id
 
 

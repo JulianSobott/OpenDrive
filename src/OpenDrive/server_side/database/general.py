@@ -44,3 +44,9 @@ def create_database() -> None:
                              "folder_name VARCHAR(100) "
                              ")")
         db.create(sql_table_folders)
+
+        sql_table_user_device = ("CREATE TABLE user_device ("
+                                 "device_id INTEGER REFERENCES devices(device_id),"
+                                 "user_id INTEGER REFERENCES users(user_id),"
+                                 "PRIMARY KEY (device_id, user_id))")
+        db.create(sql_table_user_device)

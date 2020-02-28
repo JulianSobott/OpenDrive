@@ -11,6 +11,7 @@ Tables
 - changes (files changed. folder. device)
 - privileges (folder, user, privileges)
 - devices (device_id, user_id, mac_address, token)
+- user_device (device_id, user_id)
 
 - sync_folders (client_folder, server_folder, device_user)
 
@@ -24,7 +25,5 @@ Modules
 """
 from OpenDrive.server_side.database.general import create_database, DBConnection
 from OpenDrive.server_side.database.users import User
-from OpenDrive.server_side.database.devices import Device
-from general.database import Token
+from OpenDrive.server_side.database.devices import Device, UserDevice
 from OpenDrive.server_side.database.folders import Folder
-

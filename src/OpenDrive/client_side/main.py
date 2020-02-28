@@ -5,7 +5,6 @@
 
 ## TODO:
 - proper shutdown
-- possible to close gui
 - offline gui
 
 public functions
@@ -51,7 +50,6 @@ def start():
         logger_general.info("Start connecting to server")
         while program_state.program.is_running() and not c_net_start.connect(timeout=60):
             # connect till connected
-            # TODO: Add server info (IP:PORT)
             sleep_time = 1
             time.sleep(sleep_time)
         if program_state.program.is_running():

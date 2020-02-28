@@ -22,11 +22,11 @@ class ScreenRegistration(Screen):
         password = self.tf_password.text
         repeated_password = self.tf_repeated_password.text
 
-        if len(username) == 0 or len(email) == 0 or len(password) == 0:
+        if len(username) == 0 or len(password) == 0:
             self.show_error_message("Please fill all fields")
             return
 
-        if not is_valid_email(email):
+        if not is_valid_email(email) and len(email) != 0:
             self.show_error_message("Please fill in a valid email address")
             self.tf_email.text = ""
             return
