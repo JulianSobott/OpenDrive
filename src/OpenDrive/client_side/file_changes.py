@@ -75,18 +75,21 @@ def stop_observing():
     """Protects the `observer` from external access"""
     global watchers
     global observer
-    observer.stop()
-    observer.join()
+    if observer.is_alive():
+        observer.stop()
+        observer.join()
     watchers = {}
     observer.__init__()
 
 
 def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",),
                exclude_regexes: List[str] = (), remote_name: Optional[str] = None) -> bool:
-    """If possible add folder to file and start watching. Returns True, if the folder was added."""
-    assert isinstance(include_regexes, list) or isinstance(include_regexes, tuple)
-    assert isinstance(exclude_regexes, list) or isinstance(exclude_regexes, tuple)
+    """If possible add folder to file and start watching. Returns True, if the folder was added.
+    file_changes_json.init_file() needs to be called any time before!"""
+    # TODO: remove Optional from remote name
     abs_folder_path = normalize_path(abs_folder_path)
+    if not os.path.exists(abs_folder_path):
+        return False
     added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes, remote_name)
     if not added:
         return False
@@ -99,9 +102,12 @@ def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",),
 def remove_folder_from_watching(abs_folder_path: str) -> None:
     """Stops watching at the folder and removes it permanently from the json file"""
     norm_folder_path = normalize_path(abs_folder_path)
-    _remove_watcher(norm_folder_path)
-    file_changes_json.remove_folder(norm_folder_path)
-    logger_sync.info(f"Stop watching at folder: {abs_folder_path}")
+    try:
+        _remove_watcher(norm_folder_path)
+        file_changes_json.remove_folder(norm_folder_path)
+        logger_sync.info(f"Stop watching at folder: {abs_folder_path}")
+    except KeyError:
+        logger_sync.debug(f"Tried to remove a folder that was not synced: {abs_folder_path}")
 
 
 def add_single_ignores(abs_folder_path: str, rel_paths: List[NormalizedPath]) -> None:

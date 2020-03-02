@@ -23,6 +23,7 @@ private functions
 
 """
 import os
+from unittest import mock
 import shutil
 from multiprocessing import Process, Queue
 from functools import wraps
@@ -129,3 +130,19 @@ def h_create_empty(abs_path: str):
 def _debug_server_routine(queue: Queue):
     OpenDrive.server_side.net_start.start(queue)
 
+
+class MockFile:
+
+    def __init__(self, read_data: str = ""):
+        self.mock = mock.mock_open(read_data=read_data)
+        self.patch = mock.patch("builtins.open", self.mock)
+
+    def __enter__(self):
+        self.patch.__enter__()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return self.patch.__exit__(exc_type, exc_val, exc_tb)
+
+    def assert_called_once_with(self, text):
+        return self.mock().write.assert_called_once_with(text)

@@ -12,7 +12,7 @@ FAST = ALL  # All resources are mocked
 
 
 def get_config():
-    return FAST     # varying
+    return FULL     # varying
 
 
 def is_resource_mocked(resource):

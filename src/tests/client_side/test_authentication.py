@@ -9,7 +9,7 @@ from OpenDrive import net_interface
 from tests.client_side.helper_client import h_register_dummy_user_device_client
 from OpenDrive.general.database import Token
 from OpenDrive.client_side.program_state import is_authenticated_at_server, set_authenticated_at_server
-from tests.helper_all import h_clear_init_all_folders, h_start_server_process, h_stop_server_process, h_client_routine
+from tests.helper_all import h_clear_init_all_folders, MockFile
 
 
 class TestAuthentication(unittest.TestCase):
@@ -136,20 +136,3 @@ def mock_server_call(return_value):
             return return_value
         return func
     pynetworking.core.Communication_general.MetaFunctionCommunicator.__getattribute__ = dummy
-
-
-class MockFile:
-
-    def __init__(self, read_data: str = ""):
-        self.mock = mock.mock_open(read_data=read_data)
-        self.patch = mock.patch("builtins.open", self.mock)
-
-    def __enter__(self):
-        self.patch.__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        return self.patch.__exit__(exc_type, exc_val, exc_tb)
-
-    def assert_called_once_with(self, text):
-        return self.mock().write.assert_called_once_with(text)
