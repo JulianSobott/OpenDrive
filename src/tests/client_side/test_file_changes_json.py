@@ -31,15 +31,15 @@ class TestJson(unittest.TestCase):
     def test_add_folder_existing(self):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
-        added = file_changes_json.add_folder(path, include, exclude)
+        added = file_changes_json.add_folder(path, include, exclude, client_paths.normalize_path("server/path"))
         self.assertTrue(added)
-        added = file_changes_json.add_folder(path, include, exclude)
+        added = file_changes_json.add_folder(path, include, exclude, client_paths.normalize_path("server/path"))
         self.assertFalse(added)
 
     def test_remove_folder(self):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
-        file_changes_json.add_folder(path, include, exclude)
+        file_changes_json.add_folder(path, include, exclude, client_paths.normalize_path("server/path"))
         file_changes_json.remove_folder(path)
         data = file_changes_json._get_json_data()
         self.assertEqual({}, data)
@@ -52,7 +52,7 @@ class TestJson(unittest.TestCase):
     def test_set_include_regexes(self):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
-        file_changes_json.add_folder(path, include, exclude)
+        file_changes_json.add_folder(path, include, exclude, client_paths.normalize_path("server/path"))
 
         new_include = ["hello", "you"]
         file_changes_json.set_include_regexes(path, new_include)
@@ -62,7 +62,7 @@ class TestJson(unittest.TestCase):
     def test_add_change_entry(self):
         file_changes_json.init_file()
         path, include, exclude = h_get_dummy_folder_data()
-        file_changes_json.add_folder(path, include, exclude)
+        file_changes_json.add_folder(path, include, exclude, client_paths.normalize_path("server/path"))
 
         rel_file_path = client_paths.normalize_path("test.txt")
         file_changes_json.add_change_entry(path, rel_file_path, gen_json.ACTION_PULL)

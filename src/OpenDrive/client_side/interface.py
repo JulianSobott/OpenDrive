@@ -89,21 +89,21 @@ def logout() -> Status:
     return authentication.logout()
 
 
-def add_sync_folder(abs_local_path: NormalizedPath, remote_name: str,
+def add_sync_folder(abs_local_path: NormalizedPath, server_folder_path: NormalizedPath,
                     include_regexes: List[str] = (".*",), exclude_regexes: List[str] = (),
                     merge_method: merge_folders.MergeMethod = merge_folders.MergeMethods.DEFAULT) -> Status:
     """Adds a synchronization between a local folder and a server folder. The content of both folders is merged,
     so that both folders are identical."""
-    success = file_changes.add_folder(abs_local_path, include_regexes, exclude_regexes, remote_name)
+    success = file_changes.add_folder(abs_local_path, server_folder_path, include_regexes, exclude_regexes)
     if not success:
         return Status.fail("Folder can not be added locally. It is nested in an existing folder or wraps "
                            "around an existing folder")
-    new_added = net_interface.server.add_folder(remote_name)
+    new_added = net_interface.server.add_folder(server_folder_path)
 
     if new_added:
         merge_method = merge_folders.MergeMethods.TAKE_1
 
-    status = merge_folders.merge_folders(abs_local_path, remote_name, merge_method)
+    status = merge_folders.merge_folders(abs_local_path, server_folder_path, merge_method)
     if not status.was_successful():
         return status
 
@@ -118,7 +118,7 @@ def remove_synchronization(abs_local_path: NormalizedPath) -> Status:
 
 def remove_remote_folder(remote_name: NormalizedPath) -> Status:
     """Removes the remote folder, if it is not synchronized with any devices."""
-    pass
+    pass    # TODO
 
 
 def get_all_remote_folders(access_level=None) -> Tuple[Status, List[str]]:    # TODO: specify type hint
@@ -142,8 +142,3 @@ def share_folder(username: str, remote_name: str, permissions) -> Status:  # TOD
 
 def add_ignore_patterns_to_folder(patterns:List[str], abs_local_path: NormalizedPath) -> Status:
     pass
-
-
-
-
-

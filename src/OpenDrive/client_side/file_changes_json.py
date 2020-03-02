@@ -60,7 +60,7 @@ def init_file(empty: bool = False) -> None:
 
 @_override_gen_functions
 def add_folder(abs_folder_path: NormalizedPath, include_regexes: List[str], exclude_regexes: List[str],
-               server_folder_path: Optional[NormalizedPath] = None) -> bool:
+               server_folder_path: NormalizedPath) -> bool:
     if not gen_json.can_folder_be_added(abs_folder_path):
         return False
     data = _get_json_data()

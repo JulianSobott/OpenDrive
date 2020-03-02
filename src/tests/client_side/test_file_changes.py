@@ -34,7 +34,7 @@ class TestFileCreate(TestFileChange):
         ignore_patterns = []
         if ignore:
             ignore_patterns = [".*\\.txt"]
-        file_changes.add_folder(self.abs_folder_path, exclude_regexes=ignore_patterns)
+        file_changes.add_folder(self.abs_folder_path, "server/path", exclude_regexes=ignore_patterns)
         if is_folder:
             rel_file_path = "dummy"
             os.mkdir(os.path.join(self.abs_folder_path, rel_file_path))
@@ -70,7 +70,7 @@ class TestFileCreate(TestFileChange):
 
     def test_create_many(self):
         ignore_patterns = pattern_parser.parse_patterns("*.pyc, *ignore*")
-        file_changes.add_folder(self.abs_folder_path, exclude_regexes=ignore_patterns)
+        file_changes.add_folder(self.abs_folder_path, "server/path", exclude_regexes=ignore_patterns)
         time.sleep(0.5)
         # root: 10 files + 1 folder
         for i in range(10):
@@ -126,7 +126,7 @@ class TestFileChanges(unittest.TestCase):
         with open(self.abs_file_path, "w"):
             pass
         file_changes.start_observing()
-        file_changes.add_folder(self.abs_folder_path)
+        file_changes.add_folder(self.abs_folder_path, "server/path")
 
     def tearDown(self):
         file_changes.stop_observing()
@@ -223,21 +223,21 @@ class TestAPI(unittest.TestCase):
     def test_add_folder_success(self):
         with patch("OpenDrive.client_side.file_changes_json.add_folder", return_value=True), \
                 patch("os.path.exists", return_value=True):
-            ret = file_changes.add_folder("path/to\\folder")
+            ret = file_changes.add_folder("path/to\\folder", "server/path")
             self.assertTrue(ret)
             self.assertEqual(1, len(file_changes.watchers))
 
     def test_add_folder_fail(self):
         with patch("OpenDrive.client_side.file_changes_json.add_folder", return_value=False), \
                 patch("os.path.exists", return_value=True):
-            ret = file_changes.add_folder("path/to\\folder")
+            ret = file_changes.add_folder("path/to\\folder", "server/path")
             self.assertFalse(ret)
             self.assertEqual(0, len(file_changes.watchers))
 
     def test_add_folder_fail2(self):
         with patch("OpenDrive.client_side.file_changes_json.add_folder", return_value=True), \
                 patch("os.path.exists", return_value=False):
-            ret = file_changes.add_folder("path/to\\folder")
+            ret = file_changes.add_folder("path/to\\folder", "server/path")
             self.assertFalse(ret)
             self.assertEqual(0, len(file_changes.watchers))
 
@@ -245,7 +245,7 @@ class TestAPI(unittest.TestCase):
         # no mocking of the json file
         file_changes_json.init_file(empty=True)
         with patch("os.path.exists", return_value=True):
-            file_changes.add_folder("existing/folder")
+            file_changes.add_folder("existing/folder", "server/path")
             file_changes.remove_folder_from_watching("existing/folder")
             self.assertEqual(0, len(file_changes.watchers))
             self.assertEqual({}, file_changes_json.get_all_data())

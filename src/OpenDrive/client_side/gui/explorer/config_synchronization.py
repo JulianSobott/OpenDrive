@@ -107,16 +107,20 @@ class PopupConfigFolder(Popup):
         if len(server_path) == 0 or len(client_path) == 0:
             self._error_message = "Please fill both paths!"
             self._is_valid_data = False
-        client_path = normalize_path(self.tf_client_path.text)
+            return "", ""
+        client_path = normalize_path(client_path)
+        server_path = normalize_path(server_path)
         if not os.path.exists(client_path):
             self._error_message = "Local path must exist already!"
             self._is_valid_data = False
+            return "", ""
         try:
             os.mkdir(server_path)
             os.rmdir(server_path)
         except (FileExistsError, OSError):
             self._error_message = f"{server_path}: is not a valid name for a folder!"
             self._is_valid_data = False
+            return "", ""
 
         return client_path, server_path
 

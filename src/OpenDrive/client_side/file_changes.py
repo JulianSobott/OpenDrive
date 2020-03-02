@@ -82,15 +82,15 @@ def stop_observing():
     observer.__init__()
 
 
-def add_folder(abs_folder_path: str, include_regexes: List[str] = (".*",),
-               exclude_regexes: List[str] = (), remote_name: Optional[str] = None) -> bool:
+def add_folder(abs_folder_path: str, server_folder_path: str, include_regexes: List[str] = (".*",),
+               exclude_regexes: List[str] = ()) -> bool:
     """If possible add folder to file and start watching. Returns True, if the folder was added.
     file_changes_json.init_file() needs to be called any time before!"""
-    # TODO: remove Optional from remote name
     abs_folder_path = normalize_path(abs_folder_path)
+    server_folder_path = normalize_path(server_folder_path)
     if not os.path.exists(abs_folder_path):
         return False
-    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes, remote_name)
+    added = file_changes_json.add_folder(abs_folder_path, include_regexes, exclude_regexes, server_folder_path)
     if not added:
         return False
     _add_watcher(abs_folder_path, include_regexes, exclude_regexes)
