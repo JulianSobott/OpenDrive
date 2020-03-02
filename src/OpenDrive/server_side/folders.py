@@ -34,7 +34,7 @@ from OpenDrive.server_side.decorators import requires_authentication
 
 
 @requires_authentication
-def add_folder(folder_name: str) -> bool:
+def add_folder(folder_name: str) -> bool:   # TODO: DO we allow paths or only names? folder/path vs path
     """If the folder does not exist, creates a new folder at the users path and creates a new entry at the DB.
     Returns True if a new folder is created and added. If the folder already exists return False."""
     user = net_interface.get_user()

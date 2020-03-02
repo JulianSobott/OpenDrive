@@ -102,26 +102,26 @@ class PopupConfigFolder(Popup):
         self.dismiss()
 
     def get_valid_paths(self):
+        def failure(msg):
+            self._error_message = msg
+            self._is_valid_data = False
+            return "", ""
         client_path = self.tf_client_path.text
         server_path = self.tf_server_path.text
         if len(server_path) == 0 or len(client_path) == 0:
-            self._error_message = "Please fill both paths!"
-            self._is_valid_data = False
-            return "", ""
+            return failure("Please fill both paths!")
         client_path = normalize_path(client_path)
         server_path = normalize_path(server_path)
         if not os.path.exists(client_path):
-            self._error_message = "Local path must exist already!"
-            self._is_valid_data = False
-            return "", ""
-        try:
-            os.mkdir(server_path)
-            os.rmdir(server_path)
-        except (FileExistsError, OSError):
-            self._error_message = f"{server_path}: is not a valid name for a folder!"
-            self._is_valid_data = False
-            return "", ""
+            return failure("Local path must exist already!")
 
+        # try to validate server path
+        server_max_length = 255
+        if len(server_path) > server_max_length:
+            return failure(f"Server path is too long. Max length is {server_max_length}")
+        max_sub_folders = 10
+        if server_path.count("/") > max_sub_folders:
+            return failure(f"Server path contains too many folders. Max number is {max_sub_folders}")
         return client_path, server_path
 
     def get_valid_patterns(self) -> Tuple[List[str], List[str]]:
