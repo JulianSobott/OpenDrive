@@ -160,13 +160,8 @@ class TestMergeMethods(unittest.TestCase):
 
 
 class TestMerge(unittest.TestCase):
-    def setUp(self) -> None:
-        self._server_process = h_start_server_process()
 
-    def tearDown(self) -> None:
-        h_stop_server_process(self._server_process)
-
-    @h_client_routine(clear_folders=True)
+    @unittest.skip  # TODO
     def test_merge_folders(self):
         c_json.init_file(empty=True)
         h_register_dummy_user_device_client()
