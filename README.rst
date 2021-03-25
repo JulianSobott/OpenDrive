@@ -4,6 +4,16 @@ OpenDrive
 OpenDrive is an open source, self hosting file synchronization service. You need an own server, that you have access to.
 For me a Raspberry-pi 3 with an external hard-drive just went fine.
 
+Current State of the project
+----------------------------
+
+I'm currently no longer working on this project and this project is not production ready.
+It was possible to synchronize files between devices, when they changed or when the synchronization was setup.
+However there is no real error handling. The code was devoloped, while I had very little knowledge about clean code. 
+Also I had nearly no knowledege about synchronization software.
+
+However everyone who is interested, is welcome to fork this repo, make pull requests or create issues.
+
 Features
 --------
 
